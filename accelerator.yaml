@@ -37,7 +37,7 @@ accelerator:
         text: PostgreSQL
       - value: mysql
         text: MySQL
-    defaultValue: none
+    defaultValue: postgresql
 #engine:
 #  merge:
 #  - include: [ "**" ]
