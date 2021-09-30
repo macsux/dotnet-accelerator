@@ -1,0 +1,7 @@
+# GLOBAL default settings for ALL apps in the solution. For app specific settings, use APPNAME.yaml or APPNAME-<ENV>.yaml
+Logging:
+  LogLevel:
+    Default: Information
+    Microsoft: Warning
+    Microsoft.Hosting.Lifetime: Information
+AllowedHosts: '*'

@@ -1,0 +1,72 @@
+version: "3.0"
+
+services:
+  config-server:
+    image: steeltoeoss/config-server
+    restart: always
+    ports:
+      - "8888:8888"
+    volumes: 
+      - ../config:/config
+    environment:
+      #SPRING_CLOUD_CONFIG_SERVER_GIT_URI: https://github.com/Pivotal-Field-Engineering/funny-quotes-config
+      #SPRING_PROFILES_ACTIVE: git
+      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: /config
+      SPRING_PROFILES_ACTIVE: native
+
+  eureka:
+    image: steeltoeoss/eurekaserver
+    environment: 
+      eureka_server_enableSelfPreservation: "false" # we want things to get kicked out of the registry when app is shut down
+    ports:
+      - "8761:8761"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports: 
+      - 8084:15672
+      - 15672:15672
+      - 5672:5672
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+      
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    depends_on: 
+      - redis
+    environment:
+    - REDIS_HOSTS=local:redis:6379
+    ports:
+    - 8081:8081
+      
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - 9411:9411
+    
+  omnidb: 
+    image: taivokasper/omnidb
+    ports:
+      - 8085:8080
+      - 25482:25482
+
+  postgres:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: concourse
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      PGDATA: /database
+    volumes:
+      - postgres:/database
+
+volumes:
+  postgres:

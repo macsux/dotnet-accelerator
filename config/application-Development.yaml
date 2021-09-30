@@ -1,0 +1,10 @@
+# Global default DEVELOPMENT settings for ALL apps in the solution
+Logging:
+  LogLevel:
+    Default: Debug
+Management:
+  Endpoints:
+    Actuator:
+      Exposure:
+        Include:
+          - "*"

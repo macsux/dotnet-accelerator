@@ -1,0 +1,3 @@
+DbType: SQLite
+ConnectionStrings:
+  Database: "Data Source=dotnetaccelerator.db"
