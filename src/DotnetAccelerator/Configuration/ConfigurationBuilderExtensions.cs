@@ -4,10 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Steeltoe.Extensions.Configuration.ConfigServer;
+//using Steeltoe.Extensions.Configuration.ConfigServer;
 
 namespace DotnetAccelerator.Configuration
 {
@@ -42,7 +40,6 @@ namespace DotnetAccelerator.Configuration
         });
         public static IHostBuilder UseYamlWithProfilesAppConfiguration(this IHostBuilder hostBuilder, string[] args)
         {
-            
             hostBuilder.ConfigureAppConfiguration((hostingContext, cfg) =>
             {
                 cfg.Sources.Clear();
@@ -58,20 +55,12 @@ namespace DotnetAccelerator.Configuration
                     .AddYamlFile(GetFullPath($"{configName}.yaml"), false, true)
                     .AddYamlFile(GetFullPath($"{configName}.{environment}.yaml"), true, true)
                     .AddYamlFile(GetFullPath($"{configName}-{environment}.yaml"), true, true)
-                    .AddEnvironmentVariables()
-                    .AddCommandLine(args)
-                    .AddProfiles();
-                var bootstrapConfig = bootstrapConfigBuilder.Build();
-                var appName = bootstrapConfig.GetValue<string>("spring:application:name");
-                var loggerFactory = LoggerFactory.Create(c => c.AddConfiguration(bootstrapConfig.GetSection("Logging")));
-                bootstrapConfigBuilder
-                    .AddConfigServer(environment, loggerFactory)
+                    //.EnableConfigServer(environment)
                     .AddEnvironmentVariables()
                     .AddCommandLine(args);
             });
             return hostBuilder;
         }
-        
         
         public static IConfigurationBuilder AddProfiles(this IConfigurationBuilder builder)
         {

@@ -9,6 +9,7 @@
     <ItemGroup>
         <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="5.0.26" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.10">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -24,9 +25,13 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.1.0" />
+        <!--#if (postgresql) -->
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
+        <!--#endif -->
         <PackageReference Include="Steeltoe.Bootstrap.Autoconfig" Version="3.1.1" />
+        <!--#if (configserver) -->
         <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
+        <!--#endif -->
         <PackageReference Include="Steeltoe.Management.EndpointCore" Version="3.1.1" />
         <PackageReference Include="Steeltoe.Management.TaskCore" Version="3.1.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />

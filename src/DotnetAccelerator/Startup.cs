@@ -4,6 +4,7 @@ using DotnetAccelerator.Messaging;
 using DotnetAccelerator.Modules;
 using DotnetAccelerator.Persistence;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,11 @@ namespace DotnetAccelerator
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            //     .AddJwtBearer(cfg =>
+            //     {
+            //         cfg.Authority = ""
+            //     })
             services.AddMediatR(cfg => cfg.Using<MessageBus>(), typeof(Startup));
             services.AddTransient(svc => (IMessageBus) svc.GetRequiredService<IMediator>());
             services.AddModules("DotnetAccelerator.Modules");
@@ -40,9 +46,17 @@ namespace DotnetAccelerator
                     case DbType.SQLite:
                         opt.UseSqlite(connectionString);
                         break;
+// #symbol: StartupCs_DbDriver_Postgresql
+#if postgresql
                     case DbType.PostgreSQL:
                         opt.UseNpgsql(connectionString);
-                        break;
+                        break;                  
+#endif
+#if mysql
+                    case DbType.MySQL:
+                        opt.UseNpgsql(connectionString);
+                        break;                  
+#endif
                 };
             });
             services.AddControllers(cfg => cfg.Filters.Add<DomainExceptionFilter>());
@@ -60,13 +74,9 @@ namespace DotnetAccelerator
             
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DotnetAccelerator v1"));
-
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }

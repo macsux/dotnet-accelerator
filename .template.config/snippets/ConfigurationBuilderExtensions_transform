@@ -1,0 +1,7 @@
+                    .AddEnvironmentVariables()
+                    .AddCommandLine(args)
+                    .AddProfiles();
+                var bootstrapConfig = bootstrapConfigBuilder.Build();
+                var loggerFactory = LoggerFactory.Create(c => c.AddConfiguration(bootstrapConfig.GetSection("Logging")));
+                bootstrapConfigBuilder
+                    .AddConfigServer(environment, loggerFactory)

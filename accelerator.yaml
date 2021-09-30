@@ -1,0 +1,66 @@
+accelerator:
+  displayName: Tanzu .NET accelerator
+  description: Tanzu .NET WebAPI template
+  iconUrl: https://raw.githubusercontent.com/sample-accelerators/icons/master/icon-steeltoe.png
+  tags:
+  - dotnet
+  - c#
+  - steeltoe
+  options:
+  - name: applicationName
+    label: Application Name
+    description: Application Name
+    inputType: text
+    defaultValue: Sample
+    required: true
+  - name: enableConfigServer
+    label: Config Server
+    description: Use Config Server
+    dataType: boolean
+    inputType: toggle
+    defaultValue: false
+    required: true
+  - name: resourceserver
+    label: Resource server
+    description: Use JWT resource server
+    dataType: boolean
+    inputType: toggle
+    defaultValue: true
+    required: true
+  - name: dbType
+    label: Database type
+    display: true
+    inputType: select
+    description: Database type to use
+    choices:
+      - value: postgresql
+        text: PostgreSQL
+      - value: mysql
+        text: MySQL
+    defaultValue: none
+#engine:
+#  merge:
+#  - include: [ "**" ]
+#    exclude: [ "**/ConfigServerExtensions.cs"]
+#  - include: [ "**/ConfigurationBuilderExtensions.cs", "**/ConfigServerExtensions.cs"]
+#    condition: "#enableConfigServer"
+#    chain:
+#      - type: ReplaceText
+#        substitutions:
+#          - text: "//using Steeltoe.Extensions.Configuration.ConfigServer;"
+#            with: "'using Steeltoe.Extensions.Configuration.ConfigServer;'"
+#          - text: "//.EnableConfigServer(environment)"
+#            with: "'.EnableConfigServer(environment)'"
+#
+#            
+#  - condition: "#enableConfigServer"
+#    exclude: [ "ConfigServerExtensions.cs" ]
+#    chain:
+#    - type: ReplaceText
+#      substitutions:
+#      - text: //.EnableConfigServer(environment)
+#        with: .EnableConfigServer(environment)
+#    - type: ReplaceText
+#      substitutions:
+#        - text: .EnableConfigServer(environment)
+#          with: ""

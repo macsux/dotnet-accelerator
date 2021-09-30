@@ -1,0 +1,3 @@
+                    case DbType.PostgreSQL:
+                        opt.UseNpgsql(connectionString);
+                        break;   
