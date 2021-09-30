@@ -1,0 +1,10 @@
+---
+apiVersion: accelerator.apps.tanzu.vmware.com/v1alpha1
+kind: Accelerator
+metadata:
+  name: tanzu-dotnet-webapi
+spec:
+  git:
+    url: https://github.com/macsux/dotnet-accelerator.git
+    ref:
+      branch: dev
