@@ -53,9 +53,6 @@ engine:
              #endif
            with: "'                    .EnableConfigServer(environment)'"
 
-#if configserver
-                    .EnableConfigServer(environment)  
-#endif
 
 #  - include: [ "**/ConfigurationBuilderExtensions.cs"]
 #    condition: "!#enableConfigServer"
