@@ -42,25 +42,25 @@ engine:
  merge:
  - include: [ "**" ]
    exclude: [ "**/ConfigServerExtensions.cs", ".template.config/**"]
- - include: [ "**/ConfigurationBuilderExtensions.cs", "**/ConfigServerExtensions.cs"]
-   condition: "#enableConfigServer"
-   chain:
-     - type: ReplaceText
-       substitutions:
-         - text: "//using Steeltoe.Extensions.Configuration.ConfigServer;"
-           with: "'using Steeltoe.Extensions.Configuration.ConfigServer;'"
-         - text: "//.EnableConfigServer(environment)"
-           with: "'.EnableConfigServer(environment)'"
+#  - include: [ "**/ConfigurationBuilderExtensions.cs", "**/ConfigServerExtensions.cs"]
+#    condition: "#enableConfigServer"
+#    chain:
+#      - type: ReplaceText
+#        substitutions:
+#          - text: "//using Steeltoe.Extensions.Configuration.ConfigServer;"
+#            with: "'using Steeltoe.Extensions.Configuration.ConfigServer;'"
+#          - text: "//.EnableConfigServer(environment)"
+#            with: "'.EnableConfigServer(environment)'"
 
            
- - condition: "#enableConfigServer"
-   exclude: [ "ConfigServerExtensions.cs" ]
-   chain:
-   - type: ReplaceText
-     substitutions:
-     - text: //.EnableConfigServer(environment)
-       with: .EnableConfigServer(environment)
-   - type: ReplaceText
-     substitutions:
-       - text: .EnableConfigServer(environment)
-         with: ""
+#  - condition: "#enableConfigServer"
+#    exclude: [ "ConfigServerExtensions.cs" ]
+#    chain:
+#    - type: ReplaceText
+#      substitutions:
+#      - text: //.EnableConfigServer(environment)
+#        with: .EnableConfigServer(environment)
+#    - type: ReplaceText
+#      substitutions:
+#        - text: .EnableConfigServer(environment)
+#          with: ""
