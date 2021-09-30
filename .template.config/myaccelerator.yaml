@@ -8,3 +8,4 @@ spec:
     url: https://github.com/macsux/dotnet-accelerator.git
     ref:
       branch: dev
+    interval: 10s
