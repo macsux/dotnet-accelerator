@@ -56,7 +56,7 @@ namespace DotnetAccelerator.Configuration
                     .AddYamlFile(GetFullPath($"{configName}.{environment}.yaml"), true, true)
                     .AddYamlFile(GetFullPath($"{configName}-{environment}.yaml"), true, true)
 #if configserver
-                    .EnableConfigServer(environment)  
+                    .EnableConfigServer(environment)
 #endif
                     
                     .AddEnvironmentVariables()

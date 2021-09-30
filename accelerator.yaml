@@ -49,9 +49,9 @@ engine:
        substitutions:
          - text: |
              #if configserver
-                                 .EnableConfigServer(environment)  
+                                 .EnableConfigServer(environment)
              #endif
-           with: "                    .EnableConfigServer(environment)"
+           with: "'                    .EnableConfigServer(environment)'"
 
 #if configserver
                     .EnableConfigServer(environment)  
