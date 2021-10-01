@@ -41,9 +41,9 @@ accelerator:
 engine:
  let: 
    - name: postgresql
-     expression: "dbType == 'postgresql'"
+     expression: "#dbType == 'postgresql'"
    - name: mysql
-     expression: "dbType == 'mysql'"
+     expression: "#dbType == 'mysql'"
  merge:
  - include: [ "**" ]
    exclude: [ "**/ConfigServerExtensions.cs", ".template.config/**"]
