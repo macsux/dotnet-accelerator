@@ -106,13 +106,8 @@ engine:
       - text: |
           #if configserver
         with: "''"
-      - text: |
-          #if configserver
-        with: "''"
     - type: ReplaceText
       substitutions:
-      - text: '#endif'
-        with: "''"
       - text: '#endif'
         with: "''"
   - include:
