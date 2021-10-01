@@ -41,7 +41,7 @@ namespace DotnetAccelerator
             {
                 var connectionString = Configuration.GetConnectionString("database");
                 var dbDriver = Configuration.GetValue<DbType>("DbType");
-                switch(dbDriver)
+                switch (dbDriver)
                 {
                     case DbType.SQLite:
                         opt.UseSqlite(connectionString);
@@ -49,14 +49,16 @@ namespace DotnetAccelerator
 #if postgresql
                     case DbType.PostgreSQL:
                         opt.UseNpgsql(connectionString);
-                        break;                  
+                        break;
 #endif
 #if mysql
                     case DbType.MySQL:
                         opt.UseNpgsql(connectionString);
-                        break;                  
+                        break;
 #endif
-                };
+                }
+
+                ;
             });
             services.AddControllers(cfg => cfg.Filters.Add<DomainExceptionFilter>());
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "DotnetAccelerator", Version = "v1"}); });
@@ -70,7 +72,7 @@ namespace DotnetAccelerator
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DotnetAccelerator v1"));
             app.UseHttpsRedirection();

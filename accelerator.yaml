@@ -55,12 +55,12 @@ engine:
           #if postgresql
                               case DbType.PostgreSQL:
                                   opt.UseNpgsql(connectionString);
-                                  break;                  
+                                  break;
           #endif
         with: |-
           '                    case DbType.PostgreSQL:
                                   opt.UseNpgsql(connectionString);
-                                  break;                  
+                                  break;
           '
   - include:
     - src/DotnetAccelerator/Startup.cs
@@ -72,7 +72,7 @@ engine:
           #if postgresql
                               case DbType.PostgreSQL:
                                   opt.UseNpgsql(connectionString);
-                                  break;                  
+                                  break;
           #endif
         with: "''"
   - include:
@@ -85,12 +85,12 @@ engine:
           #if mysql
                               case DbType.MySQL:
                                   opt.UseNpgsql(connectionString);
-                                  break;                  
+                                  break;
           #endif
         with: |-
           '                    case DbType.MySQL:
                                   opt.UseNpgsql(connectionString);
-                                  break;                  
+                                  break;
           '
   - include:
     - src/DotnetAccelerator/Startup.cs
@@ -102,7 +102,7 @@ engine:
           #if mysql
                               case DbType.MySQL:
                                   opt.UseNpgsql(connectionString);
-                                  break;                  
+                                  break;
           #endif
         with: "''"
   - include:
