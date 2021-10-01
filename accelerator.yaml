@@ -49,6 +49,16 @@ engine:
     - src/DotnetAccelerator/Startup.cs
     chain:
     - type: ReplaceText
+      condition: '!(#postgresql)'
+      substitutions:
+      - text: |-
+          #if postgresql
+                              case DbType.PostgreSQL:
+                                  opt.UseNpgsql(connectionString);
+                                  break;
+          #endif
+        with: "''"
+    - type: ReplaceText
       condition: '#postgresql'
       substitutions:
       - text: |-
@@ -62,22 +72,16 @@ engine:
                                   opt.UseNpgsql(connectionString);
                                   break;
           '
-  - include:
-    - src/DotnetAccelerator/Startup.cs
-    chain:
     - type: ReplaceText
-      condition: '!(#postgresql)'
+      condition: '!(#mysql)'
       substitutions:
       - text: |-
-          #if postgresql
-                              case DbType.PostgreSQL:
+          #if mysql
+                              case DbType.MySQL:
                                   opt.UseNpgsql(connectionString);
                                   break;
           #endif
         with: "''"
-  - include:
-    - src/DotnetAccelerator/Startup.cs
-    chain:
     - type: ReplaceText
       condition: '#mysql'
       substitutions:
@@ -93,21 +97,21 @@ engine:
                                   break;
           '
   - include:
-    - src/DotnetAccelerator/Startup.cs
-    chain:
-    - type: ReplaceText
-      condition: '!(#mysql)'
-      substitutions:
-      - text: |-
-          #if mysql
-                              case DbType.MySQL:
-                                  opt.UseNpgsql(connectionString);
-                                  break;
-          #endif
-        with: "''"
-  - include:
     - src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
     chain:
+    - type: ReplaceText
+      condition: '!(#configserver)'
+      substitutions:
+      - text: |-
+          #if configserver
+          using Steeltoe.Extensions.Configuration.ConfigServer;
+          #endif
+        with: "''"
+      - text: |-
+          #if configserver
+                              .EnableConfigServer(environment)
+          #endif
+        with: "''"
     - type: ReplaceText
       condition: '#configserver'
       substitutions:
@@ -126,35 +130,6 @@ engine:
           '                    .EnableConfigServer(environment)
           '
   - include:
-    - src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
-    chain:
-    - type: ReplaceText
-      condition: '!(#configserver)'
-      substitutions:
-      - text: |-
-          #if configserver
-          using Steeltoe.Extensions.Configuration.ConfigServer;
-          #endif
-        with: "''"
-      - text: |-
-          #if configserver
-                              .EnableConfigServer(environment)
-          #endif
-        with: "''"
-  - include:
-    - src/DotnetAccelerator/Persistence/DbType.cs
-    chain:
-    - type: ReplaceText
-      condition: '#postgresql'
-      substitutions:
-      - text: |-
-          #if postgresql
-                  PostgreSQL,
-          #endif
-        with: |-
-          '        PostgreSQL,
-          '
-  - include:
     - src/DotnetAccelerator/Persistence/DbType.cs
     chain:
     - type: ReplaceText
@@ -165,9 +140,24 @@ engine:
                   PostgreSQL,
           #endif
         with: "''"
-  - include:
-    - src/DotnetAccelerator/Persistence/DbType.cs
-    chain:
+    - type: ReplaceText
+      condition: '#postgresql'
+      substitutions:
+      - text: |-
+          #if postgresql
+                  PostgreSQL,
+          #endif
+        with: |-
+          '        PostgreSQL,
+          '
+    - type: ReplaceText
+      condition: '!(#mysql)'
+      substitutions:
+      - text: |-
+          #if mysql
+                  MySQL,
+          #endif
+        with: "''"
     - type: ReplaceText
       condition: '#mysql'
       substitutions:
@@ -178,14 +168,3 @@ engine:
         with: |-
           '        MySQL,
           '
-  - include:
-    - src/DotnetAccelerator/Persistence/DbType.cs
-    chain:
-    - type: ReplaceText
-      condition: '!(#mysql)'
-      substitutions:
-      - text: |-
-          #if mysql
-                  MySQL,
-          #endif
-        with: "''"
