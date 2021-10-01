@@ -47,9 +47,9 @@ engine:
     - .template.config/**
   - include:
     - src/DotnetAccelerator/Startup.cs
-    condition: '#postgresql'
     chain:
     - type: ReplaceText
+      condition: '#postgresql'
       substitutions:
       - text: |-
           #if postgresql
@@ -64,9 +64,9 @@ engine:
           '
   - include:
     - src/DotnetAccelerator/Startup.cs
-    condition: '!(#postgresql)'
     chain:
     - type: ReplaceText
+      condition: '!(#postgresql)'
       substitutions:
       - text: |-
           #if postgresql
@@ -76,10 +76,40 @@ engine:
           #endif
         with: "''"
   - include:
-    - src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
-    condition: '#configserver'
+    - src/DotnetAccelerator/Startup.cs
     chain:
     - type: ReplaceText
+      condition: '#mysql'
+      substitutions:
+      - text: |-
+          #if mysql
+                              case DbType.MySQL:
+                                  opt.UseNpgsql(connectionString);
+                                  break;
+          #endif
+        with: |-
+          '                    case DbType.MySQL:
+                                  opt.UseNpgsql(connectionString);
+                                  break;
+          '
+  - include:
+    - src/DotnetAccelerator/Startup.cs
+    chain:
+    - type: ReplaceText
+      condition: '!(#mysql)'
+      substitutions:
+      - text: |-
+          #if mysql
+                              case DbType.MySQL:
+                                  opt.UseNpgsql(connectionString);
+                                  break;
+          #endif
+        with: "''"
+  - include:
+    - src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
+    chain:
+    - type: ReplaceText
+      condition: '#configserver'
       substitutions:
       - text: |-
           #if configserver
@@ -97,9 +127,9 @@ engine:
           '
   - include:
     - src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
-    condition: '!(#configserver)'
     chain:
     - type: ReplaceText
+      condition: '!(#configserver)'
       substitutions:
       - text: |-
           #if configserver
@@ -113,9 +143,9 @@ engine:
         with: "''"
   - include:
     - src/DotnetAccelerator/Persistence/DbType.cs
-    condition: '#postgresql'
     chain:
     - type: ReplaceText
+      condition: '#postgresql'
       substitutions:
       - text: |-
           #if postgresql
@@ -126,9 +156,9 @@ engine:
           '
   - include:
     - src/DotnetAccelerator/Persistence/DbType.cs
-    condition: '!(#postgresql)'
     chain:
     - type: ReplaceText
+      condition: '!(#postgresql)'
       substitutions:
       - text: |-
           #if postgresql
@@ -137,9 +167,9 @@ engine:
         with: "''"
   - include:
     - src/DotnetAccelerator/Persistence/DbType.cs
-    condition: '#mysql'
     chain:
     - type: ReplaceText
+      condition: '#mysql'
       substitutions:
       - text: |-
           #if mysql
@@ -150,9 +180,9 @@ engine:
           '
   - include:
     - src/DotnetAccelerator/Persistence/DbType.cs
-    condition: '!(#mysql)'
     chain:
     - type: ReplaceText
+      condition: '!(#mysql)'
       substitutions:
       - text: |-
           #if mysql
