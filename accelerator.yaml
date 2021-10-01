@@ -76,36 +76,6 @@ engine:
           #endif
         with: "''"
   - include:
-    - src/DotnetAccelerator/Startup.cs
-    condition: '#mysql'
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if mysql
-                              case DbType.MySQL:
-                                  opt.UseNpgsql(connectionString);
-                                  break;
-          #endif
-        with: |-
-          '                    case DbType.MySQL:
-                                  opt.UseNpgsql(connectionString);
-                                  break;
-          '
-  - include:
-    - src/DotnetAccelerator/Startup.cs
-    condition: '!(#mysql)'
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if mysql
-                              case DbType.MySQL:
-                                  opt.UseNpgsql(connectionString);
-                                  break;
-          #endif
-        with: "''"
-  - include:
     - src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
     condition: '#configserver'
     chain:
