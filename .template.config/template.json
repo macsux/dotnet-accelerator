@@ -1,53 +1,58 @@
 {
-    "$schema": "http://json.schemastore.org/template",
-    "author": "Andrew Stakhov",
-    "classifications": [ "WebAPI" ], 
-    "name": "Tanzu .NET Web API",
-    "identity": "Tanzu.Net.WebApi",         
-    "groupIdentity":"Tanzu.Net",
-    "shortName": "tanzu-webapi",
-    "tags": {
-      "language": "C#",                         
-      "type":"project"
-    },
-    "sourceName": "DotnetAccelerator", 
-    "preferNameDirectory": true,
-    "symbols":{
-        "database": {
-          "type": "parameter",
-          "datatype": "text",
-          "choices": [
-              {
-                  "choice": "postgresql",
-                  "description": "PostgreSQL"
-              },
-              {
-                "choice": "mysql",
-                "description": "MySQL"
-              }
-          ],
-          "defaultValue": "postgresql",
-          "description": "The type of database to use"
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Andrew Stakhov",
+  "classifications": [
+    "WebAPI"
+  ],
+  "name": "Tanzu .NET Web API",
+  "identity": "Tanzu.Net.WebApi",
+  "groupIdentity": "Tanzu.Net",
+  "shortName": "tanzu-webapi",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "DotnetAccelerator",
+  "preferNameDirectory": true,
+  "symbols": {
+    "database": {
+      "type": "parameter",
+      "datatype": "text",
+      "choices": [
+        {
+          "choice": "postgresql",
+          "description": "PostgreSQL"
         },
-        "postgresql": {
-            "type": "computed",
-            "value": "(database ==\"postgresql\")"
-        },
-        "mysql": {
-            "type": "computed",
-            "value": "(database ==\"mysql\")"
-        },
-        "configserver": {
-            "type": "parameter",
-            "datatype": "bool",
-            "defaultValue": "true",
-            "description": "Enable config server integration"
-        },
-        "resourceserver": {
-            "type": "parameter",
-            "datatype": "bool",
-            "defaultValue": "true",
-            "description": "Enable security via JWT resource server"
+        {
+          "choice": "mysql",
+          "description": "MySQL"
         }
+      ],
+      "defaultValue": "postgresql",
+      "description": "The type of database to use",
+      "isRequired": true
+    },
+    "postgresql": {
+      "type": "computed",
+      "value": "(database ==\"postgresql\")"
+    },
+    "mysql": {
+      "type": "computed",
+      "value": "(database ==\"mysql\")"
+    },
+    "configserver": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Enable config server integration",
+      "isRequired": true
+    },
+    "resourceserver": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "true",
+      "description": "Enable security via JWT resource server",
+      "isRequired": true
     }
   }
+}

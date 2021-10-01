@@ -8,12 +8,15 @@ accelerator:
   - name: applicationName
     label: Application Name
     description: Application Name
+    inputType: text
     defaultValue: DotnetAccelerator
     required: true
   - name: database
     dataType: string
     description: The type of database to use
+    inputType: radio
     defaultValue: postgresql
+    required: true
     choices:
     - value: postgresql
       text: PostgreSQL
@@ -22,13 +25,15 @@ accelerator:
   - name: configserver
     dataType: boolean
     description: Enable config server integration
-    inputType: Toggle
+    inputType: toggle
     defaultValue: true
+    required: true
   - name: resourceserver
     dataType: boolean
     description: Enable security via JWT resource server
-    inputType: Toggle
+    inputType: toggle
     defaultValue: true
+    required: true
 engine:
   let:
   - name: postgresql
