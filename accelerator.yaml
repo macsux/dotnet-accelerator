@@ -37,9 +37,9 @@ accelerator:
 engine:
   let:
   - name: postgresql
-    expression: (database =="postgresql")
+    expression: (#database=="postgresql")
   - name: mysql
-    expression: (database =="mysql")
+    expression: (#database=="mysql")
   merge:
   - include:
     - '**'
