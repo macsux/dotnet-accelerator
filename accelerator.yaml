@@ -51,13 +51,17 @@ engine:
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if postgresql
-        with: "''"
-    - type: ReplaceText
-      substitutions:
-      - text: '#endif'
-        with: "''"
+                              case DbType.PostgreSQL:
+                                  opt.UseNpgsql(connectionString);
+                                  break;                  
+          #endif
+        with: |-
+          '                    case DbType.PostgreSQL:
+                                  opt.UseNpgsql(connectionString);
+                                  break;                  
+          '
   - include:
     - src/DotnetAccelerator/Startup.cs
     condition: '!(#postgresql)'
@@ -77,13 +81,17 @@ engine:
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if mysql
-        with: "''"
-    - type: ReplaceText
-      substitutions:
-      - text: '#endif'
-        with: "''"
+                              case DbType.MySQL:
+                                  opt.UseNpgsql(connectionString);
+                                  break;                  
+          #endif
+        with: |-
+          '                    case DbType.MySQL:
+                                  opt.UseNpgsql(connectionString);
+                                  break;                  
+          '
   - include:
     - src/DotnetAccelerator/Startup.cs
     condition: '!(#mysql)'
@@ -103,13 +111,20 @@ engine:
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if configserver
-        with: "''"
-    - type: ReplaceText
-      substitutions:
-      - text: '#endif'
-        with: "''"
+          using Steeltoe.Extensions.Configuration.ConfigServer;
+          #endif
+        with: |-
+          'using Steeltoe.Extensions.Configuration.ConfigServer;
+          '
+      - text: |-
+          #if configserver
+                              .EnableConfigServer(environment)
+          #endif
+        with: |-
+          '                    .EnableConfigServer(environment)
+          '
   - include:
     - src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
     condition: '!(#configserver)'
@@ -132,13 +147,13 @@ engine:
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if postgresql
-        with: "''"
-    - type: ReplaceText
-      substitutions:
-      - text: '#endif'
-        with: "''"
+                  PostgreSQL,
+          #endif
+        with: |-
+          '        PostgreSQL,
+          '
   - include:
     - src/DotnetAccelerator/Persistence/DbType.cs
     condition: '!(#postgresql)'
@@ -156,13 +171,13 @@ engine:
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if mysql
-        with: "''"
-    - type: ReplaceText
-      substitutions:
-      - text: '#endif'
-        with: "''"
+                  MySQL,
+          #endif
+        with: |-
+          '        MySQL,
+          '
   - include:
     - src/DotnetAccelerator/Persistence/DbType.cs
     condition: '!(#mysql)'
