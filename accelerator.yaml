@@ -1,100 +1,176 @@
 accelerator:
-  displayName: Tanzu .NET accelerator
-  description: Tanzu .NET WebAPI template
-  iconUrl: https://raw.githubusercontent.com/sample-accelerators/icons/master/icon-steeltoe.png
+  displayName: Tanzu .NET Web API
+  iconUrl: https://iconape.com/wp-content/files/km/370669/svg/370669.svg
   tags:
-  - dotnet
-  - c#
-  - steeltoe
+  - C#
+  - project
   options:
   - name: applicationName
     label: Application Name
     description: Application Name
-    inputType: text
-    defaultValue: Sample
+    defaultValue: DotnetAccelerator
     required: true
-  - name: enableConfigServer
-    label: Config Server
-    description: Use Config Server
-    dataType: boolean
-    inputType: toggle
-    defaultValue: false
-    required: true
-  - name: resourceserver
-    label: Resource server
-    description: Use JWT resource server
-    dataType: boolean
-    inputType: toggle
-    defaultValue: true
-    required: true
-  - name: dbType
-    label: Database type
-    display: true
-    inputType: select
-    description: Database type to use
-    choices:
-      - value: postgresql
-        text: PostgreSQL
-      - value: mysql
-        text: MySQL
+  - name: database
+    dataType: string
+    description: The type of database to use
     defaultValue: postgresql
+    choices:
+    - value: postgresql
+      text: PostgreSQL
+    - value: mysql
+      text: MySQL
+  - name: configserver
+    dataType: boolean
+    description: Enable config server integration
+    inputType: Toggle
+    defaultValue: true
+  - name: resourceserver
+    dataType: boolean
+    description: Enable security via JWT resource server
+    inputType: Toggle
+    defaultValue: true
 engine:
- let: 
-   - name: postgresql
-     expression: "#dbType == 'postgresql'"
-   - name: mysql
-     expression: "#dbType == 'mysql'"
- merge:
- - include: [ "**" ]
-   exclude: [ "**/ConfigServerExtensions.cs", ".template.config/**"]
- - include: [ "**/Startup.cs"]
-   condition: "#postgresql"
-   chain:
-     - type: ReplaceText
-       substitutions:
-         - text: |
-             #if postgresql
-                                 case DbType.PostgreSQL:
-                                     opt.UseNpgsql(connectionString);
-                                     break;                  
-             #endif
-           with: "'blah'"
- - include: [ "**/ConfigurationBuilderExtensions.cs"]
-   condition: "#enableConfigServer"
-   chain:
-     - type: ReplaceText
-       substitutions:
-         - text: |
-             #if configserver
-             using Steeltoe.Extensions.Configuration.ConfigServer;
-             #endif
-           with: "'using Steeltoe.Extensions.Configuration.ConfigServer;'"
-         - text: |
-             #if configserver
-                                 .EnableConfigServer(environment)
-             #endif
-           with: "'                    .EnableConfigServer(environment)'"
-         
-
-#  - include: [ "**/ConfigurationBuilderExtensions.cs"]
-#    condition: "!#enableConfigServer"
-#    chain:
-#      - type: ReplaceText
-#        substitutions:
-#          - text: "using Steeltoe.Extensions.Configuration.ConfigServer;"
-#            with: "'using Steeltoe.Extensions.Configuration.ConfigServer;'"
-#          - text: "//.EnableConfigServer(environment)"
-#            with: "'.EnableConfigServer(environment)'"
-
-           
-#  - condition: "#enableConfigServer"
-#    exclude: [ "ConfigServerExtensions.cs" ]
-#    chain:
-#    - type: ReplaceText
-#      substitutions:
-#      - text: //.EnableConfigServer(environment)
-#        with: .EnableConfigServer(environment)
-#    - type: ReplaceText
-#      substitutions:
-#        - text: .EnableConfigServer(environment)
-#          with: ""
+  let:
+  - name: postgresql
+    expression: (database =="postgresql")
+  - name: mysql
+    expression: (database =="mysql")
+  merge:
+  - include:
+    - '**'
+    exclude:
+    - .template.config/**
+  - include:
+    - src/DotnetAccelerator/Startup.cs
+    condition: '#postgresql'
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |
+          #if postgresql
+        with: "''"
+    - type: ReplaceText
+      substitutions:
+      - text: '#endif'
+        with: "''"
+  - include:
+    - src/DotnetAccelerator/Startup.cs
+    condition: '!(#postgresql)'
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if postgresql
+                              case DbType.PostgreSQL:
+                                  opt.UseNpgsql(connectionString);
+                                  break;                  
+          #endif
+        with: "''"
+  - include:
+    - src/DotnetAccelerator/Startup.cs
+    condition: '#mysql'
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |
+          #if mysql
+        with: "''"
+    - type: ReplaceText
+      substitutions:
+      - text: '#endif'
+        with: "''"
+  - include:
+    - src/DotnetAccelerator/Startup.cs
+    condition: '!(#mysql)'
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if mysql
+                              case DbType.MySQL:
+                                  opt.UseNpgsql(connectionString);
+                                  break;                  
+          #endif
+        with: "''"
+  - include:
+    - src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
+    condition: '#configserver'
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |
+          #if configserver
+        with: "''"
+      - text: |
+          #if configserver
+        with: "''"
+    - type: ReplaceText
+      substitutions:
+      - text: '#endif'
+        with: "''"
+      - text: '#endif'
+        with: "''"
+  - include:
+    - src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
+    condition: '!(#configserver)'
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if configserver
+          using Steeltoe.Extensions.Configuration.ConfigServer;
+          #endif
+        with: "''"
+      - text: |-
+          #if configserver
+                              .EnableConfigServer(environment)
+          #endif
+        with: "''"
+  - include:
+    - src/DotnetAccelerator/Persistence/DbType.cs
+    condition: '#postgresql'
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |
+          #if postgresql
+        with: "''"
+    - type: ReplaceText
+      substitutions:
+      - text: '#endif'
+        with: "''"
+  - include:
+    - src/DotnetAccelerator/Persistence/DbType.cs
+    condition: '!(#postgresql)'
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if postgresql
+                  PostgreSQL,
+          #endif
+        with: "''"
+  - include:
+    - src/DotnetAccelerator/Persistence/DbType.cs
+    condition: '#mysql'
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |
+          #if mysql
+        with: "''"
+    - type: ReplaceText
+      substitutions:
+      - text: '#endif'
+        with: "''"
+  - include:
+    - src/DotnetAccelerator/Persistence/DbType.cs
+    condition: '!(#mysql)'
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if mysql
+                  MySQL,
+          #endif
+        with: "''"
