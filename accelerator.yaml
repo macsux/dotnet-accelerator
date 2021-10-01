@@ -39,9 +39,26 @@ accelerator:
         text: MySQL
     defaultValue: postgresql
 engine:
+ let: 
+   - name: postgresql
+     expression: "dbType == 'postgresql'"
+   - name: mysql
+     expression: "dbType == 'mysql'"
  merge:
  - include: [ "**" ]
    exclude: [ "**/ConfigServerExtensions.cs", ".template.config/**"]
+ - include: [ "**/Startup.cs"]
+   condition: "#postgresql"
+   chain:
+     - type: ReplaceText
+       substitutions:
+         - text: |
+             #if postgresql
+                                 case DbType.PostgreSQL:
+                                     opt.UseNpgsql(connectionString);
+                                     break;                  
+             #endif
+           with: "'blah'"
  - include: [ "**/ConfigurationBuilderExtensions.cs"]
    condition: "#enableConfigServer"
    chain:
@@ -49,10 +66,15 @@ engine:
        substitutions:
          - text: |
              #if configserver
+             using Steeltoe.Extensions.Configuration.ConfigServer;
+             #endif
+           with: "'using Steeltoe.Extensions.Configuration.ConfigServer;'"
+         - text: |
+             #if configserver
                                  .EnableConfigServer(environment)
              #endif
            with: "'                    .EnableConfigServer(environment)'"
-
+         
 
 #  - include: [ "**/ConfigurationBuilderExtensions.cs"]
 #    condition: "!#enableConfigServer"

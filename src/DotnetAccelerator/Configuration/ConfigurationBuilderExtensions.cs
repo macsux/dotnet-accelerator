@@ -5,14 +5,19 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-//using Steeltoe.Extensions.Configuration.ConfigServer;
+#if configserver
+using Steeltoe.Extensions.Configuration.ConfigServer;
+#endif
+
 
 namespace DotnetAccelerator.Configuration
 {
     public static class ConfigurationBuilderExtensions
     {
         private static Lazy<string> AppSettingsConfigName = new (() => 
-            File.Exists(GetFullPath("appsettings.yaml")) ? "appsettings" : AppName.Value);
+            File.Exists(GetFullPath("appsettings.yaml")) 
+                ? "appsettings" 
+                : AppName!.Value);
 
         private static Lazy<string> AppName = new(() => Assembly
             .GetEntryAssembly()?

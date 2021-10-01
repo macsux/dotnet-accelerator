@@ -15,7 +15,7 @@
     "symbols":{
         "database": {
           "type": "parameter",
-          "datatype": "choice",
+          "datatype": "text",
           "choices": [
               {
                   "choice": "postgresql",
@@ -27,7 +27,7 @@
               }
           ],
           "defaultValue": "postgresql",
-          "replaces":"The type of database to use"
+          "description": "The type of database to use"
         },
         "postgresql": {
             "type": "computed",

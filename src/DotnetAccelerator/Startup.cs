@@ -46,7 +46,6 @@ namespace DotnetAccelerator
                     case DbType.SQLite:
                         opt.UseSqlite(connectionString);
                         break;
-// #symbol: StartupCs_DbDriver_Postgresql
 #if postgresql
                     case DbType.PostgreSQL:
                         opt.UseNpgsql(connectionString);
