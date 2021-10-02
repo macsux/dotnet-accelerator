@@ -47,12 +47,64 @@
       "description": "Enable config server integration",
       "isRequired": true
     },
-    "resourceserver": {
+    "enableSecurity": {
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "true",
       "description": "Enable security via JWT resource server",
       "isRequired": true
+    }
+  },
+  "sources": [{
+    "modifiers": [
+      {
+        "condition": "!enableSecurity",
+        "exclude": ["src/DotnetAccelerator/Security/**"]
+      },
+      {
+        "condition": "!mysql",
+        "exclude": ["**/*MySQL*"]
+      },
+      {
+        "condition": "!postgresql",
+        "exclude": ["**/*PostgreSQL*"]
+      }
+    ]
+  }],
+  "specialCustomOperations": {
+    "**/*.yaml": {
+      "operations": [
+        {
+          "configuration": {
+            "actionableElse": [
+              "#else"
+            ],
+            "actionableElseif": [
+              "#elseif"
+            ],
+            "actionableIf": [
+              "#if"
+            ],
+            "actions": [
+              "pseudoComment"
+            ],
+            "endif": [
+              "#endif"
+            ],
+            "trim": "true",
+            "wholeLine": "true"
+          },
+          "type": "conditional"
+        },
+        {
+          "configuration": {
+            "id": "pseudoComment",
+            "original": "##",
+            "replacement": ""
+          },
+          "type": "replacement"
+        }
+      ]
     }
   }
 }

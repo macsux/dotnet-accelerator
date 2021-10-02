@@ -1,17 +1,7 @@
 ﻿{
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "DotnetAccelerator - SqlLite: ": {
-      "commandName": "Project",
-      "dotnetRunMessages": "true",
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:5001;http://localhost:5000",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-//        "CONFIG_FOLDER": "../../config"
-      }
-    },
+    //#if postgresql
     "DotnetAccelerator - PostgreSQL: ": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
@@ -20,8 +10,31 @@
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "PROFILES:ACTIVE": "LocalPostgreSQL",
-//        "CONFIG_FOLDER": "../../config"
+        "PROFILES:ACTIVE": "LocalMySQL"
+      }
+    },
+    //#endif
+    //#if mysql
+    "DotnetAccelerator - MySQL: ": {
+      "commandName": "Project",
+      "dotnetRunMessages": "true",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PROFILES:ACTIVE": "LocalMySQL"
+      }
+    },
+    //#endif
+    "DotnetAccelerator - SqlLite: ": {
+      "commandName": "Project",
+      "dotnetRunMessages": "true",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }

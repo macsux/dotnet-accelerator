@@ -1,0 +1,3 @@
+DbType: MySQL
+ConnectionStrings:
+  Database: Server=127.0.0.1;Database=DotnetAccelerator;Uid=root;Pwd=admin;

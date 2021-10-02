@@ -28,7 +28,7 @@ accelerator:
     inputType: toggle
     defaultValue: true
     required: true
-  - name: resourceserver
+  - name: enableSecurity
     dataType: boolean
     description: Enable security via JWT resource server
     inputType: toggle
@@ -45,14 +45,42 @@ engine:
     - '**'
     exclude:
     - .template.config/**
+    - src/DotnetAccelerator/Security/**
+    - '**/*MySQL*'
+    - '**/*PostgreSQL*'
+  - include:
+    - src/DotnetAccelerator/Security/**
+    condition: '#enableSecurity'
+  - include:
+    - '**/*MySQL*'
+    condition: '#mysql'
+  - include:
+    - '**/*PostgreSQL*'
+    condition: '#postgresql'
   - include:
     - src/DotnetAccelerator/DotnetAccelerator.csproj
     chain:
     - type: ReplaceText
+      condition: '!(#enableSecurity)'
+      substitutions:
+      - text: |2-
+                  <!--#if enableSecurity -->
+                  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
+                  <!--#endif -->
+        with: "''"
+    - type: ReplaceText
+      condition: '#enableSecurity'
+      substitutions:
+      - text: |2-
+                  <!--#if enableSecurity -->
+                  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
+                  <!--#endif -->
+        with: "'        <PackageReference Include=\"Microsoft.AspNetCore.Authentication.JwtBearer\" Version=\"5.0.10\" />'"
+    - type: ReplaceText
       condition: '!(#postgresql)'
       substitutions:
       - text: |2-
-                  <!--#if (postgresql) -->
+                  <!--#if postgresql -->
                   <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
                   <!--#endif -->
         with: "''"
@@ -60,15 +88,31 @@ engine:
       condition: '#postgresql'
       substitutions:
       - text: |2-
-                  <!--#if (postgresql) -->
+                  <!--#if postgresql -->
                   <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
                   <!--#endif -->
         with: "'        <PackageReference Include=\"Npgsql.EntityFrameworkCore.PostgreSQL\" Version=\"5.0.10\" />'"
     - type: ReplaceText
+      condition: '!(#mysql)'
+      substitutions:
+      - text: |2-
+                  <!--#if mysql -->
+                  <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.1" />
+                  <!--#endif -->
+        with: "''"
+    - type: ReplaceText
+      condition: '#mysql'
+      substitutions:
+      - text: |2-
+                  <!--#if mysql -->
+                  <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.1" />
+                  <!--#endif -->
+        with: "'        <PackageReference Include=\"Pomelo.EntityFrameworkCore.MySql\" Version=\"5.0.1\" />'"
+    - type: ReplaceText
       condition: '!(#configserver)'
       substitutions:
       - text: |2-
-                  <!--#if (configserver) -->
+                  <!--#if configserver -->
                   <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
                   <!--#endif -->
         with: "''"
@@ -76,13 +120,79 @@ engine:
       condition: '#configserver'
       substitutions:
       - text: |2-
-                  <!--#if (configserver) -->
+                  <!--#if configserver -->
                   <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
                   <!--#endif -->
         with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
   - include:
     - src/DotnetAccelerator/Startup.cs
     chain:
+    - type: ReplaceText
+      condition: '!(#enableSecurity)'
+      substitutions:
+      - text: |
+          #if enableSecurity
+          using DotnetAccelerator.Security;
+          using Microsoft.AspNetCore.Authentication.JwtBearer;
+          #endif
+        with: "''"
+      - text: |
+          #if enableSecurity
+                      services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                          .AddJwtBearer(cfg => Configuration.GetSection($"Authentication:{JwtBearerDefaults.AuthenticationScheme}").Bind(cfg));
+                      services.AddAuthorization(authz =>
+                      {
+                          authz.AddPolicy(KnownAuthorizationPolicy.AirportRead, policy => policy.RequireClaim(KnownClaims.Read));
+                          authz.AddPolicy(KnownAuthorizationPolicy.WeatherRead, policy => policy.RequireClaim(KnownClaims.Read));
+                          authz.AddPolicy(KnownAuthorizationPolicy.WeatherWrite, policy => policy.RequireClaim(KnownClaims.Write));
+                      });
+          #endif
+        with: "''"
+      - text: |
+          #if enableSecurity
+                      app.UseAuthentication();
+                      app.UseAuthorization();
+          #endif
+        with: "''"
+    - type: ReplaceText
+      condition: '#enableSecurity'
+      substitutions:
+      - text: |
+          #if enableSecurity
+          using DotnetAccelerator.Security;
+          using Microsoft.AspNetCore.Authentication.JwtBearer;
+          #endif
+        with: |-
+          'using DotnetAccelerator.Security;
+          using Microsoft.AspNetCore.Authentication.JwtBearer;'
+      - text: |
+          #if enableSecurity
+                      services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                          .AddJwtBearer(cfg => Configuration.GetSection($"Authentication:{JwtBearerDefaults.AuthenticationScheme}").Bind(cfg));
+                      services.AddAuthorization(authz =>
+                      {
+                          authz.AddPolicy(KnownAuthorizationPolicy.AirportRead, policy => policy.RequireClaim(KnownClaims.Read));
+                          authz.AddPolicy(KnownAuthorizationPolicy.WeatherRead, policy => policy.RequireClaim(KnownClaims.Read));
+                          authz.AddPolicy(KnownAuthorizationPolicy.WeatherWrite, policy => policy.RequireClaim(KnownClaims.Write));
+                      });
+          #endif
+        with: |-
+          '            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                          .AddJwtBearer(cfg => Configuration.GetSection($"Authentication:{JwtBearerDefaults.AuthenticationScheme}").Bind(cfg));
+                      services.AddAuthorization(authz =>
+                      {
+                          authz.AddPolicy(KnownAuthorizationPolicy.AirportRead, policy => policy.RequireClaim(KnownClaims.Read));
+                          authz.AddPolicy(KnownAuthorizationPolicy.WeatherRead, policy => policy.RequireClaim(KnownClaims.Read));
+                          authz.AddPolicy(KnownAuthorizationPolicy.WeatherWrite, policy => policy.RequireClaim(KnownClaims.Write));
+                      });'
+      - text: |
+          #if enableSecurity
+                      app.UseAuthentication();
+                      app.UseAuthorization();
+          #endif
+        with: |-
+          '            app.UseAuthentication();
+                      app.UseAuthorization();'
     - type: ReplaceText
       condition: '!(#postgresql)'
       substitutions:
@@ -112,7 +222,7 @@ engine:
       - text: |
           #if mysql
                               case DbType.MySQL:
-                                  opt.UseNpgsql(connectionString);
+                                  opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
                                   break;
           #endif
         with: "''"
@@ -122,12 +232,12 @@ engine:
       - text: |
           #if mysql
                               case DbType.MySQL:
-                                  opt.UseNpgsql(connectionString);
+                                  opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
                                   break;
           #endif
         with: |-
           '                    case DbType.MySQL:
-                                  opt.UseNpgsql(connectionString);
+                                  opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
                                   break;'
   - include:
     - src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
@@ -212,3 +322,91 @@ engine:
                   MySQL,
           #endif
         with: "'        MySQL,'"
+  - include:
+    - src/DotnetAccelerator/Modules/AirportModule/AirportController.cs
+    chain:
+    - type: ReplaceText
+      condition: '!(#enableSecurity)'
+      substitutions:
+      - text: |
+          #if enableSecurity
+          using DotnetAccelerator.Security;
+          #endif
+        with: "''"
+      - text: |
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.AirportRead)]
+          #endif
+        with: "''"
+      - text: |
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.AirportRead)]
+          #endif
+        with: "''"
+    - type: ReplaceText
+      condition: '#enableSecurity'
+      substitutions:
+      - text: |
+          #if enableSecurity
+          using DotnetAccelerator.Security;
+          #endif
+        with: "'using DotnetAccelerator.Security;'"
+      - text: |
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.AirportRead)]
+          #endif
+        with: "'        [Authorize(KnownAuthorizationPolicy.AirportRead)]'"
+      - text: |
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.AirportRead)]
+          #endif
+        with: "'        [Authorize(KnownAuthorizationPolicy.AirportRead)]'"
+  - include:
+    - src/DotnetAccelerator/Modules/WeatherModule/WeatherController.cs
+    chain:
+    - type: ReplaceText
+      condition: '!(#enableSecurity)'
+      substitutions:
+      - text: |
+          #if enableSecurity
+          using DotnetAccelerator.Security;
+          #endif
+        with: "''"
+      - text: |
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]
+          #endif
+        with: "''"
+      - text: |
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]
+          #endif
+        with: "''"
+      - text: |
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.WeatherWrite)]
+          #endif
+        with: "''"
+    - type: ReplaceText
+      condition: '#enableSecurity'
+      substitutions:
+      - text: |
+          #if enableSecurity
+          using DotnetAccelerator.Security;
+          #endif
+        with: "'using DotnetAccelerator.Security;'"
+      - text: |
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]
+          #endif
+        with: "'        [Authorize(KnownAuthorizationPolicy.WeatherRead)]'"
+      - text: |
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]
+          #endif
+        with: "'        [Authorize(KnownAuthorizationPolicy.WeatherRead)]'"
+      - text: |
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.WeatherWrite)]
+          #endif
+        with: "'        [Authorize(KnownAuthorizationPolicy.WeatherWrite)]'"

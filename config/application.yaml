@@ -5,3 +5,8 @@ Logging:
     Microsoft: Warning
     Microsoft.Hosting.Lifetime: Information
 AllowedHosts: '*'
+#if enableSecurity
+Authentication:
+  Bearer:
+    Authority: https://accounts.google.com
+#endif

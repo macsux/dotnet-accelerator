@@ -1,10 +1,12 @@
-using System.Threading;
 using DotnetAccelerator.Configuration;
 using DotnetAccelerator.Messaging;
 using DotnetAccelerator.Modules;
 using DotnetAccelerator.Persistence;
-using MediatR;
+#if enableSecurity
+using DotnetAccelerator.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+#endif
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,11 +31,16 @@ namespace DotnetAccelerator
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //     .AddJwtBearer(cfg =>
-            //     {
-            //         cfg.Authority = ""
-            //     })
+#if enableSecurity
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(cfg => Configuration.GetSection($"Authentication:{JwtBearerDefaults.AuthenticationScheme}").Bind(cfg));
+            services.AddAuthorization(authz =>
+            {
+                authz.AddPolicy(KnownAuthorizationPolicy.AirportRead, policy => policy.RequireClaim(KnownClaims.Read));
+                authz.AddPolicy(KnownAuthorizationPolicy.WeatherRead, policy => policy.RequireClaim(KnownClaims.Read));
+                authz.AddPolicy(KnownAuthorizationPolicy.WeatherWrite, policy => policy.RequireClaim(KnownClaims.Write));
+            });
+#endif
             services.AddMediatR(cfg => cfg.Using<MessageBus>(), typeof(Startup));
             services.AddTransient(svc => (IMessageBus) svc.GetRequiredService<IMediator>());
             services.AddModules("DotnetAccelerator.Modules");
@@ -53,12 +60,10 @@ namespace DotnetAccelerator
 #endif
 #if mysql
                     case DbType.MySQL:
-                        opt.UseNpgsql(connectionString);
+                        opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
                         break;
 #endif
                 }
-
-                ;
             });
             services.AddControllers(cfg => cfg.Filters.Add<DomainExceptionFilter>());
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "DotnetAccelerator", Version = "v1"}); });
@@ -73,11 +78,15 @@ namespace DotnetAccelerator
                 app.UseDeveloperExceptionPage();
             }
 
+
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DotnetAccelerator v1"));
             app.UseHttpsRedirection();
             app.UseRouting();
+#if enableSecurity
+            app.UseAuthentication();
             app.UseAuthorization();
+#endif
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
