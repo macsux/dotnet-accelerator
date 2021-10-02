@@ -46,12 +46,47 @@ engine:
     exclude:
     - .template.config/**
   - include:
+    - src/DotnetAccelerator/DotnetAccelerator.csproj
+    chain:
+    - type: ReplaceText
+      condition: '!(#postgresql)'
+      substitutions:
+      - text: |2-
+                  <!--#if (postgresql) -->
+                  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
+                  <!--#endif -->
+        with: "''"
+    - type: ReplaceText
+      condition: '#postgresql'
+      substitutions:
+      - text: |2-
+                  <!--#if (postgresql) -->
+                  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
+                  <!--#endif -->
+        with: "'        <PackageReference Include=\"Npgsql.EntityFrameworkCore.PostgreSQL\" Version=\"5.0.10\" />'"
+    - type: ReplaceText
+      condition: '!(#configserver)'
+      substitutions:
+      - text: |2-
+                  <!--#if (configserver) -->
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
+                  <!--#endif -->
+        with: "''"
+    - type: ReplaceText
+      condition: '#configserver'
+      substitutions:
+      - text: |2-
+                  <!--#if (configserver) -->
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
+                  <!--#endif -->
+        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
+  - include:
     - src/DotnetAccelerator/Startup.cs
     chain:
     - type: ReplaceText
       condition: '!(#postgresql)'
       substitutions:
-      - text: |-
+      - text: |
           #if postgresql
                               case DbType.PostgreSQL:
                                   opt.UseNpgsql(connectionString);
@@ -61,7 +96,7 @@ engine:
     - type: ReplaceText
       condition: '#postgresql'
       substitutions:
-      - text: |-
+      - text: |
           #if postgresql
                               case DbType.PostgreSQL:
                                   opt.UseNpgsql(connectionString);
@@ -70,12 +105,11 @@ engine:
         with: |-
           '                    case DbType.PostgreSQL:
                                   opt.UseNpgsql(connectionString);
-                                  break;
-          '
+                                  break;'
     - type: ReplaceText
       condition: '!(#mysql)'
       substitutions:
-      - text: |-
+      - text: |
           #if mysql
                               case DbType.MySQL:
                                   opt.UseNpgsql(connectionString);
@@ -85,7 +119,7 @@ engine:
     - type: ReplaceText
       condition: '#mysql'
       substitutions:
-      - text: |-
+      - text: |
           #if mysql
                               case DbType.MySQL:
                                   opt.UseNpgsql(connectionString);
@@ -94,48 +128,62 @@ engine:
         with: |-
           '                    case DbType.MySQL:
                                   opt.UseNpgsql(connectionString);
-                                  break;
-          '
+                                  break;'
   - include:
     - src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
     chain:
     - type: ReplaceText
       condition: '!(#configserver)'
       substitutions:
-      - text: |-
+      - text: |
           #if configserver
           using Steeltoe.Extensions.Configuration.ConfigServer;
           #endif
         with: "''"
-      - text: |-
+      - text: |
           #if configserver
-                              .EnableConfigServer(environment)
+                          bootstrapConfigBuilder.AddEnvironmentVariables()
+                          .AddCommandLine(Environment.GetCommandLineArgs())
+                          .AddProfiles();
+                          var bootstrapConfig = bootstrapConfigBuilder.Build();
+                          var loggerFactory = LoggerFactory.Create(c => c.AddConfiguration(bootstrapConfig.GetSection("Logging")));
+                          bootstrapConfigBuilder
+                              .AddConfigServer(environment, loggerFactory);
           #endif
         with: "''"
     - type: ReplaceText
       condition: '#configserver'
       substitutions:
-      - text: |-
+      - text: |
           #if configserver
           using Steeltoe.Extensions.Configuration.ConfigServer;
           #endif
-        with: |-
-          'using Steeltoe.Extensions.Configuration.ConfigServer;
-          '
-      - text: |-
+        with: "'using Steeltoe.Extensions.Configuration.ConfigServer;'"
+      - text: |
           #if configserver
-                              .EnableConfigServer(environment)
+                          bootstrapConfigBuilder.AddEnvironmentVariables()
+                          .AddCommandLine(Environment.GetCommandLineArgs())
+                          .AddProfiles();
+                          var bootstrapConfig = bootstrapConfigBuilder.Build();
+                          var loggerFactory = LoggerFactory.Create(c => c.AddConfiguration(bootstrapConfig.GetSection("Logging")));
+                          bootstrapConfigBuilder
+                              .AddConfigServer(environment, loggerFactory);
           #endif
         with: |-
-          '                    .EnableConfigServer(environment)
-          '
+          '                bootstrapConfigBuilder.AddEnvironmentVariables()
+                          .AddCommandLine(Environment.GetCommandLineArgs())
+                          .AddProfiles();
+                          var bootstrapConfig = bootstrapConfigBuilder.Build();
+                          var loggerFactory = LoggerFactory.Create(c => c.AddConfiguration(bootstrapConfig.GetSection("Logging")));
+                          bootstrapConfigBuilder
+                              .AddConfigServer(environment, loggerFactory);'
   - include:
     - src/DotnetAccelerator/Persistence/DbType.cs
     chain:
     - type: ReplaceText
       condition: '!(#postgresql)'
       substitutions:
-      - text: |-
+      - text: |
           #if postgresql
                   PostgreSQL,
           #endif
@@ -143,17 +191,15 @@ engine:
     - type: ReplaceText
       condition: '#postgresql'
       substitutions:
-      - text: |-
+      - text: |
           #if postgresql
                   PostgreSQL,
           #endif
-        with: |-
-          '        PostgreSQL,
-          '
+        with: "'        PostgreSQL,'"
     - type: ReplaceText
       condition: '!(#mysql)'
       substitutions:
-      - text: |-
+      - text: |
           #if mysql
                   MySQL,
           #endif
@@ -161,10 +207,8 @@ engine:
     - type: ReplaceText
       condition: '#mysql'
       substitutions:
-      - text: |-
+      - text: |
           #if mysql
                   MySQL,
           #endif
-        with: |-
-          '        MySQL,
-          '
+        with: "'        MySQL,'"

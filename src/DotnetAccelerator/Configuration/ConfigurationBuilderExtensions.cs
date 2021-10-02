@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 #if configserver
 using Steeltoe.Extensions.Configuration.ConfigServer;
 #endif
@@ -59,11 +60,17 @@ namespace DotnetAccelerator.Configuration
                     .AddYamlFile(GetFullPath("solution-defaults.yaml"), true, true)
                     .AddYamlFile(GetFullPath($"{configName}.yaml"), false, true)
                     .AddYamlFile(GetFullPath($"{configName}.{environment}.yaml"), true, true)
-                    .AddYamlFile(GetFullPath($"{configName}-{environment}.yaml"), true, true)
+                    .AddYamlFile(GetFullPath($"{configName}-{environment}.yaml"), true, true);
 #if configserver
-                    .EnableConfigServer(environment)
+                bootstrapConfigBuilder.AddEnvironmentVariables()
+                .AddCommandLine(Environment.GetCommandLineArgs())
+                .AddProfiles();
+                var bootstrapConfig = bootstrapConfigBuilder.Build();
+                var loggerFactory = LoggerFactory.Create(c => c.AddConfiguration(bootstrapConfig.GetSection("Logging")));
+                bootstrapConfigBuilder
+                    .AddConfigServer(environment, loggerFactory);
 #endif
-                    
+                bootstrapConfigBuilder
                     .AddEnvironmentVariables()
                     .AddCommandLine(args);
             });
