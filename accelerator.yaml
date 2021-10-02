@@ -49,6 +49,9 @@ engine:
     - '**/*MySQL*'
     - '**/*PostgreSQL*'
   - include:
+    - src/DotnetAccelerator/Security/**
+    condition: '#enableSecurity'
+  - include:
     - '**/*MySQL*'
     condition: '#mysql'
   - include:
@@ -484,11 +487,6 @@ engine:
                   [Authorize(KnownAuthorizationPolicy.AirportRead)]
           #endif
         with: "''"
-      - text: |
-          #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.AirportRead)]
-          #endif
-        with: "''"
     - type: ReplaceText
       condition: '#enableSecurity'
       substitutions:
@@ -497,11 +495,6 @@ engine:
           using DotnetAccelerator.Security;
           #endif
         with: "'using DotnetAccelerator.Security;'"
-      - text: |
-          #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.AirportRead)]
-          #endif
-        with: "'        [Authorize(KnownAuthorizationPolicy.AirportRead)]'"
       - text: |
           #if enableSecurity
                   [Authorize(KnownAuthorizationPolicy.AirportRead)]
@@ -525,11 +518,6 @@ engine:
         with: "''"
       - text: |
           #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]
-          #endif
-        with: "''"
-      - text: |
-          #if enableSecurity
                   [Authorize(KnownAuthorizationPolicy.WeatherWrite)]
           #endif
         with: "''"
@@ -541,11 +529,6 @@ engine:
           using DotnetAccelerator.Security;
           #endif
         with: "'using DotnetAccelerator.Security;'"
-      - text: |
-          #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]
-          #endif
-        with: "'        [Authorize(KnownAuthorizationPolicy.WeatherRead)]'"
       - text: |
           #if enableSecurity
                   [Authorize(KnownAuthorizationPolicy.WeatherRead)]
