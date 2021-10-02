@@ -48,10 +48,6 @@ engine:
     - src/DotnetAccelerator/Security/**
     - '**/*MySQL*'
     - '**/*PostgreSQL*'
-  - merge:
-    - include:
-      - src/DotnetAccelerator/Security/**
-      condition: '#enableSecurity'
   - include:
     - '**/*MySQL*'
     condition: '#mysql'
