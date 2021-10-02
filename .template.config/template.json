@@ -30,6 +30,7 @@
       ],
       "defaultValue": "postgresql",
       "description": "The type of database to use",
+      "label": "Database",
       "isRequired": true
     },
     "postgresql": {
@@ -44,6 +45,7 @@
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "true",
+      "label": "Config Server",
       "description": "Enable config server integration",
       "isRequired": true
     },
@@ -51,6 +53,7 @@
       "type": "parameter",
       "datatype": "bool",
       "defaultValue": "true",
+      "label": "Enable Security",
       "description": "Enable security via JWT resource server",
       "isRequired": true
     }

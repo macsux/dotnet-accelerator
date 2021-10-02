@@ -12,6 +12,7 @@ accelerator:
     defaultValue: DotnetAccelerator
     required: true
   - name: database
+    label: Database
     dataType: string
     description: The type of database to use
     inputType: radio
@@ -23,12 +24,14 @@ accelerator:
     - value: mysql
       text: MySQL
   - name: configserver
+    label: Config Server
     dataType: boolean
     description: Enable config server integration
     inputType: toggle
     defaultValue: true
     required: true
   - name: enableSecurity
+    label: Enable Security
     dataType: boolean
     description: Enable security via JWT resource server
     inputType: toggle
@@ -380,8 +383,8 @@ engine:
     - type: ReplaceText
       condition: '!(#postgresql)'
       substitutions:
-      - text: |2
-              //#if postgresql
+      - text: |
+          //#if postgresql
               "DotnetAccelerator - PostgreSQL: ": {
                 "commandName": "Project",
                 "dotnetRunMessages": "true",
@@ -393,13 +396,13 @@ engine:
                   "PROFILES:ACTIVE": "LocalMySQL"
                 }
               },
-              //#endif
+          //#endif
         with: "''"
     - type: ReplaceText
       condition: '#postgresql'
       substitutions:
-      - text: |2
-              //#if postgresql
+      - text: |
+          //#if postgresql
               "DotnetAccelerator - PostgreSQL: ": {
                 "commandName": "Project",
                 "dotnetRunMessages": "true",
@@ -411,7 +414,7 @@ engine:
                   "PROFILES:ACTIVE": "LocalMySQL"
                 }
               },
-              //#endif
+          //#endif
         with: |-
           '    "DotnetAccelerator - PostgreSQL: ": {
                 "commandName": "Project",
@@ -427,8 +430,8 @@ engine:
     - type: ReplaceText
       condition: '!(#mysql)'
       substitutions:
-      - text: |2
-              //#if mysql
+      - text: |
+          //#if mysql
               "DotnetAccelerator - MySQL: ": {
                 "commandName": "Project",
                 "dotnetRunMessages": "true",
@@ -440,13 +443,13 @@ engine:
                   "PROFILES:ACTIVE": "LocalMySQL"
                 }
               },
-              //#endif
+          //#endif
         with: "''"
     - type: ReplaceText
       condition: '#mysql'
       substitutions:
-      - text: |2
-              //#if mysql
+      - text: |
+          //#if mysql
               "DotnetAccelerator - MySQL: ": {
                 "commandName": "Project",
                 "dotnetRunMessages": "true",
@@ -458,7 +461,7 @@ engine:
                   "PROFILES:ACTIVE": "LocalMySQL"
                 }
               },
-              //#endif
+          //#endif
         with: |-
           '    "DotnetAccelerator - MySQL: ": {
                 "commandName": "Project",

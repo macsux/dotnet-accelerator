@@ -1,7 +1,7 @@
 ﻿{
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
-    //#if postgresql
+//#if postgresql
     "DotnetAccelerator - PostgreSQL: ": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
@@ -13,8 +13,9 @@
         "PROFILES:ACTIVE": "LocalMySQL"
       }
     },
-    //#endif
-    //#if mysql
+//#endif
+
+//#if mysql
     "DotnetAccelerator - MySQL: ": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
@@ -26,7 +27,8 @@
         "PROFILES:ACTIVE": "LocalMySQL"
       }
     },
-    //#endif
+//#endif
+
     "DotnetAccelerator - SqlLite: ": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
