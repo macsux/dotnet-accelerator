@@ -125,6 +125,32 @@ engine:
                   <!--#endif -->
         with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
   - include:
+    - config/application-Development.yaml
+    chain:
+    - type: ReplaceText
+      condition: '!(#enableSecurity)'
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+    - type: ReplaceText
+      condition: '#enableSecurity'
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+  - include:
     - src/DotnetAccelerator/Startup.cs
     chain:
     - type: ReplaceText
@@ -240,6 +266,32 @@ engine:
                                   opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
                                   break;'
   - include:
+    - config/application.yaml
+    chain:
+    - type: ReplaceText
+      condition: '!(#enableSecurity)'
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: "''"
+    - type: ReplaceText
+      condition: '#enableSecurity'
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://accounts.google.com'
+  - include:
     - src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
     chain:
     - type: ReplaceText
@@ -322,6 +374,103 @@ engine:
                   MySQL,
           #endif
         with: "'        MySQL,'"
+  - include:
+    - src/DotnetAccelerator/Properties/launchSettings.json
+    chain:
+    - type: ReplaceText
+      condition: '!(#postgresql)'
+      substitutions:
+      - text: |2
+              //#if postgresql
+              "DotnetAccelerator - PostgreSQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "launchUrl": "swagger",
+                "applicationUrl": "https://localhost:5001;http://localhost:5000",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "PROFILES:ACTIVE": "LocalMySQL"
+                }
+              },
+              //#endif
+        with: "''"
+    - type: ReplaceText
+      condition: '#postgresql'
+      substitutions:
+      - text: |2
+              //#if postgresql
+              "DotnetAccelerator - PostgreSQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "launchUrl": "swagger",
+                "applicationUrl": "https://localhost:5001;http://localhost:5000",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "PROFILES:ACTIVE": "LocalMySQL"
+                }
+              },
+              //#endif
+        with: |-
+          '    "DotnetAccelerator - PostgreSQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "launchUrl": "swagger",
+                "applicationUrl": "https://localhost:5001;http://localhost:5000",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "PROFILES:ACTIVE": "LocalMySQL"
+                }
+              },'
+    - type: ReplaceText
+      condition: '!(#mysql)'
+      substitutions:
+      - text: |2
+              //#if mysql
+              "DotnetAccelerator - MySQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "launchUrl": "swagger",
+                "applicationUrl": "https://localhost:5001;http://localhost:5000",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "PROFILES:ACTIVE": "LocalMySQL"
+                }
+              },
+              //#endif
+        with: "''"
+    - type: ReplaceText
+      condition: '#mysql'
+      substitutions:
+      - text: |2
+              //#if mysql
+              "DotnetAccelerator - MySQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "launchUrl": "swagger",
+                "applicationUrl": "https://localhost:5001;http://localhost:5000",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "PROFILES:ACTIVE": "LocalMySQL"
+                }
+              },
+              //#endif
+        with: |-
+          '    "DotnetAccelerator - MySQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "launchUrl": "swagger",
+                "applicationUrl": "https://localhost:5001;http://localhost:5000",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "PROFILES:ACTIVE": "LocalMySQL"
+                }
+              },'
   - include:
     - src/DotnetAccelerator/Modules/AirportModule/AirportController.cs
     chain:

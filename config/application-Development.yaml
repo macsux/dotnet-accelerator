@@ -8,6 +8,8 @@ Management:
       Exposure:
         Include:
           - "*"
+#if enableSecurity
 Authentication:
   Bearer:
     Authority: https://login.run.pcfone.io
+#endif
