@@ -539,113 +539,113 @@ engine:
   chain:
   - type: RewritePath
     regex: DotnetAccelerator.sln
-    rewriteTo: "'' + #applicationName + '.sln'"
+    rewriteTo: "'' + #artifactId + '.sln'"
   - type: RewritePath
     regex: config/DotnetAccelerator-Development.yaml
-    rewriteTo: "'config/' + #applicationName + '-Development.yaml'"
+    rewriteTo: "'config/' + #artifactId + '-Development.yaml'"
   - type: RewritePath
     regex: config/DotnetAccelerator-LocalMySQL.yaml
-    rewriteTo: "'config/' + #applicationName + '-LocalMySQL.yaml'"
+    rewriteTo: "'config/' + #artifactId + '-LocalMySQL.yaml'"
   - type: RewritePath
     regex: config/DotnetAccelerator-LocalPostgreSQL.yaml
-    rewriteTo: "'config/' + #applicationName + '-LocalPostgreSQL.yaml'"
+    rewriteTo: "'config/' + #artifactId + '-LocalPostgreSQL.yaml'"
   - type: RewritePath
     regex: config/DotnetAccelerator.yaml
-    rewriteTo: "'config/' + #applicationName + '.yaml'"
+    rewriteTo: "'config/' + #artifactId + '.yaml'"
   - type: RewritePath
     regex: src/DotnetAccelerator/DotnetAccelerator.csproj
-    rewriteTo: "'src/' + #applicationName + '/' + #applicationName + '.csproj'"
+    rewriteTo: "'src/' + #artifactId + '/' + #artifactId + '.csproj'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Program.cs
-    rewriteTo: "'src/' + #applicationName + '/Program.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Program.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/README.md
-    rewriteTo: "'src/' + #applicationName + '/README.md'"
+    rewriteTo: "'src/' + #artifactId + '/README.md'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Startup.cs
-    rewriteTo: "'src/' + #applicationName + '/Startup.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Startup.cs'"
   - type: RewritePath
     regex: tests/DotnetAcceleratorTests/DotnetAcceleratorTests.csproj
-    rewriteTo: "'tests/' + #applicationName + 'Tests/' + #applicationName + 'Tests.csproj'"
+    rewriteTo: "'tests/' + #artifactId + 'Tests/' + #artifactId + 'Tests.csproj'"
   - type: RewritePath
     regex: tests/DotnetAcceleratorTests/IUseDbContext.cs
-    rewriteTo: "'tests/' + #applicationName + 'Tests/IUseDbContext.cs'"
+    rewriteTo: "'tests/' + #artifactId + 'Tests/IUseDbContext.cs'"
   - type: RewritePath
     regex: tests/DotnetAcceleratorTests/WeatherTests.cs
-    rewriteTo: "'tests/' + #applicationName + 'Tests/WeatherTests.cs'"
+    rewriteTo: "'tests/' + #artifactId + 'Tests/WeatherTests.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
-    rewriteTo: "'src/' + #applicationName + '/Configuration/ConfigurationBuilderExtensions.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Configuration/ConfigurationBuilderExtensions.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Configuration/ServiceCollectionExtensions.cs
-    rewriteTo: "'src/' + #applicationName + '/Configuration/ServiceCollectionExtensions.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Configuration/ServiceCollectionExtensions.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Messaging/IMessageBus.cs
-    rewriteTo: "'src/' + #applicationName + '/Messaging/IMessageBus.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Messaging/IMessageBus.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Messaging/MessageBus.cs
-    rewriteTo: "'src/' + #applicationName + '/Messaging/MessageBus.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Messaging/MessageBus.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/DomainException.cs
-    rewriteTo: "'src/' + #applicationName + '/Modules/DomainException.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Modules/DomainException.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/DomainExceptionFilter.cs
-    rewriteTo: "'src/' + #applicationName + '/Modules/DomainExceptionFilter.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Modules/DomainExceptionFilter.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Persistence/DbType.cs
-    rewriteTo: "'src/' + #applicationName + '/Persistence/DbType.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Persistence/DbType.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Persistence/DotnetAcceleratorContext.cs
-    rewriteTo: "'src/' + #applicationName + '/Persistence/' + #applicationName + 'Context.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Persistence/' + #artifactId + 'Context.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Properties/launchSettings.json
-    rewriteTo: "'src/' + #applicationName + '/Properties/launchSettings.json'"
+    rewriteTo: "'src/' + #artifactId + '/Properties/launchSettings.json'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Security/KnownAuthorizationPolicy.cs
-    rewriteTo: "'src/' + #applicationName + '/Security/KnownAuthorizationPolicy.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Security/KnownAuthorizationPolicy.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Security/KnownClaims.cs
-    rewriteTo: "'src/' + #applicationName + '/Security/KnownClaims.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Security/KnownClaims.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/AirportModule/AirportController.cs
-    rewriteTo: "'src/' + #applicationName + '/Modules/AirportModule/AirportController.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Modules/AirportModule/AirportController.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/WeatherModule/WeatherController.cs
-    rewriteTo: "'src/' + #applicationName + '/Modules/WeatherModule/WeatherController.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Modules/WeatherModule/WeatherController.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/AirportModule/Domain/Models/Airport.cs
-    rewriteTo: "'src/' + #applicationName + '/Modules/AirportModule/Domain/Models/Airport.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Modules/AirportModule/Domain/Models/Airport.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/AirportModule/Domain/Models/AirportQuery.cs
-    rewriteTo: "'src/' + #applicationName + '/Modules/AirportModule/Domain/Models/AirportQuery.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Modules/AirportModule/Domain/Models/AirportQuery.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/AirportModule/Domain/Models/AirportQuery.MediatR.cs
-    rewriteTo: "'src/' + #applicationName + '/Modules/AirportModule/Domain/Models/AirportQuery.MediatR.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Modules/AirportModule/Domain/Models/AirportQuery.MediatR.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/AirportModule/Domain/Services/AirportService.cs
-    rewriteTo: "'src/' + #applicationName + '/Modules/AirportModule/Domain/Services/AirportService.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Modules/AirportModule/Domain/Services/AirportService.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/AirportModule/Domain/Services/AirportService.Handlers.cs
-    rewriteTo: "'src/' + #applicationName + '/Modules/AirportModule/Domain/Services/AirportService.Handlers.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Modules/AirportModule/Domain/Services/AirportService.Handlers.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Models/WeatherForecast.cs
-    rewriteTo: "'src/' + #applicationName + '/Modules/WeatherModule/Domain/Models/WeatherForecast.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Modules/WeatherModule/Domain/Models/WeatherForecast.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Models/WeatherForecast.MediatR.cs
-    rewriteTo: "'src/' + #applicationName + '/Modules/WeatherModule/Domain/Models/WeatherForecast.MediatR.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Modules/WeatherModule/Domain/Models/WeatherForecast.MediatR.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Models/WeatherForecastQuery.cs
-    rewriteTo: "'src/' + #applicationName + '/Modules/WeatherModule/Domain/Models/WeatherForecastQuery.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Modules/WeatherModule/Domain/Models/WeatherForecastQuery.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Models/WeatherForecastQuery.MediatR.cs
-    rewriteTo: "'src/' + #applicationName + '/Modules/WeatherModule/Domain/Models/WeatherForecastQuery.MediatR.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Modules/WeatherModule/Domain/Models/WeatherForecastQuery.MediatR.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Services/WeatherService.cs
-    rewriteTo: "'src/' + #applicationName + '/Modules/WeatherModule/Domain/Services/WeatherService.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Modules/WeatherModule/Domain/Services/WeatherService.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Services/WeatherService.Handlers.cs
-    rewriteTo: "'src/' + #applicationName + '/Modules/WeatherModule/Domain/Services/WeatherService.Handlers.cs'"
+    rewriteTo: "'src/' + #artifactId + '/Modules/WeatherModule/Domain/Services/WeatherService.Handlers.cs'"
   - type: ReplaceText
     substitutions:
     - text: DotnetAccelerator
-      with: '#applicationName'
+      with: '#artifactId'
