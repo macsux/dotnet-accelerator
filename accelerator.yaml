@@ -64,100 +64,73 @@ engine:
     - src/DotnetAccelerator/DotnetAccelerator.csproj
     chain:
     - type: ReplaceText
-      condition: '!(#enableSecurity)'
       substitutions:
       - text: |2-
                   <!--#if enableSecurity -->
                   <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
                   <!--#endif -->
         with: "''"
+      condition: '!(#enableSecurity)'
     - type: ReplaceText
-      condition: '#enableSecurity'
       substitutions:
       - text: |2-
                   <!--#if enableSecurity -->
                   <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
                   <!--#endif -->
         with: "'        <PackageReference Include=\"Microsoft.AspNetCore.Authentication.JwtBearer\" Version=\"5.0.10\" />'"
+      condition: '#enableSecurity'
     - type: ReplaceText
-      condition: '!(#postgresql)'
       substitutions:
       - text: |2-
                   <!--#if postgresql -->
                   <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
                   <!--#endif -->
         with: "''"
+      condition: '!(#postgresql)'
     - type: ReplaceText
-      condition: '#postgresql'
       substitutions:
       - text: |2-
                   <!--#if postgresql -->
                   <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
                   <!--#endif -->
         with: "'        <PackageReference Include=\"Npgsql.EntityFrameworkCore.PostgreSQL\" Version=\"5.0.10\" />'"
+      condition: '#postgresql'
     - type: ReplaceText
-      condition: '!(#mysql)'
       substitutions:
       - text: |2-
                   <!--#if mysql -->
                   <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.1" />
                   <!--#endif -->
         with: "''"
+      condition: '!(#mysql)'
     - type: ReplaceText
-      condition: '#mysql'
       substitutions:
       - text: |2-
                   <!--#if mysql -->
                   <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.1" />
                   <!--#endif -->
         with: "'        <PackageReference Include=\"Pomelo.EntityFrameworkCore.MySql\" Version=\"5.0.1\" />'"
+      condition: '#mysql'
     - type: ReplaceText
-      condition: '!(#configserver)'
       substitutions:
       - text: |2-
                   <!--#if configserver -->
                   <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
                   <!--#endif -->
         with: "''"
+      condition: '!(#configserver)'
     - type: ReplaceText
-      condition: '#configserver'
       substitutions:
       - text: |2-
                   <!--#if configserver -->
                   <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
                   <!--#endif -->
         with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
-  - include:
-    - config/application-Development.yaml
-    chain:
-    - type: ReplaceText
-      condition: '!(#enableSecurity)'
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-    - type: ReplaceText
-      condition: '#enableSecurity'
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
+      condition: '#configserver'
   - include:
     - src/DotnetAccelerator/Startup.cs
     chain:
     - type: ReplaceText
-      condition: '!(#enableSecurity)'
       substitutions:
       - text: |
           #if enableSecurity
@@ -183,8 +156,8 @@ engine:
                       app.UseAuthorization();
           #endif
         with: "''"
+      condition: '!(#enableSecurity)'
     - type: ReplaceText
-      condition: '#enableSecurity'
       substitutions:
       - text: |
           #if enableSecurity
@@ -222,8 +195,8 @@ engine:
         with: |-
           '            app.UseAuthentication();
                       app.UseAuthorization();'
+      condition: '#enableSecurity'
     - type: ReplaceText
-      condition: '!(#postgresql)'
       substitutions:
       - text: |
           #if postgresql
@@ -232,8 +205,8 @@ engine:
                                   break;
           #endif
         with: "''"
+      condition: '!(#postgresql)'
     - type: ReplaceText
-      condition: '#postgresql'
       substitutions:
       - text: |
           #if postgresql
@@ -245,8 +218,8 @@ engine:
           '                    case DbType.PostgreSQL:
                                   opt.UseNpgsql(connectionString);
                                   break;'
+      condition: '#postgresql'
     - type: ReplaceText
-      condition: '!(#mysql)'
       substitutions:
       - text: |
           #if mysql
@@ -255,8 +228,8 @@ engine:
                                   break;
           #endif
         with: "''"
+      condition: '!(#mysql)'
     - type: ReplaceText
-      condition: '#mysql'
       substitutions:
       - text: |
           #if mysql
@@ -268,11 +241,37 @@ engine:
           '                    case DbType.MySQL:
                                   opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
                                   break;'
+      condition: '#mysql'
+  - include:
+    - config/application-Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
   - include:
     - config/application.yaml
     chain:
     - type: ReplaceText
-      condition: '!(#enableSecurity)'
       substitutions:
       - text: |-
           #if enableSecurity
@@ -281,8 +280,8 @@ engine:
               Authority: https://accounts.google.com
           #endif
         with: "''"
+      condition: '!(#enableSecurity)'
     - type: ReplaceText
-      condition: '#enableSecurity'
       substitutions:
       - text: |-
           #if enableSecurity
@@ -294,11 +293,11 @@ engine:
           'Authentication:
             Bearer:
               Authority: https://accounts.google.com'
+      condition: '#enableSecurity'
   - include:
     - src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
     chain:
     - type: ReplaceText
-      condition: '!(#configserver)'
       substitutions:
       - text: |
           #if configserver
@@ -316,8 +315,8 @@ engine:
                               .AddConfigServer(environment, loggerFactory);
           #endif
         with: "''"
+      condition: '!(#configserver)'
     - type: ReplaceText
-      condition: '#configserver'
       substitutions:
       - text: |
           #if configserver
@@ -342,46 +341,46 @@ engine:
                           var loggerFactory = LoggerFactory.Create(c => c.AddConfiguration(bootstrapConfig.GetSection("Logging")));
                           bootstrapConfigBuilder
                               .AddConfigServer(environment, loggerFactory);'
+      condition: '#configserver'
   - include:
     - src/DotnetAccelerator/Persistence/DbType.cs
     chain:
     - type: ReplaceText
-      condition: '!(#postgresql)'
       substitutions:
       - text: |
           #if postgresql
                   PostgreSQL,
           #endif
         with: "''"
+      condition: '!(#postgresql)'
     - type: ReplaceText
-      condition: '#postgresql'
       substitutions:
       - text: |
           #if postgresql
                   PostgreSQL,
           #endif
         with: "'        PostgreSQL,'"
+      condition: '#postgresql'
     - type: ReplaceText
-      condition: '!(#mysql)'
       substitutions:
       - text: |
           #if mysql
                   MySQL,
           #endif
         with: "''"
+      condition: '!(#mysql)'
     - type: ReplaceText
-      condition: '#mysql'
       substitutions:
       - text: |
           #if mysql
                   MySQL,
           #endif
         with: "'        MySQL,'"
+      condition: '#mysql'
   - include:
     - src/DotnetAccelerator/Properties/launchSettings.json
     chain:
     - type: ReplaceText
-      condition: '!(#postgresql)'
       substitutions:
       - text: |
           //#if postgresql
@@ -398,8 +397,8 @@ engine:
               },
           //#endif
         with: "''"
+      condition: '!(#postgresql)'
     - type: ReplaceText
-      condition: '#postgresql'
       substitutions:
       - text: |
           //#if postgresql
@@ -427,8 +426,8 @@ engine:
                   "PROFILES:ACTIVE": "LocalMySQL"
                 }
               },'
+      condition: '#postgresql'
     - type: ReplaceText
-      condition: '!(#mysql)'
       substitutions:
       - text: |
           //#if mysql
@@ -445,8 +444,8 @@ engine:
               },
           //#endif
         with: "''"
+      condition: '!(#mysql)'
     - type: ReplaceText
-      condition: '#mysql'
       substitutions:
       - text: |
           //#if mysql
@@ -474,11 +473,11 @@ engine:
                   "PROFILES:ACTIVE": "LocalMySQL"
                 }
               },'
+      condition: '#mysql'
   - include:
     - src/DotnetAccelerator/Modules/AirportModule/AirportController.cs
     chain:
     - type: ReplaceText
-      condition: '!(#enableSecurity)'
       substitutions:
       - text: |
           #if enableSecurity
@@ -490,8 +489,8 @@ engine:
                   [Authorize(KnownAuthorizationPolicy.AirportRead)]
           #endif
         with: "''"
+      condition: '!(#enableSecurity)'
     - type: ReplaceText
-      condition: '#enableSecurity'
       substitutions:
       - text: |
           #if enableSecurity
@@ -503,11 +502,11 @@ engine:
                   [Authorize(KnownAuthorizationPolicy.AirportRead)]
           #endif
         with: "'        [Authorize(KnownAuthorizationPolicy.AirportRead)]'"
+      condition: '#enableSecurity'
   - include:
     - src/DotnetAccelerator/Modules/WeatherModule/WeatherController.cs
     chain:
     - type: ReplaceText
-      condition: '!(#enableSecurity)'
       substitutions:
       - text: |
           #if enableSecurity
@@ -524,8 +523,8 @@ engine:
                   [Authorize(KnownAuthorizationPolicy.WeatherWrite)]
           #endif
         with: "''"
+      condition: '!(#enableSecurity)'
     - type: ReplaceText
-      condition: '#enableSecurity'
       substitutions:
       - text: |
           #if enableSecurity
@@ -542,3 +541,117 @@ engine:
                   [Authorize(KnownAuthorizationPolicy.WeatherWrite)]
           #endif
         with: "'        [Authorize(KnownAuthorizationPolicy.WeatherWrite)]'"
+      condition: '#enableSecurity'
+  chain:
+  - type: RewritePath
+    regex: DotnetAccelerator.sln
+    rewriteTo: "'' + #applicationName + '.sln'"
+  - type: RewritePath
+    regex: config/DotnetAccelerator-Development.yaml
+    rewriteTo: "'config/' + #applicationName + '-Development.yaml'"
+  - type: RewritePath
+    regex: config/DotnetAccelerator-LocalMySQL.yaml
+    rewriteTo: "'config/' + #applicationName + '-LocalMySQL.yaml'"
+  - type: RewritePath
+    regex: config/DotnetAccelerator-LocalPostgreSQL.yaml
+    rewriteTo: "'config/' + #applicationName + '-LocalPostgreSQL.yaml'"
+  - type: RewritePath
+    regex: config/DotnetAccelerator.yaml
+    rewriteTo: "'config/' + #applicationName + '.yaml'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/DotnetAccelerator.csproj
+    rewriteTo: "'src/' + #applicationName + '/' + #applicationName + '.csproj'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Program.cs
+    rewriteTo: "'src/' + #applicationName + '/Program.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/README.md
+    rewriteTo: "'src/' + #applicationName + '/README.md'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Startup.cs
+    rewriteTo: "'src/' + #applicationName + '/Startup.cs'"
+  - type: RewritePath
+    regex: tests/DotnetAcceleratorTests/DotnetAcceleratorTests.csproj
+    rewriteTo: "'tests/' + #applicationName + 'Tests/' + #applicationName + 'Tests.csproj'"
+  - type: RewritePath
+    regex: tests/DotnetAcceleratorTests/IUseDbContext.cs
+    rewriteTo: "'tests/' + #applicationName + 'Tests/IUseDbContext.cs'"
+  - type: RewritePath
+    regex: tests/DotnetAcceleratorTests/WeatherTests.cs
+    rewriteTo: "'tests/' + #applicationName + 'Tests/WeatherTests.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
+    rewriteTo: "'src/' + #applicationName + '/Configuration/ConfigurationBuilderExtensions.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Configuration/ServiceCollectionExtensions.cs
+    rewriteTo: "'src/' + #applicationName + '/Configuration/ServiceCollectionExtensions.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Messaging/IMessageBus.cs
+    rewriteTo: "'src/' + #applicationName + '/Messaging/IMessageBus.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Messaging/MessageBus.cs
+    rewriteTo: "'src/' + #applicationName + '/Messaging/MessageBus.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/DomainException.cs
+    rewriteTo: "'src/' + #applicationName + '/Modules/DomainException.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/DomainExceptionFilter.cs
+    rewriteTo: "'src/' + #applicationName + '/Modules/DomainExceptionFilter.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Persistence/DbType.cs
+    rewriteTo: "'src/' + #applicationName + '/Persistence/DbType.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Persistence/DotnetAcceleratorContext.cs
+    rewriteTo: "'src/' + #applicationName + '/Persistence/' + #applicationName + 'Context.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Properties/launchSettings.json
+    rewriteTo: "'src/' + #applicationName + '/Properties/launchSettings.json'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Security/KnownAuthorizationPolicy.cs
+    rewriteTo: "'src/' + #applicationName + '/Security/KnownAuthorizationPolicy.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Security/KnownClaims.cs
+    rewriteTo: "'src/' + #applicationName + '/Security/KnownClaims.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/AirportModule/AirportController.cs
+    rewriteTo: "'src/' + #applicationName + '/Modules/AirportModule/AirportController.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/WeatherModule/WeatherController.cs
+    rewriteTo: "'src/' + #applicationName + '/Modules/WeatherModule/WeatherController.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/AirportModule/Domain/Models/Airport.cs
+    rewriteTo: "'src/' + #applicationName + '/Modules/AirportModule/Domain/Models/Airport.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/AirportModule/Domain/Models/AirportQuery.cs
+    rewriteTo: "'src/' + #applicationName + '/Modules/AirportModule/Domain/Models/AirportQuery.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/AirportModule/Domain/Models/AirportQuery.MediatR.cs
+    rewriteTo: "'src/' + #applicationName + '/Modules/AirportModule/Domain/Models/AirportQuery.MediatR.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/AirportModule/Domain/Services/AirportService.cs
+    rewriteTo: "'src/' + #applicationName + '/Modules/AirportModule/Domain/Services/AirportService.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/AirportModule/Domain/Services/AirportService.Handlers.cs
+    rewriteTo: "'src/' + #applicationName + '/Modules/AirportModule/Domain/Services/AirportService.Handlers.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Models/WeatherForecast.cs
+    rewriteTo: "'src/' + #applicationName + '/Modules/WeatherModule/Domain/Models/WeatherForecast.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Models/WeatherForecast.MediatR.cs
+    rewriteTo: "'src/' + #applicationName + '/Modules/WeatherModule/Domain/Models/WeatherForecast.MediatR.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Models/WeatherForecastQuery.cs
+    rewriteTo: "'src/' + #applicationName + '/Modules/WeatherModule/Domain/Models/WeatherForecastQuery.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Models/WeatherForecastQuery.MediatR.cs
+    rewriteTo: "'src/' + #applicationName + '/Modules/WeatherModule/Domain/Models/WeatherForecastQuery.MediatR.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Services/WeatherService.cs
+    rewriteTo: "'src/' + #applicationName + '/Modules/WeatherModule/Domain/Services/WeatherService.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Services/WeatherService.Handlers.cs
+    rewriteTo: "'src/' + #applicationName + '/Modules/WeatherModule/Domain/Services/WeatherService.Handlers.cs'"
+  - type: ReplaceText
+    substitutions:
+    - text: DotnetAccelerator
+      with: '#applicationName'
