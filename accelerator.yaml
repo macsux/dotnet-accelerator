@@ -5,12 +5,6 @@ accelerator:
   - C#
   - project
   options:
-  - name: applicationName
-    label: Application Name
-    description: Application Name
-    inputType: text
-    defaultValue: DotnetAccelerator
-    required: true
   - name: database
     label: Database
     dataType: string
