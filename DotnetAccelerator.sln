@@ -13,6 +13,7 @@ ProjectSection(SolutionItems) = preProject
 	global.json = global.json
 	version.json = version.json
 	Directory.Build.props = Directory.Build.props
+	README.md = README.md
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "config", "config\config.csproj", "{45E90901-4A67-4041-AABB-9A79D614D133}"
