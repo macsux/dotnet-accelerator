@@ -25,7 +25,7 @@ namespace DotnetAccelerator.Configuration
             .GetCustomAttributes<AssemblyMetadataAttribute>()
             .Where(x => x.Key == "ApplicationName")
             .Select(x => x.Value)
-            .FirstOrDefault() ?? Assembly.GetEntryAssembly()?.GetName().Name ?? throw new Exception("App name not set"));
+            .FirstOrDefault() ?? typeof(Startup).Assembly.GetName().Name ?? throw new Exception("App name not set"));
         private static Lazy<string> ConfigFolder = new (() =>
         {
 
@@ -58,7 +58,7 @@ namespace DotnetAccelerator.Configuration
                     })
                     .AddYamlFile(GetFullPath("application.yaml"), true, true)
                     .AddYamlFile(GetFullPath("solution-defaults.yaml"), true, true)
-                    .AddYamlFile(GetFullPath($"{configName}.yaml"), false, true)
+                    .AddYamlFile(GetFullPath($"{configName}.yaml"), true, true)
                     .AddYamlFile(GetFullPath($"{configName}.{environment}.yaml"), true, true)
                     .AddYamlFile(GetFullPath($"{configName}-{environment}.yaml"), true, true);
 #if configserver
