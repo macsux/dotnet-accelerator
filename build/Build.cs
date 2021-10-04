@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using DefaultNamespace;
 using LibGit2Sharp;
 using Nuke.Common;
 using Nuke.Common.CI;
@@ -14,6 +16,7 @@ using Nuke.Common.Tools.NerdbankGitVersioning;
 using Nuke.Common.Utilities.Collections;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+using static Nuke.Common.Tools.NerdbankGitVersioning.NerdbankGitVersioningTasks;
 using static Nuke.Common.IO.CompressionTasks;
 
 [CheckBuildProjectConfigurations]
@@ -40,7 +43,7 @@ class Build : NukeBuild
         Environment.SetEnvironmentVariable("NUKE_TELEMETRY_OPTOUT", "true");
         Environment.SetEnvironmentVariable("NO_LOGO", "true");
     }
-    public static int Main () => Execute<Build>(x => x.Compile);
+    public static int Main () => Execute<Build>();
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
@@ -52,7 +55,7 @@ class Build : NukeBuild
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
     string TargetFramework => "net5.0";
 
-    [NerdbankGitVersioning] NerdbankGitVersioning GitVersion;
+    [GitVersion] NerdbankGitVersioning GitVersion;
 
     Repository GitRepository;
     static bool IsGitInitialized => Repository.IsValid(RootDirectory);
@@ -126,14 +129,28 @@ class Build : NukeBuild
                 .ToArray();
 
             var version = GitVersion?.NuGetPackageVersion ?? "1.0";
+            var artifacts = new List<string>();
             foreach (var (name, publishDir) in publishDirs)
             {
                 var zipFile = ArtifactsDirectory / $"{name}-{version}.zip";
                 DeleteFile(zipFile);
                 Compress(publishDir, zipFile);
+                artifacts.Add(zipFile);
             }
+
+            Logger.Block(string.Join("\n", artifacts));
         });
 
+    Target GetVersion => _ => _
+        .Executes(() =>
+        {
+            Logger.Block(GitVersion.NuGetPackageVersion);
+        });
+    Target PrepareRelease => _ => _
+        .Executes(() =>
+        {
+            NerdbankGitVersioningPrepareRelease(x => x.SetTag("beta"));
+        });
     
     #region Init Subtasks
     Target SetupGit => _ => _

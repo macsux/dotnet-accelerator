@@ -73,7 +73,9 @@
             "enum": [
               "Clean",
               "Compile",
+              "GetVersion",
               "Init",
+              "PrepareRelease",
               "Publish",
               "Restore",
               "RestoreTools",
@@ -94,7 +96,9 @@
             "enum": [
               "Clean",
               "Compile",
+              "GetVersion",
               "Init",
+              "PrepareRelease",
               "Publish",
               "Restore",
               "RestoreTools",

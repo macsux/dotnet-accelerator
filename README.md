@@ -36,7 +36,7 @@ When the team is ready to start preparing next release, they *cut* a release bra
 Cutting a release branch can be done by issuing this command:
 
 ```
-dotnet nbgv prepare-release
+.\build.ps1 prepare-release
 ```
 
 `develop` branch usually follows a `<SEMVER>-alpha` versioning pattern. When a release is cut, the unstable tag of the stablization branch changes to `beta`. 

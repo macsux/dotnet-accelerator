@@ -122,6 +122,58 @@ engine:
         with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
       condition: '#configserver'
   - include:
+    - config/application-Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
+  - include:
+    - config/application.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://accounts.google.com'
+      condition: '#enableSecurity'
+  - include:
     - src/DotnetAccelerator/Startup.cs
     chain:
     - type: ReplaceText
@@ -237,58 +289,6 @@ engine:
                                   break;'
       condition: '#mysql'
   - include:
-    - config/application-Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
-  - include:
-    - config/application.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://accounts.google.com'
-      condition: '#enableSecurity'
-  - include:
     - src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
     chain:
     - type: ReplaceText
@@ -337,40 +337,57 @@ engine:
                               .AddConfigServer(environment, loggerFactory);'
       condition: '#configserver'
   - include:
-    - src/DotnetAccelerator/Persistence/DbType.cs
+    - src/DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.Development.yaml
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
-          #if postgresql
-                  PostgreSQL,
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
           #endif
         with: "''"
-      condition: '!(#postgresql)'
+      condition: '!(#enableSecurity)'
     - type: ReplaceText
       substitutions:
-      - text: |
-          #if postgresql
-                  PostgreSQL,
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
           #endif
-        with: "'        PostgreSQL,'"
-      condition: '#postgresql'
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
+  - include:
+    - src/DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.yaml
+    chain:
     - type: ReplaceText
       substitutions:
-      - text: |
-          #if mysql
-                  MySQL,
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
           #endif
         with: "''"
-      condition: '!(#mysql)'
+      condition: '!(#enableSecurity)'
     - type: ReplaceText
       substitutions:
-      - text: |
-          #if mysql
-                  MySQL,
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
           #endif
-        with: "'        MySQL,'"
-      condition: '#mysql'
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://accounts.google.com'
+      condition: '#enableSecurity'
   - include:
     - src/DotnetAccelerator/Properties/launchSettings.json
     chain:
@@ -469,6 +486,93 @@ engine:
               },'
       condition: '#mysql'
   - include:
+    - src/DotnetAccelerator/Persistence/DbType.cs
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |
+          #if postgresql
+                  PostgreSQL,
+          #endif
+        with: "''"
+      condition: '!(#postgresql)'
+    - type: ReplaceText
+      substitutions:
+      - text: |
+          #if postgresql
+                  PostgreSQL,
+          #endif
+        with: "'        PostgreSQL,'"
+      condition: '#postgresql'
+    - type: ReplaceText
+      substitutions:
+      - text: |
+          #if mysql
+                  MySQL,
+          #endif
+        with: "''"
+      condition: '!(#mysql)'
+    - type: ReplaceText
+      substitutions:
+      - text: |
+          #if mysql
+                  MySQL,
+          #endif
+        with: "'        MySQL,'"
+      condition: '#mysql'
+  - include:
+    - tests/DotnetAcceleratorTests/bin/Debug/net5.0/config/solution-defaults.Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
+  - include:
+    - tests/DotnetAcceleratorTests/bin/Debug/net5.0/config/solution-defaults.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://accounts.google.com'
+      condition: '#enableSecurity'
+  - include:
     - src/DotnetAccelerator/Modules/AirportModule/AirportController.cs
     chain:
     - type: ReplaceText
@@ -496,6 +600,32 @@ engine:
                   [Authorize(KnownAuthorizationPolicy.AirportRead)]
           #endif
         with: "'        [Authorize(KnownAuthorizationPolicy.AirportRead)]'"
+      condition: '#enableSecurity'
+  - include:
+    - src/DotnetAccelerator/bin/Debug/net5.0/publish/config/solution-defaults.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://accounts.google.com'
       condition: '#enableSecurity'
   - include:
     - src/DotnetAccelerator/Modules/WeatherModule/WeatherController.cs
