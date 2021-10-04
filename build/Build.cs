@@ -123,7 +123,8 @@ class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .EnableNoRestore());
 
-            var publishDirs = Solution.Projects
+            var publishDirs = Solution.AllProjects
+                .Where(x => x.Name is not "_build" and not "config" && !x.Name.EndsWith("Tests"))
                 .Select(x => (x.Name, PublishDir: x.Directory / "bin" / Configuration / TargetFramework / "publish"))
                 .Where(x => DirectoryExists(x.PublishDir))
                 .ToArray();

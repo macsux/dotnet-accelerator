@@ -39,7 +39,17 @@ Cutting a release branch can be done by issuing this command:
 .\build.ps1 prepare-release
 ```
 
-`develop` branch usually follows a `<SEMVER>-alpha` versioning pattern. When a release is cut, the unstable tag of the stablization branch changes to `beta`. 
+### Prereleases
+
+Builds created out of different branches will have the pre-release tags applied automatically to their version numbers:
+
+`develop`: `<semver>-alpha` 
+
+`v.X.X`: `<semver>-beta` 
+
+`main`: `<semver>`
+
+any other: `<semver>-<short-sha>`
 
 ### Creating production release 
 
@@ -54,7 +64,7 @@ At the end of stabilization cycle when the release is made. The following steps 
 
 Config server allows configuration to be loaded from a dedicated service that is backed by one or more configuration sources. The default configuration source is git, allowing configuration changes to be stored in git, but loaded without having to redeploy the app.
 
-![Config Server | Pivotal Docs](docs/images/config-server-fig1.png)
+![Config Server](https://docs.pivotal.io/spring-cloud-services/2-1/common/config-server/images/config-server-fig1.png)
 
 The configuration is stored inside `/config` folder in the repository. You can launch config server locally via `docker-compose` from inside `services` folder vas following:
 
