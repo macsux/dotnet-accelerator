@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Bootstrap.Autoconfig;
+using Steeltoe.Management.Endpoint;
 
 namespace DotnetAccelerator
 {

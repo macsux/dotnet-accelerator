@@ -2,6 +2,14 @@
 Logging:
   LogLevel:
     Default: Debug
+Spring:
+  Boot:
+    Admin:
+      Client:
+        Url: http://localhost:8088
+        Metadata:
+          "User.Name": admin
+          "User.Password": admin
 Management:
   Endpoints:
     Actuator:
@@ -13,3 +21,4 @@ Authentication:
   Bearer:
     Authority: https://login.run.pcfone.io
 #endif
+Urls: ${ASPNETCORE_URLS}
