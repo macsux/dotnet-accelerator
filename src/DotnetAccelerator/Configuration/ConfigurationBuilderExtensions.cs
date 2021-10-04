@@ -57,6 +57,7 @@ namespace DotnetAccelerator.Configuration
                         {"spring:application:name", AppName.Value}
                     })
                     .AddYamlFile(GetFullPath("application.yaml"), true, true)
+                    .AddYamlFile(GetFullPath($"application-{environment}.yaml"), true, true)
                     .AddYamlFile(GetFullPath("solution-defaults.yaml"), true, true)
                     .AddYamlFile(GetFullPath($"{configName}.yaml"), false, true)
                     .AddYamlFile(GetFullPath($"{configName}.{environment}.yaml"), true, true)

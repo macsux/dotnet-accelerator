@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DotnetAccelerator.Configuration
+namespace DotnetAccelerator.Modules
 {
     public static class ServiceCollectionExtensions
     {
