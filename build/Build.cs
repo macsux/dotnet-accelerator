@@ -4,6 +4,7 @@ using LibGit2Sharp;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.CI.AzurePipelines;
+using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.Execution;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
@@ -17,6 +18,16 @@ using static Nuke.Common.IO.CompressionTasks;
 
 [CheckBuildProjectConfigurations]
 [ShutdownDotNetAfterServerBuild]
+[GitHubActions("CI", GitHubActionsImage.Ubuntu1804, 
+    InvokedTargets = new[]{nameof(Test),nameof(Publish)},
+    On = new [] {GitHubActionsTrigger.Push},
+    PublishArtifacts = true
+    // OnPushBranchesIgnore = new[] { "main", "v*" }
+    )]
+[AzurePipelines(AzurePipelinesImage.Ubuntu1804, 
+    InvokedTargets = new[]{nameof(Test), nameof(Publish)},
+    ExcludedTargets = new[] { nameof(Clean)},
+    CacheKeyFiles = new[] { "global.json", "source/**/*.csproj" })]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
@@ -97,6 +108,7 @@ class Build : NukeBuild
     Target Publish => _ => _
         .OnlyWhenDynamic(() => IsGitInitialized)
         .DependsOn(Restore)
+        .Produces(ArtifactsDirectory / "*.zip")
         .Executes(() =>
         {
             if (GitRepository.RetrieveStatus().IsDirty)

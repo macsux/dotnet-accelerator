@@ -39,5 +39,26 @@ Cutting a release branch can be done by issuing this command:
 dotnet nbgv prepare-release
 ```
 
-This will create 2 commits - do not attempt to squash them. These are necessary for the git versioning to work properly.
+`develop` branch usually follows a `<SEMVER>-alpha` versioning pattern. When a release is cut, the unstable tag of the stablization branch changes to `beta`. 
+
+### Creating production release 
+
+At the end of stabilization cycle when the release is made. The following steps should be performed:
+
+- switch to release branch (ex. v2.0)
+- edit `version.json` and change the `version` property to remove the `beta` tag
+- commit
+- merge release branch into master
+
+## Config server
+
+Config server allows configuration to be loaded from a dedicated service that is backed by one or more configuration sources. The default configuration source is git, allowing configuration changes to be stored in git, but loaded without having to redeploy the app.
+
+![Config Server | Pivotal Docs](docs/images/config-server-fig1.png)
+
+The configuration is stored inside `/config` folder in the repository. You can launch config server locally via `docker-compose` from inside `services` folder vas following:
+
+```
+services> docker-compose up configserver
+```
 
