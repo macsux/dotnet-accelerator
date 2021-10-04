@@ -3,8 +3,8 @@ using DotnetAccelerator.Messaging;
 using DotnetAccelerator.Modules;
 using DotnetAccelerator.Persistence;
 using idunno.Authentication.Basic;
-#if enableSecurity
 using DotnetAccelerator.Security;
+#if enableSecurity
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 #endif
 using MediatR;
@@ -94,23 +94,11 @@ namespace DotnetAccelerator
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DotnetAccelerator v1"));
             app.UseHttpsRedirection();
             app.UseRouting();
-#if enableSecurity
+
             app.UseAuthentication();
             app.UseAuthorization();
-#endif
-            // app.Map("/actuator", app => app.Use(async (context,next) =>
-            // {
-            //     var authorizationServices = context.RequestServices.GetRequiredService<IAuthorizationService>();
-            //     var authenticateResult = await context.AuthenticateAsync(BasicAuthenticationDefaults.AuthenticationScheme);
-            //
-            //     var authorizationResult = await authorizationServices.AuthorizeAsync(authenticateResult.Principal ?? context.User, KnownAuthorizationPolicy.Actuators);
-            //     if (!authorizationResult.Succeeded)
-            //     {
-            //         await context.ChallengeAsync();
-            //     }
-            //
-            //     await next();
-            // }));
+
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
