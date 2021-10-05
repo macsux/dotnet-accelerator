@@ -6,6 +6,12 @@ namespace DotnetAccelerator.Modules
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds services found inside selected namespace to the service container.
+        /// </summary>
+        /// <param name="services">Service collection</param>
+        /// <param name="modulesNamespace">Namespace to scan</param>
+        /// <remarks>Services are located as any class ending with word "Service". It is registered into container for every interface it implements</remarks>
         public static IServiceCollection AddModules(this IServiceCollection services, string modulesNamespace)
         {
             var serviceTypes = AppDomain.CurrentDomain.GetAssemblies()

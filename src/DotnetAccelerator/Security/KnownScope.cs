@@ -1,6 +1,6 @@
 ﻿namespace DotnetAccelerator.Security
 {
-    public class KnownScopes
+    public static class KnownScope
     {
         public const string Actuators = "actuators";
         public const string Read = "read";

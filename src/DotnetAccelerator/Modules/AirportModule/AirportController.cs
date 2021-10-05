@@ -8,6 +8,7 @@ using DotnetAccelerator.Security;
 #endif
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace DotnetAccelerator.Modules.AirportModule
 {
@@ -16,12 +17,10 @@ namespace DotnetAccelerator.Modules.AirportModule
     public class AirportController : ControllerBase
     {
         private readonly IMessageBus _messageBus;
-        private readonly AirportService _airportService;
 
-        public AirportController(IMessageBus messageBus, AirportService airportService)
+        public AirportController(IMessageBus messageBus)
         {
             _messageBus = messageBus;
-            _airportService = airportService;
         }
 
         [HttpGet]

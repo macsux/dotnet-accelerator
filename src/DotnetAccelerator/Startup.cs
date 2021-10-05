@@ -1,15 +1,13 @@
-using DotnetAccelerator.Configuration;
 using DotnetAccelerator.Messaging;
 using DotnetAccelerator.Modules;
 using DotnetAccelerator.Persistence;
-using idunno.Authentication.Basic;
 using DotnetAccelerator.Security;
 #if enableSecurity
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using idunno.Authentication.Basic;
 #endif
 using MediatR;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -17,8 +15,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Steeltoe.Connector.EFCore;
+#if configserver
+using Steeltoe.Extensions.Configuration.ConfigServer;
+#endif
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.SpringBootAdminClient;
+using Steeltoe.Management.Tracing;
 
 namespace DotnetAccelerator
 {
@@ -36,19 +38,27 @@ namespace DotnetAccelerator
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddActuatorSecurity();
-            services.AddSpringBootAdmin();
+            services.AddDistributedTracingAspNetCore();
+            services.AddSecureActuators();
+#if configserver
+            services.AddConfigServerHealthContributor();
+#endif
+            if (Configuration.GetValue<string>("Spring:Boot:Admin:Client:Url") != null)
+            {
+                services.AddSpringBootAdmin();
+            }
 #if enableSecurity
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(cfg => Configuration.GetSection($"Authentication:{JwtBearerDefaults.AuthenticationScheme}").Bind(cfg));
+                .AddJwtBearer(cfg =>
+                {
+                    cfg.ForwardDefaultSelector = httpContext => (httpContext.Request.Path.StartsWithSegments("/actuator")? BasicAuthenticationDefaults.AuthenticationScheme : null)!;
+                    Configuration.GetSection($"Authentication:{JwtBearerDefaults.AuthenticationScheme}").Bind(cfg);
+                });
             services.AddAuthorization(authz =>
             {
-                authz.AddPolicy(KnownAuthorizationPolicy.AirportRead, policy => policy.RequireScope(KnownScopes.Read));
-                authz.AddPolicy(KnownAuthorizationPolicy.WeatherRead, policy => policy.RequireScope(KnownScopes.Read));
-                authz.AddPolicy(KnownAuthorizationPolicy.WeatherWrite, policy => policy.RequireScope(KnownScopes.Write));
-                authz.AddPolicy(KnownAuthorizationPolicy.Actuators, policyBuilder => policyBuilder
-                    .AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme)
-                    .RequireScope(KnownScopes.Actuators));
+                authz.AddPolicy(KnownAuthorizationPolicy.AirportRead, policy => policy.RequireScope(KnownScope.Read));
+                authz.AddPolicy(KnownAuthorizationPolicy.WeatherRead, policy => policy.RequireScope(KnownScope.Read));
+                authz.AddPolicy(KnownAuthorizationPolicy.WeatherWrite, policy => policy.RequireScope(KnownScope.Write));
             });
 #endif
             services.AddMediatR(cfg => cfg.Using<MessageBus>(), typeof(Startup));
@@ -58,53 +68,40 @@ namespace DotnetAccelerator
             {
                 var connectionString = Configuration.GetConnectionString("database");
                 var dbDriver = Configuration.GetValue<DbType>("DbType");
-                switch (dbDriver)
+                _ = dbDriver switch
                 {
-                    case DbType.SQLite:
-                        opt.UseSqlite(connectionString);
-                        break;
+                    DbType.SQLite => opt.UseSqlite(connectionString),
 #if postgresql
-                    case DbType.PostgreSQL:
-                        opt.UseNpgsql(connectionString);
-                        break;
+                    DbType.PostgreSQL => opt.UseNpgsql(connectionString),
 #endif
 #if mysql
-                    case DbType.MySQL:
-                        opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-                        break;
+                    DbType.MySQL => opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)),
 #endif
-                }
+                    _ => opt
+                };
             });
             services.AddControllers(cfg => cfg.Filters.Add<DomainExceptionFilter>());
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "DotnetAccelerator", Version = "v1"}); });
-            services.AddAllActuators();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DotnetAcceleratorContext context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            context.Database.Migrate();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            
-
+            app.MigrateDatabase<DotnetAcceleratorContext>();
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DotnetAccelerator v1"));
-            app.UseHttpsRedirection();
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
-
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapAllActuators().RequireAuthorization(KnownAuthorizationPolicy.Actuators);
             });
-            
         }
     }
 }

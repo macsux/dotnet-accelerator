@@ -4,7 +4,21 @@ Logging:
     Default: Information
     Microsoft: Warning
     Microsoft.Hosting.Lifetime: Information
+    idunno: Error
 AllowedHosts: '*'
+Management:
+  Endpoints:
+    Actuator:
+      Exposure:
+        Include: 
+          - '*'
+    Health:
+      ShowDetails: WhenAuthorized
+      Claim:
+        Type: Scope
+        Value: actuators
+        
+
 #if enableSecurity
 Authentication:
   Bearer:

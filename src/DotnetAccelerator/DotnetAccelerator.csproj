@@ -14,14 +14,16 @@
         <!--#endif -->
         <!--#if postgresql -->
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
+        <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="1.1.0" />
         <!--#endif -->
         <!--#if mysql -->
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.1" />
+        <PackageReference Include="Steeltoe.Connector.EFCore" Version="3.1.1" />
         <!--#endif -->
         <!--#if configserver -->
         <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
         <!--#endif -->
-        <PackageReference Include="Steeltoe.Bootstrap.Autoconfig" Version="3.1.1" />
+        
         <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="5.0.26" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.10">
@@ -39,15 +41,14 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.1.0" />
+        <PackageReference Include="Steeltoe.Bootstrap.Autoconfig" Version="3.1.1" />
+        <PackageReference Include="Steeltoe.Extensions.Configuration.PlaceholderCore" Version="3.1.1" />
         <PackageReference Include="Steeltoe.Extensions.Configuration.SpringBootCore" Version="3.1.1" />
-
         <PackageReference Include="Steeltoe.Management.EndpointCore" Version="3.1.1" />
         <PackageReference Include="Steeltoe.Management.TaskCore" Version="3.1.1" />
+        <PackageReference Include="Steeltoe.Common" Version="3.1.1" />
+        <PackageReference Include="Steeltoe.Management.TracingCore" Version="3.1.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
         <PackageReference Include="System.Linq.Async" Version="5.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Management" />
     </ItemGroup>
 </Project>

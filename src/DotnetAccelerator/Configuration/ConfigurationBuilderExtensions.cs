@@ -6,6 +6,8 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Extensions.Configuration.Placeholder;
+using Steeltoe.Extensions.Logging;
 #if configserver
 using Steeltoe.Extensions.Configuration.ConfigServer;
 #endif
@@ -67,13 +69,16 @@ namespace DotnetAccelerator.Configuration
                 .AddCommandLine(Environment.GetCommandLineArgs())
                 .AddProfiles();
                 var bootstrapConfig = bootstrapConfigBuilder.Build();
-                var loggerFactory = LoggerFactory.Create(c => c.AddConfiguration(bootstrapConfig.GetSection("Logging")));
+                var loggerFactory = LoggerFactory.Create(_ => _
+                    .AddDynamicConsole()
+                    .AddConfiguration(bootstrapConfig.GetSection("Logging")));
                 bootstrapConfigBuilder
                     .AddConfigServer(environment, loggerFactory);
 #endif
                 bootstrapConfigBuilder
                     .AddEnvironmentVariables()
-                    .AddCommandLine(args);
+                    .AddCommandLine(args)
+                    .AddPlaceholderResolver();
             });
             return hostBuilder;
         }
