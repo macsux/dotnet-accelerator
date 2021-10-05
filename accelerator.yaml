@@ -708,6 +708,12 @@ engine:
     regex: src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
     rewriteTo: "'src/' + #artifactId + '/Configuration/ConfigurationBuilderExtensions.cs'"
   - type: RewritePath
+    regex: src/DotnetAccelerator/Management/SpringBootAdminServiceCollectionExtensions.cs
+    rewriteTo: "'src/' + #artifactId + '/Management/SpringBootAdminServiceCollectionExtensions.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Management/SpringBootRegistrationHostedService.cs
+    rewriteTo: "'src/' + #artifactId + '/Management/SpringBootRegistrationHostedService.cs'"
+  - type: RewritePath
     regex: src/DotnetAccelerator/Messaging/IMessageBus.cs
     rewriteTo: "'src/' + #artifactId + '/Messaging/IMessageBus.cs'"
   - type: RewritePath

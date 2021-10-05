@@ -4,7 +4,6 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using idunno.Authentication.Basic;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -135,19 +134,18 @@ namespace DotnetAccelerator.Security
                     .AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme)
                     .RequireAssertion(context =>
                     {
+                        var httpContext = (HttpContext) context.Resource!;
+                        var actuatorEndpoints = httpContext.RequestServices.GetServices<IEndpointOptions>()
+                            .Where(x => x.Id is not "health" and not "info")
+                            .Select(x => ((PathString) $"/actuator").Add($"/{x.Id}"))
+                            .ToList();
+                        var path = httpContext.Request.Path;
+                        if (actuatorEndpoints.Any(x => path.StartsWithSegments(x)) && !context.User.HasScope(KnownScope.Actuators))
+                        {
+                            return false;
+                        }
+                        
                         return true;
-                        // var httpContext = (HttpContext) context.Resource!;
-                        // var actuatorEndpoints = httpContext.RequestServices.GetServices<IEndpointOptions>()
-                        //     .Where(x => x.Id is not "health" and not "info")
-                        //     .Select(x => ((PathString) $"/actuator").Add($"/{x.Id}"))
-                        //     .ToList();
-                        // var path = httpContext.Request.Path;
-                        // if (actuatorEndpoints.Any(x => path.StartsWithSegments(x)) && !context.User.HasScope(KnownScope.Actuators))
-                        // {
-                        //     return false;
-                        // }
-                        //
-                        // return true;
                     })
                 );
             });
