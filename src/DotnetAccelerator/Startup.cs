@@ -93,7 +93,10 @@ namespace DotnetAccelerator
             }
             app.MigrateDatabase<DotnetAcceleratorContext>();
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DotnetAccelerator v1"));
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "DotnetAccelerator v1");
+            });
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
