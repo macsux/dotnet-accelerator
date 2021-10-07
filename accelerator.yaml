@@ -5,6 +5,11 @@ accelerator:
   - C#
   - project
   options:
+  - name: artifactId
+    label: Name
+    dataType: text
+    inputType: radio
+    defaultValue: DotnetAccelerator
   - name: database
     label: Database
     dataType: string
@@ -708,12 +713,6 @@ engine:
     regex: src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
     rewriteTo: "'src/' + #artifactId + '/Configuration/ConfigurationBuilderExtensions.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Management/SpringBootAdminServiceCollectionExtensions.cs
-    rewriteTo: "'src/' + #artifactId + '/Management/SpringBootAdminServiceCollectionExtensions.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Management/SpringBootRegistrationHostedService.cs
-    rewriteTo: "'src/' + #artifactId + '/Management/SpringBootRegistrationHostedService.cs'"
-  - type: RewritePath
     regex: src/DotnetAccelerator/Messaging/IMessageBus.cs
     rewriteTo: "'src/' + #artifactId + '/Messaging/IMessageBus.cs'"
   - type: RewritePath
@@ -728,6 +727,9 @@ engine:
   - type: RewritePath
     regex: src/DotnetAccelerator/Migrations/DotnetAcceleratorContextModelSnapshot.cs
     rewriteTo: "'src/' + #artifactId + '/Migrations/' + #artifactId + 'ContextModelSnapshot.cs'"
+  - type: RewritePath
+    regex: src/DotnetAccelerator/Modules/DefaultController.cs
+    rewriteTo: "'src/' + #artifactId + '/Modules/DefaultController.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/DomainException.cs
     rewriteTo: "'src/' + #artifactId + '/Modules/DomainException.cs'"
