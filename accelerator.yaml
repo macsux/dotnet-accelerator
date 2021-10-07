@@ -8,7 +8,7 @@ accelerator:
   - name: artifactId
     label: Name
     dataType: text
-    inputType: radio
+    inputType: text
     defaultValue: DotnetAccelerator
   - name: database
     label: Database
