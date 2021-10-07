@@ -7,7 +7,7 @@ accelerator:
   options:
   - name: artifactId
     label: Name
-    dataType: text
+    dataType: string
     inputType: text
     defaultValue: DotnetAccelerator
     required: true
