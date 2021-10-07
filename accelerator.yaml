@@ -10,6 +10,7 @@ accelerator:
     dataType: text
     inputType: text
     defaultValue: DotnetAccelerator
+    required: true
   - name: database
     label: Database
     dataType: string
