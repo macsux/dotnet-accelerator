@@ -2,7 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
 <!--#if false-->
-        <DefineConstants>postgresql;mysql;configserver1;enableSecurity</DefineConstants>
+        <DefineConstants>postgresql;mysql;configserver;enableSecurity</DefineConstants>
 <!--#endif-->        
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>

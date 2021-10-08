@@ -140,7 +140,7 @@ engine:
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if enableSecurity
           Authentication:
             Bearer:
@@ -150,7 +150,7 @@ engine:
       condition: '!(#enableSecurity)'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if enableSecurity
           Authentication:
             Bearer:
@@ -166,7 +166,7 @@ engine:
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if enableSecurity
           Authentication:
             Bearer:
@@ -176,7 +176,7 @@ engine:
       condition: '!(#enableSecurity)'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if enableSecurity
           Authentication:
             Bearer:
@@ -192,14 +192,14 @@ engine:
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if enableSecurity
           using Microsoft.AspNetCore.Authentication.JwtBearer;
           using Microsoft.AspNetCore.Mvc.ApplicationModels;
           using idunno.Authentication.Basic;
           #endif
         with: "''"
-      - text: |
+      - text: |-
           #if enableSecurity
                       services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                           .AddJwtBearer(cfg =>
@@ -218,7 +218,7 @@ engine:
       condition: '!(#enableSecurity)'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if enableSecurity
           using Microsoft.AspNetCore.Authentication.JwtBearer;
           using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -228,7 +228,7 @@ engine:
           'using Microsoft.AspNetCore.Authentication.JwtBearer;
           using Microsoft.AspNetCore.Mvc.ApplicationModels;
           using idunno.Authentication.Basic;'
-      - text: |
+      - text: |-
           #if enableSecurity
                       services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                           .AddJwtBearer(cfg =>
@@ -259,12 +259,12 @@ engine:
       condition: '#enableSecurity'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if configserver
           using Steeltoe.Extensions.Configuration.ConfigServer;
           #endif
         with: "''"
-      - text: |
+      - text: |-
           #if configserver
                       services.AddConfigServerHealthContributor();
           #endif
@@ -272,12 +272,12 @@ engine:
       condition: '!(#configserver)'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if configserver
           using Steeltoe.Extensions.Configuration.ConfigServer;
           #endif
         with: "'using Steeltoe.Extensions.Configuration.ConfigServer;'"
-      - text: |
+      - text: |-
           #if configserver
                       services.AddConfigServerHealthContributor();
           #endif
@@ -285,7 +285,7 @@ engine:
       condition: '#configserver'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if postgresql
                               DbType.PostgreSQL => opt.UseNpgsql(connectionString),
           #endif
@@ -293,7 +293,7 @@ engine:
       condition: '!(#postgresql)'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if postgresql
                               DbType.PostgreSQL => opt.UseNpgsql(connectionString),
           #endif
@@ -301,7 +301,7 @@ engine:
       condition: '#postgresql'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if mysql
                               DbType.MySQL => opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)),
           #endif
@@ -309,7 +309,7 @@ engine:
       condition: '!(#mysql)'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if mysql
                               DbType.MySQL => opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)),
           #endif
@@ -320,12 +320,12 @@ engine:
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if configserver
           using Steeltoe.Extensions.Configuration.ConfigServer;
           #endif
         with: "''"
-      - text: |
+      - text: |-
           #if configserver
                           bootstrapConfigBuilder.AddEnvironmentVariables()
                           .AddCommandLine(Environment.GetCommandLineArgs())
@@ -341,12 +341,12 @@ engine:
       condition: '!(#configserver)'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if configserver
           using Steeltoe.Extensions.Configuration.ConfigServer;
           #endif
         with: "'using Steeltoe.Extensions.Configuration.ConfigServer;'"
-      - text: |
+      - text: |-
           #if configserver
                           bootstrapConfigBuilder.AddEnvironmentVariables()
                           .AddCommandLine(Environment.GetCommandLineArgs())
@@ -370,11 +370,11 @@ engine:
                               .AddConfigServer(environment, loggerFactory);'
       condition: '#configserver'
   - include:
-    - src/DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.Development.yaml
+    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.Development.yaml
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if enableSecurity
           Authentication:
             Bearer:
@@ -384,7 +384,7 @@ engine:
       condition: '!(#enableSecurity)'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if enableSecurity
           Authentication:
             Bearer:
@@ -396,33 +396,7 @@ engine:
               Authority: https://login.run.pcfone.io'
       condition: '#enableSecurity'
   - include:
-    - src/DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://accounts.google.com'
-      condition: '#enableSecurity'
-  - include:
-    - src/DotnetAccelerator/bin/Debug/net5.0/publish/config/solution-defaults.yaml
+    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.yaml
     chain:
     - type: ReplaceText
       substitutions:
@@ -452,7 +426,7 @@ engine:
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           //#if postgresql
               "DotnetAccelerator - PostgreSQL: ": {
                 "commandName": "Project",
@@ -470,7 +444,7 @@ engine:
       condition: '!(#postgresql)'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           //#if postgresql
               "DotnetAccelerator - PostgreSQL: ": {
                 "commandName": "Project",
@@ -499,7 +473,7 @@ engine:
       condition: '#postgresql'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           //#if mysql
               "DotnetAccelerator - MySQL: ": {
                 "commandName": "Project",
@@ -517,7 +491,7 @@ engine:
       condition: '!(#mysql)'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           //#if mysql
               "DotnetAccelerator - MySQL: ": {
                 "commandName": "Project",
@@ -549,7 +523,7 @@ engine:
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if postgresql
                   PostgreSQL,
           #endif
@@ -557,7 +531,7 @@ engine:
       condition: '!(#postgresql)'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if postgresql
                   PostgreSQL,
           #endif
@@ -565,7 +539,7 @@ engine:
       condition: '#postgresql'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if mysql
                   MySQL,
           #endif
@@ -573,7 +547,7 @@ engine:
       condition: '!(#mysql)'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if mysql
                   MySQL,
           #endif
@@ -584,7 +558,7 @@ engine:
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if enableSecurity
                   public const string AirportRead = "airport.read";
                   public const string WeatherRead = "airport.read";
@@ -594,7 +568,7 @@ engine:
       condition: '!(#enableSecurity)'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if enableSecurity
                   public const string AirportRead = "airport.read";
                   public const string WeatherRead = "airport.read";
@@ -610,12 +584,12 @@ engine:
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if enableSecurity
           using DotnetAccelerator.Security;
           #endif
         with: "''"
-      - text: |
+      - text: |-
           #if enableSecurity
                   [Authorize(KnownAuthorizationPolicy.AirportRead)]
           #endif
@@ -623,12 +597,12 @@ engine:
       condition: '!(#enableSecurity)'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if enableSecurity
           using DotnetAccelerator.Security;
           #endif
         with: "'using DotnetAccelerator.Security;'"
-      - text: |
+      - text: |-
           #if enableSecurity
                   [Authorize(KnownAuthorizationPolicy.AirportRead)]
           #endif
@@ -639,17 +613,17 @@ engine:
     chain:
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if enableSecurity
           using DotnetAccelerator.Security;
           #endif
         with: "''"
-      - text: |
+      - text: |-
           #if enableSecurity
                   [Authorize(KnownAuthorizationPolicy.WeatherRead)]
           #endif
         with: "''"
-      - text: |
+      - text: |-
           #if enableSecurity
                   [Authorize(KnownAuthorizationPolicy.WeatherWrite)]
           #endif
@@ -657,17 +631,17 @@ engine:
       condition: '!(#enableSecurity)'
     - type: ReplaceText
       substitutions:
-      - text: |
+      - text: |-
           #if enableSecurity
           using DotnetAccelerator.Security;
           #endif
         with: "'using DotnetAccelerator.Security;'"
-      - text: |
+      - text: |-
           #if enableSecurity
                   [Authorize(KnownAuthorizationPolicy.WeatherRead)]
           #endif
         with: "'        [Authorize(KnownAuthorizationPolicy.WeatherRead)]'"
-      - text: |
+      - text: |-
           #if enableSecurity
                   [Authorize(KnownAuthorizationPolicy.WeatherWrite)]
           #endif
