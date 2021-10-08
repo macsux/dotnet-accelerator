@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DefaultNamespace;
 using LibGit2Sharp;
@@ -47,7 +49,10 @@ class Build : NukeBuild
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
-
+    [Parameter("Project to target")]
+    readonly string TargetProject = "DotnetAccelerator";
+    [Parameter("The name of the migration to add")]
+    string MigrationName;
     [Solution] readonly Solution Solution;
 
     AbsolutePath SourceDirectory => RootDirectory / "src";
@@ -70,7 +75,7 @@ class Build : NukeBuild
     }
 
     Target Init => _ => _
-        .DependsOn(SetupGit, RestoreTools);
+        .DependsOn(SetupGit, RestoreTools, AddInitialMigration);
 
     Target Clean => _ => _
         .Before(Restore)
@@ -142,6 +147,31 @@ class Build : NukeBuild
             Logger.Block(string.Join("\n", artifacts));
         });
 
+    Target AddInitialMigration => _ => _
+        .OnlyWhenDynamic(() => MigrationsFolderExists())
+        .Unlisted()
+        .Executes(() =>
+        {
+            MigrationName ??= "Initial";
+            DoAddMigration();
+        });
+    Target AddMigration => _ => _
+        .Description("Adds database migration to the project")
+        .Requires(() => MigrationName, () => TargetProject)
+        .Executes(DoAddMigration);
+
+    bool MigrationsFolderExists() => !Directory.Exists(RootDirectory / "src" / Solution.GetProject(TargetProject).Directory / "Migrations");
+
+    void DoAddMigration()
+    {
+        var environmentVariables = new Dictionary<string, string>(Environment.GetEnvironmentVariables()
+            .Cast<DictionaryEntry>()
+            .Select(x => KeyValuePair.Create(x.Key.ToString(), x.Value.ToString())))
+        {
+            {"SPRING__CLOUD__CONFIG__ENABLED", "false"}
+        };
+        DotNet($"ef migrations add {MigrationName} --project src/{TargetProject}", environmentVariables: environmentVariables);
+    }
     Target GetVersion => _ => _
         .Executes(() =>
         {

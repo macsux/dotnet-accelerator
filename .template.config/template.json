@@ -72,6 +72,9 @@
       {
         "condition": "!postgresql",
         "exclude": ["**/*PostgreSQL*"]
+      },
+      {
+        "exclude": ["**/Migrations/**"]
       }
     ]
   }],
