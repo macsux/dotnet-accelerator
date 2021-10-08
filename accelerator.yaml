@@ -1,16 +1,11 @@
 accelerator:
   displayName: Tanzu .NET Web API
+  description: An enterprise template for building .NET applications in C#
   iconUrl: https://iconape.com/wp-content/files/km/370669/svg/370669.svg
   tags:
   - C#
   - project
   options:
-  - name: artifactId
-    label: Name
-    dataType: string
-    inputType: text
-    defaultValue: DotnetAccelerator
-    required: true
   - name: database
     label: Database
     dataType: string
@@ -60,6 +55,32 @@ engine:
   - include:
     - '**/*PostgreSQL*'
     condition: '#postgresql'
+  - include:
+    - config/application-Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
   - include:
     - src/DotnetAccelerator/DotnetAccelerator.csproj
     chain:
@@ -135,32 +156,6 @@ engine:
                   <!--#endif -->
         with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
       condition: '#configserver'
-  - include:
-    - config/application-Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
   - include:
     - config/application.yaml
     chain:

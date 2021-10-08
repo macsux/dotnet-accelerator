@@ -1,6 +1,7 @@
 {
   "$schema": "http://json.schemastore.org/template",
   "author": "Andrew Stakhov",
+  "description": "An enterprise template for building .NET applications in C#",
   "classifications": [
     "WebAPI"
   ],
