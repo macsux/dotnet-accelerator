@@ -57,8 +57,6 @@ engine:
     - '**/*PostgreSQL*'
     condition: '#postgresql'
   - include:
-    - '**/Migrations/**'
-  - include:
     - src/DotnetAccelerator/DotnetAccelerator.csproj
     chain:
     - type: ReplaceText
@@ -691,15 +689,6 @@ engine:
   - type: RewritePath
     regex: src/DotnetAccelerator/Messaging/MessageBus.cs
     rewriteTo: "'src/' + #artifactId + '/Messaging/MessageBus.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Migrations/20211004141718_Initial.cs
-    rewriteTo: "'src/' + #artifactId + '/Migrations/20211004141718_Initial.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Migrations/20211004141718_Initial.Designer.cs
-    rewriteTo: "'src/' + #artifactId + '/Migrations/20211004141718_Initial.Designer.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Migrations/DotnetAcceleratorContextModelSnapshot.cs
-    rewriteTo: "'src/' + #artifactId + '/Migrations/' + #artifactId + 'ContextModelSnapshot.cs'"
   - type: RewritePath
     regex: src/DotnetAccelerator/Modules/DefaultController.cs
     rewriteTo: "'src/' + #artifactId + '/Modules/DefaultController.cs'"
