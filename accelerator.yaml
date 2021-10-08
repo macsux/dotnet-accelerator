@@ -46,6 +46,7 @@ engine:
     - src/DotnetAccelerator/Security/**
     - '**/*MySQL*'
     - '**/*PostgreSQL*'
+    - '**/Migrations/**'
   - include:
     - src/DotnetAccelerator/Security/**
     condition: '#enableSecurity'
@@ -56,31 +57,7 @@ engine:
     - '**/*PostgreSQL*'
     condition: '#postgresql'
   - include:
-    - config/application-Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
+    - '**/Migrations/**'
   - include:
     - src/DotnetAccelerator/DotnetAccelerator.csproj
     chain:
@@ -156,6 +133,32 @@ engine:
                   <!--#endif -->
         with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
       condition: '#configserver'
+  - include:
+    - config/application-Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
   - include:
     - config/application.yaml
     chain:
@@ -431,7 +434,7 @@ engine:
                 "applicationUrl": "https://localhost:5001;http://localhost:5000",
                 "environmentVariables": {
                   "ASPNETCORE_ENVIRONMENT": "Development",
-                  "PROFILES:ACTIVE": "LocalMySQL"
+                  "PROFILES:ACTIVE": "LocalPostgreSQL"
                 }
               },
           //#endif
@@ -449,7 +452,7 @@ engine:
                 "applicationUrl": "https://localhost:5001;http://localhost:5000",
                 "environmentVariables": {
                   "ASPNETCORE_ENVIRONMENT": "Development",
-                  "PROFILES:ACTIVE": "LocalMySQL"
+                  "PROFILES:ACTIVE": "LocalPostgreSQL"
                 }
               },
           //#endif
@@ -462,7 +465,7 @@ engine:
                 "applicationUrl": "https://localhost:5001;http://localhost:5000",
                 "environmentVariables": {
                   "ASPNETCORE_ENVIRONMENT": "Development",
-                  "PROFILES:ACTIVE": "LocalMySQL"
+                  "PROFILES:ACTIVE": "LocalPostgreSQL"
                 }
               },'
       condition: '#postgresql'
