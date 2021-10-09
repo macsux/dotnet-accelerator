@@ -39,8 +39,8 @@ namespace DotnetAccelerator.Configuration
             if (overridenAppName != null)
                 return overridenAppName;
             return stackAssemblies
-                       .Select(x => x.GetName().Name)
-                       .FirstOrDefault(x => x != null && x.StartsWith("MyProjectGroup")) 
+                .Select(x => x.GetName().Name)
+                .FirstOrDefault(x => x != null && x.StartsWith("MyProjectGroup")) 
                    ?? throw new InvalidOperationException("Application name cannot be determined");
         });
         private static Lazy<string> ConfigFolder = new (() =>

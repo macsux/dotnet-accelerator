@@ -6,34 +6,34 @@
 <!--#endif-->        
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
-  <ItemGroup>
+    <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" Condition="!Exists('packages.config')">
       <Version>3.4.240</Version>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
+    </ItemGroup>
+    <ItemGroup>
     <AssemblyMetadata Include="ApplicationName" Value="$(ApplicationName)" />
-  </ItemGroup>
-  <ItemGroup>
-      <None Include="$(MSBuildThisFileDirectory)/config/application.yaml" 
+    </ItemGroup>
+    <ItemGroup Condition="$(OutputType) == 'Exe' and $(IsPublishable)">
+        <None Include="$(MSBuildThisFileDirectory)/config/application.yaml" 
             CopyToOutputDirectory="PreserveNewest" 
             Link="config/solution-defaults.yaml" />
-      <None Include="$(MSBuildThisFileDirectory)/config/application-Development.yaml" 
+        <None Include="$(MSBuildThisFileDirectory)/config/application-Development.yaml" 
             CopyToOutputDirectory="PreserveNewest" 
             CopyToPublishDirectory="Never" 
             Condition="Exists('$(MSBuildThisFileDirectory)/config/application-Development.yaml')" 
             Link="config/solution-defaults.Development.yaml" />
-      <None Include="$(MSBuildThisFileDirectory)/config/$(ApplicationName).yaml" 
+        <None Include="$(MSBuildThisFileDirectory)/config/$(ApplicationName).yaml" 
             CopyToOutputDirectory="PreserveNewest" 
             Condition="Exists('$(MSBuildThisFileDirectory)/config/$(ApplicationName).yaml')"
             Link="config/appsettings.yaml"/>
-      <None Include="$(MSBuildThisFileDirectory)/config/$(ApplicationName)-Development.yaml" 
+        <None Include="$(MSBuildThisFileDirectory)/config/$(ApplicationName)-Development.yaml" 
             CopyToOutputDirectory="PreserveNewest"
             Condition="Exists('$(MSBuildThisFileDirectory)/config/$(ApplicationName)-Development.yaml')"
             CopyToPublishDirectory="Never"
             Link="config/appsettings.Development.yaml"/>
-      <None Include="$(MSBuildThisFileDirectory)/config/$(ApplicationName)-LocalPostgreSQL.yaml"
+        <None Include="$(MSBuildThisFileDirectory)/config/$(ApplicationName)-LocalPostgreSQL.yaml"
             CopyToOutputDirectory="PreserveNewest"
             Condition="Exists('$(MSBuildThisFileDirectory)/config/$(ApplicationName)-LocalPostgreSQL.yaml')"
             CopyToPublishDirectory="Never"

@@ -3,6 +3,9 @@ Logging:
   LogLevel:
     Default: Debug
 Spring:
+  Cloud:
+    Config:
+      Enabled: false # disable config server in local development
   Boot:
     Admin:
       Client:
