@@ -15,7 +15,7 @@ using Steeltoe.Management;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
-namespace DotnetAccelerator.Security
+namespace MyProjectGroup.Common.Security
 {
     public static class ServiceCollectionExtensions
     {

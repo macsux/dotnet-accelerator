@@ -2,6 +2,7 @@
 Logging:
   LogLevel:
     Default: Debug
+    Steeltoe.Extensions.Configuration.ConfigServer: Warning
 Spring:
   Cloud:
     Config:

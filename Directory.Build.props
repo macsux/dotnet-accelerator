@@ -5,6 +5,7 @@
         <DefineConstants>postgresql;mysql;configserver;enableSecurity</DefineConstants>
 <!--#endif-->        
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" Condition="!Exists('packages.config')">

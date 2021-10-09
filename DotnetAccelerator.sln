@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 #
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetAccelerator", "src\DotnetAccelerator\DotnetAccelerator.csproj", "{05AF40AC-8C37-4C5D-8C93-E6B5DB0A3658}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyProjectGroup.DotnetAccelerator", "src\MyProjectGroup.DotnetAccelerator\MyProjectGroup.DotnetAccelerator.csproj", "{05AF40AC-8C37-4C5D-8C93-E6B5DB0A3658}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetAcceleratorTests", "tests\DotnetAcceleratorTests\DotnetAcceleratorTests.csproj", "{160A1C52-AF25-4593-B8C1-7A6B91E1AC84}"
 EndProject
@@ -14,6 +14,9 @@ ProjectSection(SolutionItems) = preProject
 	version.json = version.json
 	Directory.Build.props = Directory.Build.props
 	README.md = README.md
+#if false
+	.template.config\template.json = .template.config\template.json
+#endif
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "config", "config\config.csproj", "{45E90901-4A67-4041-AABB-9A79D614D133}"

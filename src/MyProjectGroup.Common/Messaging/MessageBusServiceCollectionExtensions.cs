@@ -3,7 +3,7 @@ using System.Linq;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DotnetAccelerator.Messaging
+namespace MyProjectGroup.Common.Messaging
 {
     public static class MessageBusServiceCollectionExtensions
     {

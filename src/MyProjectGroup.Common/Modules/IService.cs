@@ -1,4 +1,4 @@
-﻿namespace DotnetAccelerator.Modules
+﻿namespace MyProjectGroup.Common.Modules
 {
     public interface IService
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace DotnetAccelerator.Modules
+namespace MyProjectGroup.Common.Modules
 {
     public class DomainException : Exception
     {

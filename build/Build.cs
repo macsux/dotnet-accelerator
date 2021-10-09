@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DefaultNamespace;
 using LibGit2Sharp;
 using Nuke.Common;
 using Nuke.Common.CI;
@@ -50,7 +49,7 @@ class Build : NukeBuild
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
     [Parameter("Project to target")]
-    readonly string TargetProject = "DotnetAccelerator";
+    readonly string TargetProject = "MyProjectGroup.DotnetAccelerator";
     [Parameter("The name of the migration to add")]
     string MigrationName;
     [Solution] readonly Solution Solution;
@@ -160,7 +159,7 @@ class Build : NukeBuild
         .Requires(() => MigrationName, () => TargetProject)
         .Executes(DoAddMigration);
 
-    bool MigrationsFolderExists() => !Directory.Exists(RootDirectory / "src" / Solution.GetProject(TargetProject).Directory / "Migrations");
+    bool MigrationsFolderExists() => !Directory.Exists(RootDirectory / "src" / RootDirectory.GetRelativePathTo(Solution.GetProject(TargetProject).Directory) / "Migrations");
 
     void DoAddMigration()
     {
@@ -194,6 +193,8 @@ class Build : NukeBuild
             var signature = GitRepository.Config.BuildSignature(DateTimeOffset.UtcNow);
             Commands.Stage(GitRepository, ".gitignore");
             Commands.Stage(GitRepository, "version.json");
+            Commands.Stage(GitRepository, "build.sh");
+            GitTasks.Git("update-index --chmod=+x build.sh", workingDirectory: RootDirectory);
             GitRepository.Commit("Initial", signature, signature);
             var devBranch = GitRepository.CreateBranch("develop");
             Commands.Checkout(GitRepository, devBranch);

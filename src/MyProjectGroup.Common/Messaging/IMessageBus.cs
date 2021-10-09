@@ -2,7 +2,7 @@
 using System.Threading;
 using MediatR;
 
-namespace DotnetAccelerator.Messaging
+namespace MyProjectGroup.Common.Messaging
 {
     public interface IMessageBus : IMediator
     {

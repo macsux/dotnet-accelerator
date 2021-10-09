@@ -5,6 +5,7 @@ Logging:
     Microsoft: Warning
     Microsoft.Hosting.Lifetime: Information
     idunno: Error
+    Steeltoe: Information
 AllowedHosts: '*'
 Management:
   Endpoints:

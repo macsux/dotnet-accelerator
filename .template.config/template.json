@@ -16,6 +16,16 @@
   "sourceName": "DotnetAccelerator",
   "preferNameDirectory": true,
   "symbols": {
+    "namespace": {
+      "type": "parameter",
+      "replaces": "MyProjectGroup",
+      "datatype": "string",
+      "fileRename": "MyProjectGroup",
+      "defaultValue": "MyNamespace",
+      "label": "Namespace",
+      "description": "Root namespace for the project",
+      "isRequired": true
+    },
     "database": {
       "type": "parameter",
       "datatype": "text",
@@ -68,6 +78,10 @@
       {
         "condition": "!mysql",
         "exclude": ["**/*MySQL*"]
+      },
+      {
+        "condition": "!postgresql",
+        "exclude": ["**/*PostgreSQL*"]
       },
       {
         "condition": "!postgresql",

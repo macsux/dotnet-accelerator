@@ -6,18 +6,19 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+
 using Steeltoe.Extensions.Configuration.Placeholder;
-using Steeltoe.Extensions.Logging;
 #if configserver
 using Steeltoe.Extensions.Configuration.ConfigServer;
 #endif
 
 
-namespace DotnetAccelerator.Configuration
+namespace MyProjectGroup.Common.Configuration
 {
     public static class ConfigurationBuilderExtensions
     {
+        private static Type? _markerType;
+
         private static Lazy<string> AppSettingsConfigName = new (() => 
             File.Exists(GetFullPath("appsettings.yaml")) 
                 ? "appsettings" 
@@ -25,23 +26,17 @@ namespace DotnetAccelerator.Configuration
 
         private static Lazy<string> AppName = new(() =>
         {
-            var stackAssemblies = new StackTrace().GetFrames()
-                .Select(x => x.GetMethod()?.DeclaringType?.Assembly)
-                .Where(x => x != null)
-                .Select(x => x!)
-                .Reverse()
-                .ToList();
-            var overridenAppName = stackAssemblies
-                .SelectMany(x => x.GetCustomAttributes<AssemblyMetadataAttribute>())
+            var overridenAppName = _markerType!.Assembly
+                .GetCustomAttributes<AssemblyMetadataAttribute>()
                 .Where(x => x.Key == "ApplicationName")
                 .Select(x => x.Value)
                 .FirstOrDefault();
             if (overridenAppName != null)
+            {
                 return overridenAppName;
-            return stackAssemblies
-                .Select(x => x.GetName().Name)
-                .FirstOrDefault(x => x != null && x.StartsWith("MyProjectGroup")) 
-                   ?? throw new InvalidOperationException("Application name cannot be determined");
+            }
+
+            return _markerType.Assembly.GetName().Name!;
         });
         private static Lazy<string> ConfigFolder = new (() =>
         {
@@ -61,8 +56,9 @@ namespace DotnetAccelerator.Configuration
 
             return Environment.CurrentDirectory;
         });
-        public static IHostBuilder UseYamlWithProfilesAppConfiguration(this IHostBuilder hostBuilder, string[] args)
+        public static IHostBuilder UseYamlWithProfilesAppConfiguration<T>(this IHostBuilder hostBuilder, string[] args)
         {
+            _markerType = typeof(T);
             hostBuilder.ConfigureAppConfiguration((hostingContext, cfg) =>
             {
                 cfg.Sources.Clear();
@@ -83,12 +79,8 @@ namespace DotnetAccelerator.Configuration
                 bootstrapConfigBuilder.AddEnvironmentVariables()
                 .AddCommandLine(Environment.GetCommandLineArgs())
                 .AddProfiles();
-                var bootstrapConfig = bootstrapConfigBuilder.Build();
-                var loggerFactory = LoggerFactory.Create(_ => _
-                    .AddDynamicConsole()
-                    .AddConfiguration(bootstrapConfig.GetSection("Logging")));
-                bootstrapConfigBuilder
-                    .AddConfigServer(environment, loggerFactory);
+                BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
+                bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);
 #endif
                 bootstrapConfigBuilder
                     .AddEnvironmentVariables()

@@ -3,21 +3,18 @@ using System.Reflection;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.NerdbankGitVersioning;
 
-namespace DefaultNamespace
+public class GitVersionAttribute : NerdbankGitVersioningAttribute
 {
-    public class GitVersionAttribute : NerdbankGitVersioningAttribute
+    public override object GetValue(MemberInfo member, object instance)
     {
-        public override object GetValue(MemberInfo member, object instance)
+        try
         {
-            try
-            {
-                return base.GetValue(member, instance);
-            }
-            catch (ProcessException)
-            {
-            }
-
-            return null;
+            return base.GetValue(member, instance);
         }
+        catch (ProcessException)
+        {
+        }
+
+        return null;
     }
 }

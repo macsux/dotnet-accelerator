@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
-namespace DotnetAccelerator.Security
+namespace MyProjectGroup.Common.Security
 {
     public static class AuthorizationPolicyBuilderExtensions
     {

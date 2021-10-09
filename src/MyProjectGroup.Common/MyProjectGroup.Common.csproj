@@ -7,6 +7,8 @@
         <!--#if configserver -->
         <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
         <!--#endif -->
+        <PackageReference Include="Steeltoe.Extensions.Configuration.PlaceholderCore" Version="3.1.1" />
+
         <PackageReference Include="Steeltoe.Extensions.Logging.DynamicLogger" Version="3.1.1" />
         <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.1.0" />
         <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="5.0.26" />

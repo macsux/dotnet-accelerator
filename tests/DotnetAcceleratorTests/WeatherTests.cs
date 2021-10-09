@@ -1,14 +1,14 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DotnetAccelerator.Messaging;
-using DotnetAccelerator.Modules;
-using DotnetAccelerator.Modules.AirportModule.Domain.Models;
-using DotnetAccelerator.Modules.WeatherModule.Domain.Models;
-using DotnetAccelerator.Modules.WeatherModule.Domain.Services;
-using DotnetAccelerator.Persistence;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
+using MyProjectGroup.Common.Messaging;
+using MyProjectGroup.Common.Modules;
+using MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Domain.Models;
+using MyProjectGroup.DotnetAccelerator.Modules.WeatherModule.Domain.Models;
+using MyProjectGroup.DotnetAccelerator.Modules.WeatherModule.Domain.Services;
+using MyProjectGroup.DotnetAccelerator.Persistence;
 using NSubstitute;
 using Xunit;
 

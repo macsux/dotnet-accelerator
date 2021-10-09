@@ -1,4 +1,4 @@
-﻿namespace DotnetAccelerator.Security
+﻿namespace MyProjectGroup.Common.Security
 {
     public class KnownAuthorizationPolicy
     {

@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using MediatR;
 
-namespace DotnetAccelerator.Messaging
+namespace MyProjectGroup.Common.Messaging
 {
     public class MessageBus : Mediator, IMessageBus
     {

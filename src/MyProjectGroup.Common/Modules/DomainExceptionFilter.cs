@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace DotnetAccelerator.Modules
+namespace MyProjectGroup.Common.Modules
 {
     public class DomainExceptionFilter : IActionFilter, IOrderedFilter
     {

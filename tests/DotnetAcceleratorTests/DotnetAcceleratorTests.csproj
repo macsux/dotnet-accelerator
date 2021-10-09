@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DotnetAccelerator\DotnetAccelerator.csproj" />
+    <ProjectReference Include="..\..\src\MyProjectGroup.DotnetAccelerator\MyProjectGroup.DotnetAccelerator.csproj" />
   </ItemGroup>
 
 </Project>
