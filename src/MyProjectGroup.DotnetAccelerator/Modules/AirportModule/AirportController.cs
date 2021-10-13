@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyProjectGroup.Common.Messaging;
-using MyProjectGroup.Common.Security;
 using MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Domain.Models;
 #if enableSecurity
+using MyProjectGroup.Common.Security;
 #endif
 
 namespace MyProjectGroup.DotnetAccelerator.Modules.AirportModule

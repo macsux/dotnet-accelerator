@@ -66,6 +66,25 @@ engine:
     - '**/*PostgreSQL*'
     condition: '#postgresql'
   - include:
+    - src/MyProjectGroup.Common/MyProjectGroup.Common.csproj
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if configserver -->
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
+                  <!--#endif -->
+        with: "''"
+      condition: '!(#configserver)'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if configserver -->
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
+                  <!--#endif -->
+        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
+      condition: '#configserver'
+  - include:
     - config/application-Development.yaml
     chain:
     - type: ReplaceText
@@ -91,51 +110,6 @@ engine:
             Bearer:
               Authority: https://login.run.pcfone.io'
       condition: '#enableSecurity'
-  - include:
-    - config/application.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://accounts.google.com'
-      condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.Common/MyProjectGroup.Common.csproj
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if configserver -->
-                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
-                  <!--#endif -->
-        with: "''"
-      condition: '!(#configserver)'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if configserver -->
-                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
-                  <!--#endif -->
-        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
-      condition: '#configserver'
   - include:
     - src/MyProjectGroup.DotnetAccelerator/MyProjectGroup.DotnetAccelerator.csproj
     chain:
@@ -211,6 +185,32 @@ engine:
                   <!--#endif -->
         with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
       condition: '#configserver'
+  - include:
+    - config/application.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://accounts.google.com'
+      condition: '#enableSecurity'
   - include:
     - src/MyProjectGroup.DotnetAccelerator/Startup.cs
     chain:
@@ -347,6 +347,48 @@ engine:
                                   break;'
       condition: '#mysql'
   - include:
+    - src/MyProjectGroup.Common/Configuration/ConfigurationBuilderExtensions.cs
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if configserver
+          using Steeltoe.Extensions.Configuration.ConfigServer;
+          #endif
+        with: "''"
+      - text: |-
+          #if configserver
+                          bootstrapConfigBuilder.AddEnvironmentVariables()
+                          .AddCommandLine(Environment.GetCommandLineArgs())
+                          .AddProfiles();
+                          BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
+                          bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);
+          #endif
+        with: "''"
+      condition: '!(#configserver)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if configserver
+          using Steeltoe.Extensions.Configuration.ConfigServer;
+          #endif
+        with: "'using Steeltoe.Extensions.Configuration.ConfigServer;'"
+      - text: |-
+          #if configserver
+                          bootstrapConfigBuilder.AddEnvironmentVariables()
+                          .AddCommandLine(Environment.GetCommandLineArgs())
+                          .AddProfiles();
+                          BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
+                          bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);
+          #endif
+        with: |-
+          '                bootstrapConfigBuilder.AddEnvironmentVariables()
+                          .AddCommandLine(Environment.GetCommandLineArgs())
+                          .AddProfiles();
+                          BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
+                          bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);'
+      condition: '#configserver'
+  - include:
     - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.Development.yaml
     chain:
     - type: ReplaceText
@@ -398,48 +440,6 @@ engine:
             Bearer:
               Authority: https://accounts.google.com'
       condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.Common/Configuration/ConfigurationBuilderExtensions.cs
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if configserver
-          using Steeltoe.Extensions.Configuration.ConfigServer;
-          #endif
-        with: "''"
-      - text: |-
-          #if configserver
-                          bootstrapConfigBuilder.AddEnvironmentVariables()
-                          .AddCommandLine(Environment.GetCommandLineArgs())
-                          .AddProfiles();
-                          BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
-                          bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);
-          #endif
-        with: "''"
-      condition: '!(#configserver)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if configserver
-          using Steeltoe.Extensions.Configuration.ConfigServer;
-          #endif
-        with: "'using Steeltoe.Extensions.Configuration.ConfigServer;'"
-      - text: |-
-          #if configserver
-                          bootstrapConfigBuilder.AddEnvironmentVariables()
-                          .AddCommandLine(Environment.GetCommandLineArgs())
-                          .AddProfiles();
-                          BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
-                          bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);
-          #endif
-        with: |-
-          '                bootstrapConfigBuilder.AddEnvironmentVariables()
-                          .AddCommandLine(Environment.GetCommandLineArgs())
-                          .AddProfiles();
-                          BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
-                          bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);'
-      condition: '#configserver'
   - include:
     - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/publish/config/solution-defaults.yaml
     chain:
@@ -631,24 +631,7 @@ engine:
       substitutions:
       - text: |-
           #if enableSecurity
-          #endif
-
-          namespace MyProjectGroup.DotnetAccelerator.Modules.AirportModule
-          {
-              [ApiController]
-              [Route("[controller]")]
-              public class AirportController : ControllerBase
-              {
-                  private readonly IMessageBus _messageBus;
-
-                  public AirportController(IMessageBus messageBus)
-                  {
-                      _messageBus = messageBus;
-                  }
-
-                  [HttpGet]
-          #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.AirportRead)]
+          using MyProjectGroup.Common.Security;
           #endif
         with: "''"
       - text: |-
@@ -661,44 +644,9 @@ engine:
       substitutions:
       - text: |-
           #if enableSecurity
+          using MyProjectGroup.Common.Security;
           #endif
-
-          namespace MyProjectGroup.DotnetAccelerator.Modules.AirportModule
-          {
-              [ApiController]
-              [Route("[controller]")]
-              public class AirportController : ControllerBase
-              {
-                  private readonly IMessageBus _messageBus;
-
-                  public AirportController(IMessageBus messageBus)
-                  {
-                      _messageBus = messageBus;
-                  }
-
-                  [HttpGet]
-          #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.AirportRead)]
-          #endif
-        with: |-
-          '#endif
-
-          namespace MyProjectGroup.DotnetAccelerator.Modules.AirportModule
-          {
-              [ApiController]
-              [Route("[controller]")]
-              public class AirportController : ControllerBase
-              {
-                  private readonly IMessageBus _messageBus;
-
-                  public AirportController(IMessageBus messageBus)
-                  {
-                      _messageBus = messageBus;
-                  }
-
-                  [HttpGet]
-          #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.AirportRead)]'
+        with: "'using MyProjectGroup.Common.Security;'"
       - text: |-
           #if enableSecurity
                   [Authorize(KnownAuthorizationPolicy.AirportRead)]
@@ -813,6 +761,15 @@ engine:
     regex: config/DotnetAccelerator.yaml
     rewriteTo: "'config/' + #artifactId + '.yaml'"
   - type: RewritePath
+    regex: src/MyProjectGroup.Common/BootstrapLoggerFactory.cs
+    rewriteTo: "'src/' + #namespace + '.Common/BootstrapLoggerFactory.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/MyProjectGroup.Common.csproj
+    rewriteTo: "'src/' + #namespace + '.Common/' + #namespace + '.Common.csproj'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/NullLogProcessor.cs
+    rewriteTo: "'src/' + #namespace + '.Common/NullLogProcessor.cs'"
+  - type: RewritePath
     regex: src/MyProjectGroup.DotnetAccelerator/MyProjectGroup.DotnetAccelerator.csproj
     rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/' + #namespace + '.' + #artifactId + '.csproj'"
   - type: RewritePath
@@ -833,6 +790,54 @@ engine:
   - type: RewritePath
     regex: tests/DotnetAcceleratorTests/WeatherTests.cs
     rewriteTo: "'tests/' + #artifactId + 'Tests/WeatherTests.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Configuration/ConfigurationBuilderExtensions.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Configuration/ConfigurationBuilderExtensions.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Messaging/IMessageBus.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Messaging/IMessageBus.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Messaging/MessageBus.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Messaging/MessageBus.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Messaging/MessageBusServiceCollectionExtensions.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Messaging/MessageBusServiceCollectionExtensions.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Modules/DomainException.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Modules/DomainException.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Modules/DomainExceptionFilter.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Modules/DomainExceptionFilter.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Modules/IService.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Modules/IService.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Modules/ServiceCollectionExtensions.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Modules/ServiceCollectionExtensions.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Persistence/DbContextMigrationApplicationBuilderExtensions.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Persistence/DbContextMigrationApplicationBuilderExtensions.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Persistence/DbContextMigrator.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Persistence/DbContextMigrator.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Persistence/DbType.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Persistence/DbType.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Security/ActuatorSecurityOptions.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Security/ActuatorSecurityOptions.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Security/AuthorizationPolicyBuilderExtensions.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Security/AuthorizationPolicyBuilderExtensions.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Security/KnownAuthorizationPolicy.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Security/KnownAuthorizationPolicy.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Security/KnownScope.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Security/KnownScope.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Security/ServiceCollectionExtensions.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Security/ServiceCollectionExtensions.cs'"
   - type: RewritePath
     regex: src/MyProjectGroup.DotnetAccelerator/Persistence/DotnetAcceleratorContext.cs
     rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Persistence/' + #artifactId + 'Context.cs'"
