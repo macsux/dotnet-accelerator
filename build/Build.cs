@@ -199,7 +199,7 @@ class Build : NukeBuild
             foreach (var extension in new[] {"sh", "cmd", "ps1"})
             {
                 Commands.Stage(GitRepository, $"build.{extension}");
-                GitTasks.Git("update-index --chmod=+x build.{extension}", workingDirectory: RootDirectory);
+                GitTasks.Git($"update-index --chmod=+x build.{extension}", workingDirectory: RootDirectory);
             }
 
             GitRepository.Commit("Initial", signature, signature);
