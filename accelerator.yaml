@@ -347,6 +347,32 @@ engine:
                                   break;'
       condition: '#mysql'
   - include:
+    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
+  - include:
     - src/MyProjectGroup.Common/Configuration/ConfigurationBuilderExtensions.cs
     chain:
     - type: ReplaceText
@@ -388,32 +414,6 @@ engine:
                           BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
                           bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);'
       condition: '#configserver'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
   - include:
     - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.yaml
     chain:
@@ -883,6 +883,10 @@ engine:
   - type: RewritePath
     regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/Api/WeatherForecastQuery.MediatR.cs
     rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Modules/WeatherModule/Api/WeatherForecastQuery.MediatR.cs'"
+  - type: ReplaceText
+    substitutions:
+    - text: MyProjectGroup
+      with: '#namespace'
   - type: ReplaceText
     substitutions:
     - text: DotnetAccelerator
