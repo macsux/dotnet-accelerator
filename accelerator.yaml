@@ -6,6 +6,13 @@ accelerator:
   - C#
   - project
   options:
+  - name: namespace
+    label: Namespace
+    dataType: string
+    description: Root namespace for the project
+    inputType: text
+    defaultValue: MyNamespace
+    required: true
   - name: database
     label: Database
     dataType: string
@@ -46,6 +53,7 @@ engine:
     - src/DotnetAccelerator/Security/**
     - '**/*MySQL*'
     - '**/*PostgreSQL*'
+    - '**/*PostgreSQL*'
     - '**/Migrations/**'
   - include:
     - src/DotnetAccelerator/Security/**
@@ -55,9 +63,55 @@ engine:
     condition: '#mysql'
   - include:
     - '**/*PostgreSQL*'
+    - '**/*PostgreSQL*'
     condition: '#postgresql'
   - include:
-    - src/DotnetAccelerator/DotnetAccelerator.csproj
+    - src/MyProjectGroup.Common/MyProjectGroup.Common.csproj
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if configserver -->
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
+                  <!--#endif -->
+        with: "''"
+      condition: '!(#configserver)'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if configserver -->
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
+                  <!--#endif -->
+        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
+      condition: '#configserver'
+  - include:
+    - config/application-Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/MyProjectGroup.DotnetAccelerator.csproj
     chain:
     - type: ReplaceText
       substitutions:
@@ -132,32 +186,6 @@ engine:
         with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
       condition: '#configserver'
   - include:
-    - config/application-Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
-  - include:
     - config/application.yaml
     chain:
     - type: ReplaceText
@@ -184,15 +212,13 @@ engine:
               Authority: https://accounts.google.com'
       condition: '#enableSecurity'
   - include:
-    - src/DotnetAccelerator/Startup.cs
+    - src/MyProjectGroup.DotnetAccelerator/Startup.cs
     chain:
     - type: ReplaceText
       substitutions:
       - text: |-
           #if enableSecurity
           using Microsoft.AspNetCore.Authentication.JwtBearer;
-          using Microsoft.AspNetCore.Mvc.ApplicationModels;
-          using idunno.Authentication.Basic;
           #endif
         with: "''"
       - text: |-
@@ -217,13 +243,8 @@ engine:
       - text: |-
           #if enableSecurity
           using Microsoft.AspNetCore.Authentication.JwtBearer;
-          using Microsoft.AspNetCore.Mvc.ApplicationModels;
-          using idunno.Authentication.Basic;
           #endif
-        with: |-
-          'using Microsoft.AspNetCore.Authentication.JwtBearer;
-          using Microsoft.AspNetCore.Mvc.ApplicationModels;
-          using idunno.Authentication.Basic;'
+        with: "'using Microsoft.AspNetCore.Authentication.JwtBearer;'"
       - text: |-
           #if enableSecurity
                       services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -283,7 +304,9 @@ engine:
       substitutions:
       - text: |-
           #if postgresql
-                              DbType.PostgreSQL => opt.UseNpgsql(connectionString),
+                              case DbType.PostgreSQL:
+                                  opt.UseNpgsql(connectionString);
+                                  break;
           #endif
         with: "''"
       condition: '!(#postgresql)'
@@ -291,15 +314,22 @@ engine:
       substitutions:
       - text: |-
           #if postgresql
-                              DbType.PostgreSQL => opt.UseNpgsql(connectionString),
+                              case DbType.PostgreSQL:
+                                  opt.UseNpgsql(connectionString);
+                                  break;
           #endif
-        with: "'                    DbType.PostgreSQL => opt.UseNpgsql(connectionString),'"
+        with: |-
+          '                    case DbType.PostgreSQL:
+                                  opt.UseNpgsql(connectionString);
+                                  break;'
       condition: '#postgresql'
     - type: ReplaceText
       substitutions:
       - text: |-
           #if mysql
-                              DbType.MySQL => opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)),
+                              case DbType.MySQL:
+                                  opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+                                  break;
           #endif
         with: "''"
       condition: '!(#mysql)'
@@ -307,12 +337,17 @@ engine:
       substitutions:
       - text: |-
           #if mysql
-                              DbType.MySQL => opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)),
+                              case DbType.MySQL:
+                                  opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+                                  break;
           #endif
-        with: "'                    DbType.MySQL => opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)),'"
+        with: |-
+          '                    case DbType.MySQL:
+                                  opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+                                  break;'
       condition: '#mysql'
   - include:
-    - src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
+    - src/MyProjectGroup.Common/Configuration/ConfigurationBuilderExtensions.cs
     chain:
     - type: ReplaceText
       substitutions:
@@ -326,12 +361,8 @@ engine:
                           bootstrapConfigBuilder.AddEnvironmentVariables()
                           .AddCommandLine(Environment.GetCommandLineArgs())
                           .AddProfiles();
-                          var bootstrapConfig = bootstrapConfigBuilder.Build();
-                          var loggerFactory = LoggerFactory.Create(_ => _
-                              .AddDynamicConsole()
-                              .AddConfiguration(bootstrapConfig.GetSection("Logging")));
-                          bootstrapConfigBuilder
-                              .AddConfigServer(environment, loggerFactory);
+                          BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
+                          bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);
           #endif
         with: "''"
       condition: '!(#configserver)'
@@ -347,23 +378,15 @@ engine:
                           bootstrapConfigBuilder.AddEnvironmentVariables()
                           .AddCommandLine(Environment.GetCommandLineArgs())
                           .AddProfiles();
-                          var bootstrapConfig = bootstrapConfigBuilder.Build();
-                          var loggerFactory = LoggerFactory.Create(_ => _
-                              .AddDynamicConsole()
-                              .AddConfiguration(bootstrapConfig.GetSection("Logging")));
-                          bootstrapConfigBuilder
-                              .AddConfigServer(environment, loggerFactory);
+                          BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
+                          bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);
           #endif
         with: |-
           '                bootstrapConfigBuilder.AddEnvironmentVariables()
                           .AddCommandLine(Environment.GetCommandLineArgs())
                           .AddProfiles();
-                          var bootstrapConfig = bootstrapConfigBuilder.Build();
-                          var loggerFactory = LoggerFactory.Create(_ => _
-                              .AddDynamicConsole()
-                              .AddConfiguration(bootstrapConfig.GetSection("Logging")));
-                          bootstrapConfigBuilder
-                              .AddConfigServer(environment, loggerFactory);'
+                          BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
+                          bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);'
       condition: '#configserver'
   - include:
     - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.Development.yaml
@@ -418,7 +441,33 @@ engine:
               Authority: https://accounts.google.com'
       condition: '#enableSecurity'
   - include:
-    - src/DotnetAccelerator/Properties/launchSettings.json
+    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/publish/config/solution-defaults.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://accounts.google.com'
+      condition: '#enableSecurity'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/Properties/launchSettings.json
     chain:
     - type: ReplaceText
       substitutions:
@@ -515,7 +564,7 @@ engine:
               },'
       condition: '#mysql'
   - include:
-    - src/DotnetAccelerator/Persistence/DbType.cs
+    - src/MyProjectGroup.Common/Persistence/DbType.cs
     chain:
     - type: ReplaceText
       substitutions:
@@ -550,7 +599,7 @@ engine:
         with: "'        MySQL,'"
       condition: '#mysql'
   - include:
-    - src/DotnetAccelerator/Security/KnownAuthorizationPolicy.cs
+    - src/MyProjectGroup.Common/Security/KnownAuthorizationPolicy.cs
     chain:
     - type: ReplaceText
       substitutions:
@@ -576,13 +625,30 @@ engine:
                   public const string WeatherWrite = "airport.read";'
       condition: '#enableSecurity'
   - include:
-    - src/DotnetAccelerator/Modules/AirportModule/AirportController.cs
+    - src/MyProjectGroup.DotnetAccelerator/Modules/AirportModule/AirportController.cs
     chain:
     - type: ReplaceText
       substitutions:
       - text: |-
           #if enableSecurity
-          using DotnetAccelerator.Security;
+          #endif
+
+          namespace MyProjectGroup.DotnetAccelerator.Modules.AirportModule
+          {
+              [ApiController]
+              [Route("[controller]")]
+              public class AirportController : ControllerBase
+              {
+                  private readonly IMessageBus _messageBus;
+
+                  public AirportController(IMessageBus messageBus)
+                  {
+                      _messageBus = messageBus;
+                  }
+
+                  [HttpGet]
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.AirportRead)]
           #endif
         with: "''"
       - text: |-
@@ -595,9 +661,44 @@ engine:
       substitutions:
       - text: |-
           #if enableSecurity
-          using DotnetAccelerator.Security;
           #endif
-        with: "'using DotnetAccelerator.Security;'"
+
+          namespace MyProjectGroup.DotnetAccelerator.Modules.AirportModule
+          {
+              [ApiController]
+              [Route("[controller]")]
+              public class AirportController : ControllerBase
+              {
+                  private readonly IMessageBus _messageBus;
+
+                  public AirportController(IMessageBus messageBus)
+                  {
+                      _messageBus = messageBus;
+                  }
+
+                  [HttpGet]
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.AirportRead)]
+          #endif
+        with: |-
+          '#endif
+
+          namespace MyProjectGroup.DotnetAccelerator.Modules.AirportModule
+          {
+              [ApiController]
+              [Route("[controller]")]
+              public class AirportController : ControllerBase
+              {
+                  private readonly IMessageBus _messageBus;
+
+                  public AirportController(IMessageBus messageBus)
+                  {
+                      _messageBus = messageBus;
+                  }
+
+                  [HttpGet]
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.AirportRead)]'
       - text: |-
           #if enableSecurity
                   [Authorize(KnownAuthorizationPolicy.AirportRead)]
@@ -605,13 +706,30 @@ engine:
         with: "'        [Authorize(KnownAuthorizationPolicy.AirportRead)]'"
       condition: '#enableSecurity'
   - include:
-    - src/DotnetAccelerator/Modules/WeatherModule/WeatherController.cs
+    - src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/WeatherController.cs
     chain:
     - type: ReplaceText
       substitutions:
       - text: |-
           #if enableSecurity
-          using DotnetAccelerator.Security;
+          #endif
+
+          namespace MyProjectGroup.DotnetAccelerator.Modules.WeatherModule
+          {
+              [ApiController]
+              [Route("[controller]")]
+              public class WeatherController : ControllerBase
+              {
+                  private readonly IMessageBus _messageBus;
+
+                  public WeatherController(IMessageBus messageBus)
+                  {
+                      _messageBus = messageBus;
+                  }
+
+                  [HttpGet]
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]
           #endif
         with: "''"
       - text: |-
@@ -629,9 +747,44 @@ engine:
       substitutions:
       - text: |-
           #if enableSecurity
-          using DotnetAccelerator.Security;
           #endif
-        with: "'using DotnetAccelerator.Security;'"
+
+          namespace MyProjectGroup.DotnetAccelerator.Modules.WeatherModule
+          {
+              [ApiController]
+              [Route("[controller]")]
+              public class WeatherController : ControllerBase
+              {
+                  private readonly IMessageBus _messageBus;
+
+                  public WeatherController(IMessageBus messageBus)
+                  {
+                      _messageBus = messageBus;
+                  }
+
+                  [HttpGet]
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]
+          #endif
+        with: |-
+          '#endif
+
+          namespace MyProjectGroup.DotnetAccelerator.Modules.WeatherModule
+          {
+              [ApiController]
+              [Route("[controller]")]
+              public class WeatherController : ControllerBase
+              {
+                  private readonly IMessageBus _messageBus;
+
+                  public WeatherController(IMessageBus messageBus)
+                  {
+                      _messageBus = messageBus;
+                  }
+
+                  [HttpGet]
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]'
       - text: |-
           #if enableSecurity
                   [Authorize(KnownAuthorizationPolicy.WeatherRead)]
@@ -660,17 +813,17 @@ engine:
     regex: config/DotnetAccelerator.yaml
     rewriteTo: "'config/' + #artifactId + '.yaml'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/DotnetAccelerator.csproj
-    rewriteTo: "'src/' + #artifactId + '/' + #artifactId + '.csproj'"
+    regex: src/MyProjectGroup.DotnetAccelerator/MyProjectGroup.DotnetAccelerator.csproj
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/MyProjectGroup.' + #artifactId + '.csproj'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Program.cs
-    rewriteTo: "'src/' + #artifactId + '/Program.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Program.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Program.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/README.md
-    rewriteTo: "'src/' + #artifactId + '/README.md'"
+    regex: src/MyProjectGroup.DotnetAccelerator/README.md
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/README.md'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Startup.cs
-    rewriteTo: "'src/' + #artifactId + '/Startup.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Startup.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Startup.cs'"
   - type: RewritePath
     regex: tests/DotnetAcceleratorTests/DotnetAcceleratorTests.csproj
     rewriteTo: "'tests/' + #artifactId + 'Tests/' + #artifactId + 'Tests.csproj'"
@@ -681,95 +834,50 @@ engine:
     regex: tests/DotnetAcceleratorTests/WeatherTests.cs
     rewriteTo: "'tests/' + #artifactId + 'Tests/WeatherTests.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Configuration/ConfigurationBuilderExtensions.cs
-    rewriteTo: "'src/' + #artifactId + '/Configuration/ConfigurationBuilderExtensions.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Persistence/DotnetAcceleratorContext.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Persistence/' + #artifactId + 'Context.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Messaging/IMessageBus.cs
-    rewriteTo: "'src/' + #artifactId + '/Messaging/IMessageBus.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Properties/launchSettings.json
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Properties/launchSettings.json'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Messaging/MessageBus.cs
-    rewriteTo: "'src/' + #artifactId + '/Messaging/MessageBus.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/AirportModule/AirportController.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Modules/AirportModule/AirportController.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/DefaultController.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/DefaultController.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/AirportModule/AirportService.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Modules/AirportModule/AirportService.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/DomainException.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/DomainException.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/AirportModule/AirportService.Handlers.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Modules/AirportModule/AirportService.Handlers.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/DomainExceptionFilter.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/DomainExceptionFilter.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/WeatherController.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Modules/WeatherModule/WeatherController.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/ServiceCollectionExtensions.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/ServiceCollectionExtensions.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/WeatherService.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Modules/WeatherModule/WeatherService.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Persistence/ApplicationBuilderExtensions.cs
-    rewriteTo: "'src/' + #artifactId + '/Persistence/ApplicationBuilderExtensions.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/WeatherService.Handlers.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Modules/WeatherModule/WeatherService.Handlers.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Persistence/DbContextMigrator.cs
-    rewriteTo: "'src/' + #artifactId + '/Persistence/DbContextMigrator.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/AirportModule/Api/Airport.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Modules/AirportModule/Api/Airport.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Persistence/DbType.cs
-    rewriteTo: "'src/' + #artifactId + '/Persistence/DbType.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/AirportModule/Api/AirportQuery.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Modules/AirportModule/Api/AirportQuery.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Persistence/DotnetAcceleratorContext.cs
-    rewriteTo: "'src/' + #artifactId + '/Persistence/' + #artifactId + 'Context.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/AirportModule/Api/AirportQuery.MediatR.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Modules/AirportModule/Api/AirportQuery.MediatR.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Properties/launchSettings.json
-    rewriteTo: "'src/' + #artifactId + '/Properties/launchSettings.json'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/Api/WeatherForecast.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Modules/WeatherModule/Api/WeatherForecast.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Security/ActuatorSecurityOptions.cs
-    rewriteTo: "'src/' + #artifactId + '/Security/ActuatorSecurityOptions.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/Api/WeatherForecast.MediatR.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Modules/WeatherModule/Api/WeatherForecast.MediatR.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Security/AuthorizationPolicyBuilderExtensions.cs
-    rewriteTo: "'src/' + #artifactId + '/Security/AuthorizationPolicyBuilderExtensions.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/Api/WeatherForecastQuery.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Modules/WeatherModule/Api/WeatherForecastQuery.cs'"
   - type: RewritePath
-    regex: src/DotnetAccelerator/Security/KnownAuthorizationPolicy.cs
-    rewriteTo: "'src/' + #artifactId + '/Security/KnownAuthorizationPolicy.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Security/KnownScope.cs
-    rewriteTo: "'src/' + #artifactId + '/Security/KnownScope.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Security/ServiceCollectionExtensions.cs
-    rewriteTo: "'src/' + #artifactId + '/Security/ServiceCollectionExtensions.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/AirportModule/AirportController.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/AirportModule/AirportController.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/WeatherModule/WeatherController.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/WeatherModule/WeatherController.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/AirportModule/Domain/Models/Airport.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/AirportModule/Domain/Models/Airport.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/AirportModule/Domain/Models/AirportQuery.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/AirportModule/Domain/Models/AirportQuery.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/AirportModule/Domain/Models/AirportQuery.MediatR.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/AirportModule/Domain/Models/AirportQuery.MediatR.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/AirportModule/Domain/Services/AirportService.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/AirportModule/Domain/Services/AirportService.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/AirportModule/Domain/Services/AirportService.Handlers.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/AirportModule/Domain/Services/AirportService.Handlers.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Models/WeatherForecast.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/WeatherModule/Domain/Models/WeatherForecast.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Models/WeatherForecast.MediatR.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/WeatherModule/Domain/Models/WeatherForecast.MediatR.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Models/WeatherForecastQuery.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/WeatherModule/Domain/Models/WeatherForecastQuery.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Models/WeatherForecastQuery.MediatR.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/WeatherModule/Domain/Models/WeatherForecastQuery.MediatR.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Services/WeatherService.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/WeatherModule/Domain/Services/WeatherService.cs'"
-  - type: RewritePath
-    regex: src/DotnetAccelerator/Modules/WeatherModule/Domain/Services/WeatherService.Handlers.cs
-    rewriteTo: "'src/' + #artifactId + '/Modules/WeatherModule/Domain/Services/WeatherService.Handlers.cs'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/Api/WeatherForecastQuery.MediatR.cs
+    rewriteTo: "'src/MyProjectGroup.' + #artifactId + '/Modules/WeatherModule/Api/WeatherForecastQuery.MediatR.cs'"
   - type: ReplaceText
     substitutions:
     - text: DotnetAccelerator
