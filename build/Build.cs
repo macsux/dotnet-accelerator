@@ -128,7 +128,9 @@ class Build : NukeBuild
                 .EnableNoRestore());
 
             var publishDirs = Solution.AllProjects
-                .Where(x => x.Name is not "_build" and not "config" && !x.Name.EndsWith("Tests"))
+                .Where(x => x.Name is not "_build" and not "config" && 
+                            !x.Name.EndsWith("Tests") && 
+                            x.GetMSBuildProject().GetProperty("OutputType").EvaluatedValue == "Exe")
                 .Select(x => (x.Name, PublishDir: x.Directory / "bin" / Configuration / TargetFramework / "publish"))
                 .Where(x => DirectoryExists(x.PublishDir))
                 .ToArray();
