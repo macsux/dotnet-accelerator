@@ -19,7 +19,7 @@
     "namespace": {
       "type": "parameter",
       "replaces": "MyProjectGroup",
-      "datatype": "string",
+      "datatype": "text",
       "fileRename": "MyProjectGroup",
       "defaultValue": "MyNamespace",
       "label": "Namespace",
