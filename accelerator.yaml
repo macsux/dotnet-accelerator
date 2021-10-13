@@ -347,32 +347,6 @@ engine:
                                   break;'
       condition: '#mysql'
   - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
-  - include:
     - src/MyProjectGroup.Common/Configuration/ConfigurationBuilderExtensions.cs
     chain:
     - type: ReplaceText
@@ -414,6 +388,32 @@ engine:
                           BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
                           bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);'
       condition: '#configserver'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
   - include:
     - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.yaml
     chain:
@@ -660,24 +660,7 @@ engine:
       substitutions:
       - text: |-
           #if enableSecurity
-          #endif
-
-          namespace MyProjectGroup.DotnetAccelerator.Modules.WeatherModule
-          {
-              [ApiController]
-              [Route("[controller]")]
-              public class WeatherController : ControllerBase
-              {
-                  private readonly IMessageBus _messageBus;
-
-                  public WeatherController(IMessageBus messageBus)
-                  {
-                      _messageBus = messageBus;
-                  }
-
-                  [HttpGet]
-          #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]
+          using MyProjectGroup.Common.Security;
           #endif
         with: "''"
       - text: |-
@@ -695,44 +678,9 @@ engine:
       substitutions:
       - text: |-
           #if enableSecurity
+          using MyProjectGroup.Common.Security;
           #endif
-
-          namespace MyProjectGroup.DotnetAccelerator.Modules.WeatherModule
-          {
-              [ApiController]
-              [Route("[controller]")]
-              public class WeatherController : ControllerBase
-              {
-                  private readonly IMessageBus _messageBus;
-
-                  public WeatherController(IMessageBus messageBus)
-                  {
-                      _messageBus = messageBus;
-                  }
-
-                  [HttpGet]
-          #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]
-          #endif
-        with: |-
-          '#endif
-
-          namespace MyProjectGroup.DotnetAccelerator.Modules.WeatherModule
-          {
-              [ApiController]
-              [Route("[controller]")]
-              public class WeatherController : ControllerBase
-              {
-                  private readonly IMessageBus _messageBus;
-
-                  public WeatherController(IMessageBus messageBus)
-                  {
-                      _messageBus = messageBus;
-                  }
-
-                  [HttpGet]
-          #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]'
+        with: "'using MyProjectGroup.Common.Security;'"
       - text: |-
           #if enableSecurity
                   [Authorize(KnownAuthorizationPolicy.WeatherRead)]
