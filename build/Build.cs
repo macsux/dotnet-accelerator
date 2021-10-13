@@ -193,8 +193,13 @@ class Build : NukeBuild
             var signature = GitRepository.Config.BuildSignature(DateTimeOffset.UtcNow);
             Commands.Stage(GitRepository, ".gitignore");
             Commands.Stage(GitRepository, "version.json");
-            Commands.Stage(GitRepository, "build.sh");
-            GitTasks.Git("update-index --chmod=+x build.sh", workingDirectory: RootDirectory);
+            // commit all build scripts with execute permission to make sure they are runnable on linux based systems
+            foreach (var extension in new[] {"sh", "cmd", "ps1"})
+            {
+                Commands.Stage(GitRepository, $"build.{extension}");
+                GitTasks.Git("update-index --chmod=+x build.{extension}", workingDirectory: RootDirectory);
+            }
+
             GitRepository.Commit("Initial", signature, signature);
             var devBranch = GitRepository.CreateBranch("develop");
             Commands.Checkout(GitRepository, devBranch);
