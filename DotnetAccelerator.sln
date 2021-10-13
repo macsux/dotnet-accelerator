@@ -14,9 +14,6 @@ ProjectSection(SolutionItems) = preProject
 	version.json = version.json
 	Directory.Build.props = Directory.Build.props
 	README.md = README.md
-#if false
-	.template.config\template.json = .template.config\template.json
-#endif
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "config", "config\config.csproj", "{45E90901-4A67-4041-AABB-9A79D614D133}"
