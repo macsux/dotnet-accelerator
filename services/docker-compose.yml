@@ -82,5 +82,10 @@ services:
     volumes:
      - /sessions
 
+  spring-boot-admin:
+    image: steeltoeoss/spring-boot-admin
+    ports: 
+      - 8088:8080 
+      
 volumes:
   postgresql:

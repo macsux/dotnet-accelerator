@@ -71,9 +71,9 @@ namespace MyProjectGroup.Common.Security
                 {
                     await _springBootAdminHostedService.StartAsync(cancellationToken);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    _logger.LogWarning(e, $"Can't connect to Spring Boot Admin at {_options.Url}");
+                    _logger.LogWarning($"Can't connect to Spring Boot Admin at {_options.Url}");
                 }
             }
 

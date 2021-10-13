@@ -35,10 +35,12 @@ namespace MyProjectGroup.DotnetAccelerator
             Configuration = configuration;
             Environment = environment;
             BootstrapLoggerFactory.Update(configuration);
+            Logger = BootstrapLoggerFactory.Instance.CreateLogger<Startup>();
         }
 
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment Environment { get; }
+        public ILogger Logger { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)

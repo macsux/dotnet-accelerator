@@ -11,6 +11,7 @@ using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.Execution;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.Git;
 using Nuke.Common.Tools.NerdbankGitVersioning;
@@ -78,6 +79,7 @@ class Build : NukeBuild
 
     Target Clean => _ => _
         .Before(Restore)
+        .Description("Cleans out bin/obj & artifacts folders")
         .Executes(() =>
         {
             SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
@@ -86,6 +88,7 @@ class Build : NukeBuild
         });
 
     Target Restore => _ => _
+        .Description("Restores nuget packages")
         .Executes(() =>
         {
             DotNetRestore(s => s
@@ -94,6 +97,7 @@ class Build : NukeBuild
 
     Target Compile => _ => _
         .DependsOn(Restore)
+        .Description("Compiles the app")
         .Executes(() =>
         {
             DotNetBuild(s => s
@@ -104,6 +108,7 @@ class Build : NukeBuild
     
     Target Test => _ => _
         .DependsOn(Compile)
+        .Description("Executes tests for the app")
         .Executes(() =>
         {
             DotNetTest(s => s
@@ -111,11 +116,21 @@ class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .EnableNoRestore());
         });
-    
+
+    Target Run => _ => _
+        .Description("Builds and launches the application")
+        .Executes(() =>
+        {
+            DotNetRun(x => x
+                .SetProjectFile(Solution.GetProject(TargetProject).Directory)
+                .SetNoLaunchProfile(true)
+                .SetProcessEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "DEVELOPMENT"));
+        });
     Target Publish => _ => _
         .OnlyWhenDynamic(() => IsGitInitialized)
         .DependsOn(Restore)
         .Produces(ArtifactsDirectory / "*.zip")
+        .Description("Publishes the app in framework-dependent mode and packages it as version stamped zip file")
         .Executes(() =>
         {
             if (GitRepository.RetrieveStatus().IsDirty)
@@ -161,7 +176,7 @@ class Build : NukeBuild
         .Requires(() => MigrationName, () => TargetProject)
         .Executes(DoAddMigration);
 
-    bool MigrationsFolderExists() => !Directory.Exists(RootDirectory / "src" / RootDirectory.GetRelativePathTo(Solution.GetProject(TargetProject).Directory) / "Migrations");
+    bool MigrationsFolderExists() => !Directory.Exists(RootDirectory / RootDirectory.GetRelativePathTo(Solution.GetProject(TargetProject).Directory) / "Migrations");
 
     void DoAddMigration()
     {

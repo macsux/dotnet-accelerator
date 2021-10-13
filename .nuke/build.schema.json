@@ -85,6 +85,7 @@
               "Publish",
               "Restore",
               "RestoreTools",
+              "Run",
               "SetupGit",
               "Test"
             ]
@@ -110,6 +111,7 @@
               "Publish",
               "Restore",
               "RestoreTools",
+              "Run",
               "SetupGit",
               "Test"
             ]

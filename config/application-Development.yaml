@@ -25,4 +25,4 @@ Authentication:
   Bearer:
     Authority: https://login.run.pcfone.io
 #endif
-Urls: ${ASPNETCORE_URLS}
+Urls: ${ASPNETCORE_URLS?http://localhost:5000;https://localhost:5001}
