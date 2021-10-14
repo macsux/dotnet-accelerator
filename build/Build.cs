@@ -189,11 +189,13 @@ class Build : NukeBuild
         DotNet($"ef migrations add {MigrationName} --project src/{TargetProject}", environmentVariables: environmentVariables);
     }
     Target GetVersion => _ => _
+        .Description("Returns current project semver based on current branch")
         .Executes(() =>
         {
             Logger.Block(GitVersion.NuGetPackageVersion);
         });
     Target PrepareRelease => _ => _
+        .Description("Cuts a stabilization branch and increments version number of development branch")
         .Executes(() =>
         {
             NerdbankGitVersioningPrepareRelease(x => x.SetTag("beta"));

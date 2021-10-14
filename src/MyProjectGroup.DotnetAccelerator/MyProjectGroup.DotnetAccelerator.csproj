@@ -16,6 +16,7 @@
         <!--#endif -->
         <!--#if mysql -->
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.1" />
+        <PackageReference Include="Steeltoe.Connector.ConnectorCore" Version="3.1.1" />
         <PackageReference Include="Steeltoe.Connector.EFCore" Version="3.1.1" />
         <!--#endif -->
         <!--#if configserver -->

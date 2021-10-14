@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using idunno.Authentication.Basic;
 using MediatR;
 
@@ -16,9 +17,12 @@ using MyProjectGroup.Common.Modules;
 using MyProjectGroup.Common.Persistence;
 using MyProjectGroup.Common.Security;
 using MyProjectGroup.DotnetAccelerator.Persistence;
+using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connector;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Tracing;
+using DbType = MyProjectGroup.Common.Persistence.DbType;
 #if enableSecurity
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 #endif
@@ -97,7 +101,9 @@ namespace MyProjectGroup.DotnetAccelerator
 #endif
                 }
             });
-            services.AddControllers(cfg => cfg.Filters.Add<DomainExceptionFilter>());
+            services.AddScoped<IDbConnection>(ctx => ctx.GetRequiredService<DotnetAcceleratorContext>().Database.GetDbConnection());
+            services.AddScoped<IHealthContributor, RelationalDbHealthContributor>(); // allow db connection health to show up in actuator health endpoint
+            services.AddControllers(cfg => cfg.Filters.Add<DomainExceptionFilter>()); // respond with HTTP400 if domain exception is thrown
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "MyProjectGroup.DotnetAccelerator", Version = "v1"}); });
         }
 
