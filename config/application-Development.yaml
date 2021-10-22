@@ -2,7 +2,9 @@
 Logging:
   LogLevel:
     Default: Debug
+    Microsoft: Debug
     Steeltoe.Extensions.Configuration.ConfigServer: Warning
+
 Spring:
   Cloud:
     Config:
@@ -15,6 +17,9 @@ Spring:
           "user.name": admin
           "user.password": admin
 Management:
+  Endpoints:
+    Actuator:
+      EnableSecurity: false
   Tracing:
     Exporter:
       Zipkin:

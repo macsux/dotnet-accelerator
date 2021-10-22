@@ -63,18 +63,24 @@ namespace MyProjectGroup.Common.Security
                 _springBootAdminHostedService = (IHostedService)ActivatorUtilities.CreateInstance(serviceProvider, type);
             }
 
-            public async Task StartAsync(CancellationToken cancellationToken)
+            public Task StartAsync(CancellationToken cancellationToken)
             {
-                if (_springBootAdminHostedService == null)
-                    return;
-                try
+                if (_springBootAdminHostedService != null)
                 {
-                    await _springBootAdminHostedService.StartAsync(cancellationToken);
+                    Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await _springBootAdminHostedService.StartAsync(cancellationToken);
+                            _logger.LogInformation("Successfully registered with Spring Boot Admin at {Url}", _options.Url);
+                        }
+                        catch (Exception)
+                        {
+                            _logger.LogWarning("Can't connect to Spring Boot Admin at {Url}", _options.Url);
+                        }
+                    }, cancellationToken);
                 }
-                catch (Exception)
-                {
-                    _logger.LogWarning($"Can't connect to Spring Boot Admin at {_options.Url}");
-                }
+                return Task.CompletedTask;
             }
 
             public async Task StopAsync(CancellationToken cancellationToken)
@@ -109,9 +115,12 @@ namespace MyProjectGroup.Common.Security
                     {
                         options.Password = password;
                     }
+
+                    options.Enabled = config.GetValue<bool?>("Management:Endpoints:Actuator:EnableSecurity") ?? true;
                 });
             services.AddAuthentication().AddBasic(BasicAuthenticationDefaults.AuthenticationScheme, options =>
             {
+                options.AllowInsecureProtocol = true;
                 options.Events = new BasicAuthenticationEvents
                 {
                     OnValidateCredentials = context =>
@@ -135,6 +144,11 @@ namespace MyProjectGroup.Common.Security
                     .RequireAssertion(context =>
                     {
                         var httpContext = (HttpContext) context.Resource!;
+                        var options = httpContext.RequestServices.GetRequiredService<IOptionsSnapshot<ActuatorSecurityOptions>>().Value;
+                        if (!options.Enabled)
+                        {
+                            return true;
+                        }
                         var actuatorEndpoints = httpContext.RequestServices.GetServices<IEndpointOptions>()
                             .Where(x => x.Id is not "health" and not "info")
                             .Select(x => ((PathString) $"/actuator").Add($"/{x.Id}"))

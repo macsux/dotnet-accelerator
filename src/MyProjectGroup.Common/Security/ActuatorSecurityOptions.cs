@@ -9,5 +9,6 @@ namespace MyProjectGroup.Common.Security
         private static string GenerateSecret() => Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Trim('=');
         public string UserName { get; set; } = _defaultUsername.Value;
         public string Password { get; set; } = _defaultPassword.Value;
+        public bool Enabled { get; set; } = true;
     }
 }

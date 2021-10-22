@@ -6,6 +6,7 @@ Logging:
     Microsoft.Hosting.Lifetime: Information
     idunno: Error
     Steeltoe: Information
+    Steeltoe.Management.Endpoint.Metrics.Observer.AspNetCoreHostingObserver: None
 AllowedHosts: '*'
 Management:
   Endpoints:
