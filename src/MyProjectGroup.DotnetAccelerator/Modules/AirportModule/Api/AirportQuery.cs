@@ -1,4 +1,4 @@
-﻿namespace MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Domain.Models
+﻿namespace MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Api
 {
     public partial class AirportQuery
     {

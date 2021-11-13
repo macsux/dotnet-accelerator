@@ -4,9 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-
+using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Configuration.Placeholder;
 #if configserver
 using Steeltoe.Extensions.Configuration.ConfigServer;
@@ -69,12 +70,14 @@ namespace MyProjectGroup.Common.Configuration
                     {
                         {"spring:application:name", AppName.Value}
                     })
-                    .AddYamlFile(GetFullPath("application.yaml"), true, true)
-                    .AddYamlFile(GetFullPath($"application-{environment}.yaml"), true, true)
                     .AddYamlFile(GetFullPath("solution-defaults.yaml"), true, true)
-                    .AddYamlFile(GetFullPath($"{configName}.yaml"), true, true)
-                    .AddYamlFile(GetFullPath($"{configName}.{environment}.yaml"), true, true)
-                    .AddYamlFile(GetFullPath($"{configName}-{environment}.yaml"), true, true);
+                    .AddYamlFile(GetFullPath("application.yaml"), true, true)
+                    .AddYamlFile(GetFullPath($"solution-defaults.{environment}.yaml"), true, true)
+                    .AddYamlFile(GetFullPath($"application-{environment}.yaml"), true, true)
+                    .AddYamlFile(GetFullPath("appsettings.yaml"), true, true)
+                    .AddYamlFile(GetFullPath($"{AppName.Value}.yaml"), true, true)
+                    .AddYamlFile(GetFullPath($"appsettings.{environment}.yaml"), true, true)
+                    .AddYamlFile(GetFullPath($"{AppName.Value}-{environment}.yaml"), true, true);
 #if configserver
                 bootstrapConfigBuilder.AddEnvironmentVariables()
                 .AddCommandLine(Environment.GetCommandLineArgs())
@@ -86,6 +89,34 @@ namespace MyProjectGroup.Common.Configuration
                     .AddEnvironmentVariables()
                     .AddCommandLine(args)
                     .AddPlaceholderResolver();
+
+                var logger = BootstrapLoggerFactory.Instance.CreateLogger(typeof(ConfigurationBuilderExtensions).FullName);
+                logger.LogInformation("Configuration folder: {ConfigFolder}", ConfigFolder.Value);
+
+                void LogSources(IList<IConfigurationSource> sources)
+                {
+                    foreach (var source in sources)
+                    {
+                        var sourceName = source.GetType().Name;
+                        if (source is FileConfigurationSource fileSource)
+                        {
+                            var fullPath = Path.Combine(ConfigFolder.Value, fileSource.Path);
+                            logger.LogInformation("- {ConfigSource} - {File} {Status}", sourceName, fullPath, File.Exists(fullPath) ? "" : "missing");
+                        }
+                        else if (source is PlaceholderResolverSource placeholderSource)
+                        {
+                            if (placeholderSource.GetType().GetField("_sources", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(placeholderSource) is IList<IConfigurationSource> innerSources)
+                            {
+                                LogSources(innerSources);
+                            }
+                        }
+                        else
+                        {
+                            logger.LogInformation("Config Source: {ConfigSource}", sourceName);
+                        }
+                    }
+                }
+                LogSources(bootstrapConfigBuilder.Sources);
             });
             return hostBuilder;
         }

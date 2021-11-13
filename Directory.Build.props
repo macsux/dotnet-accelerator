@@ -2,7 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
 <!--#if false-->
-        <DefineConstants>postgresql;mysql;configserver;enableSecurity</DefineConstants>
+        <DefineConstants>postgresql;mysql;configserver;enableSecurity1</DefineConstants>
 <!--#endif-->        
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <Nullable>enable</Nullable>
@@ -21,8 +21,7 @@
             CopyToOutputDirectory="PreserveNewest" 
             Link="config/solution-defaults.yaml" />
         <None Include="$(MSBuildThisFileDirectory)/config/application-Development.yaml" 
-            CopyToOutputDirectory="PreserveNewest" 
-            CopyToPublishDirectory="Never" 
+            CopyToOutputDirectory="PreserveNewest"
             Condition="Exists('$(MSBuildThisFileDirectory)/config/application-Development.yaml')" 
             Link="config/solution-defaults.Development.yaml" />
         <None Include="$(MSBuildThisFileDirectory)/config/$(ApplicationName).yaml" 
@@ -32,12 +31,15 @@
         <None Include="$(MSBuildThisFileDirectory)/config/$(ApplicationName)-Development.yaml" 
             CopyToOutputDirectory="PreserveNewest"
             Condition="Exists('$(MSBuildThisFileDirectory)/config/$(ApplicationName)-Development.yaml')"
-            CopyToPublishDirectory="Never"
             Link="config/appsettings.Development.yaml"/>
         <None Include="$(MSBuildThisFileDirectory)/config/$(ApplicationName)-LocalPostgreSQL.yaml"
             CopyToOutputDirectory="PreserveNewest"
             Condition="Exists('$(MSBuildThisFileDirectory)/config/$(ApplicationName)-LocalPostgreSQL.yaml')"
-            CopyToPublishDirectory="Never"
             Link="config/appsettings.LocalPostgreSQL.yaml"/>
-  </ItemGroup>
+      <None Include="$(MSBuildThisFileDirectory)/config/$(ApplicationName)-SQLite.yaml"
+            CopyToOutputDirectory="PreserveNewest"
+            Condition="Exists('$(MSBuildThisFileDirectory)/config/$(ApplicationName)-SQLite.yaml')"
+            Link="config/appsettings.SQLite.yaml"/>
+
+    </ItemGroup>
 </Project>

@@ -1,8 +1,7 @@
-DbType: SQLite
-ConnectionStrings:
-  Database: "Data Source=dotnetaccelerator.db"
 Spring:
   Boot:
     Admin:
       Client:
         BasePath: http://host.docker.internal:5000 # use http since SBA doesn't like our self signed cert
+  Profiles:
+    Active: SQLite

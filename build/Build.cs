@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using LibGit2Sharp;
 using Nuke.Common;
 using Nuke.Common.CI;
@@ -12,6 +15,8 @@ using Nuke.Common.Execution;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
+using Nuke.Common.Tools.CloudFoundry;
+using Nuke.Common.Tools.Docker;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.Git;
 using Nuke.Common.Tools.NerdbankGitVersioning;
@@ -20,6 +25,7 @@ using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.NerdbankGitVersioning.NerdbankGitVersioningTasks;
 using static Nuke.Common.IO.CompressionTasks;
+using Logger = Nuke.Common.Logger;
 
 [CheckBuildProjectConfigurations]
 [ShutdownDotNetAfterServerBuild]
@@ -58,6 +64,7 @@ class Build : NukeBuild
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath TestsDirectory => RootDirectory / "tests";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
+    AbsolutePath ToolsDirectory => RootDirectory / "tools";
     string TargetFramework => "net5.0";
 
     [GitVersion] NerdbankGitVersioning GitVersion;
@@ -117,6 +124,24 @@ class Build : NukeBuild
                 .EnableNoRestore());
         });
 
+    Target OpenApi => _ => _
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            EnsureExistingDirectory(ArtifactsDirectory);
+            var project = Solution.GetProject(TargetProject);
+            var swaggerDocName = "v1";
+            var assembly = project!.Directory / "bin" / Configuration / "net5.0" / $"{project.Name}.dll";
+            DotNet($"swagger tofile --output \"{GetSwaggerFileName(project, swaggerDocName)}\" {assembly} {swaggerDocName}");
+            DotNet($"swagger tofile --yaml --output \"{GetSwaggerFileName(project, swaggerDocName, "yaml")}\" {assembly} {swaggerDocName}");
+        });
+
+    AbsolutePath GetSwaggerFileName(Project project, string swaggerDocName, string extension = "json")
+    {
+        var projectSwaggerName = project.Name.Replace(".", "-").ToLower();
+        return ArtifactsDirectory / $"{projectSwaggerName}-swagger-{swaggerDocName}.{extension}";
+    }
+
     Target Run => _ => _
         .Description("Builds and launches the application")
         .Executes(() =>
@@ -126,9 +151,11 @@ class Build : NukeBuild
                 .SetNoLaunchProfile(true)
                 .SetProcessEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "DEVELOPMENT"));
         });
+
     Target Publish => _ => _
         .OnlyWhenDynamic(() => IsGitInitialized)
         .DependsOn(Restore)
+        .After(Compile)
         .Produces(ArtifactsDirectory / "*.zip")
         .Description("Publishes the app in framework-dependent mode and packages it as version stamped zip file")
         .Executes(() =>
@@ -171,10 +198,64 @@ class Build : NukeBuild
             MigrationName ??= "Initial";
             DoAddMigration();
         });
+
     Target AddMigration => _ => _
         .Description("Adds database migration to the project")
         .Requires(() => MigrationName, () => TargetProject)
         .Executes(DoAddMigration);
+
+    Target Tilt => _ => _
+        .Executes(async () =>
+        {
+            string os = "";
+            if (OperatingSystem.IsWindows())
+                os = "win";
+            else if (OperatingSystem.IsLinux())
+                os = "linux";
+            else
+                os = "osx";
+            var tilt = ToolPathResolver.GetPackageExecutable($"Tilt.CommandLine.{os}-x64", "tilt" + (OperatingSystem.IsWindows() ? ".exe" : ""));
+            var process = ProcessTasks.StartProcess(tilt, "up", workingDirectory: RootDirectory);
+            await Task.Delay(3000);
+            var psi = new ProcessStartInfo
+            {
+                FileName = "http://localhost:10350",
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+            process.WaitForExit();
+        });
+
+    Target GenerateClient => _ => _
+        .DependsOn(OpenApi)
+        .Executes(() =>
+        {
+            var rootPath = $"/{RootDirectory.ToString().Replace(":", "").Replace("\\","/")}";
+            var project = Solution.GetProject(TargetProject);
+            var swaggerFullPath = GetSwaggerFileName(project, "v1");
+            var swaggerFileName = swaggerFullPath.Parent.GetUnixRelativePathTo(swaggerFullPath);
+            var clientSourceFolder = TemporaryDirectory / "client";
+            var targetFolderDocker = RootDirectory.GetUnixRelativePathTo(clientSourceFolder);
+            
+            DockerTasks.DockerRun(_ => _
+                .EnableRm()
+                .SetImage("azuresdk/autorest-all")
+                .SetVolume($"{rootPath}:/src")
+                .AddArgs($"--input-file=/src/artifacts/{swaggerFileName}")
+                .AddArgs($"--output-folder=/src/{targetFolderDocker}/DotnetAccelerator.Client")
+                .AddArgs("--namespace=MyProjectGroup.DotnetAccelerator.Client")
+                .AddArgs("--v3")
+                .AddArgs("--latest")
+                .AddArgs("--clear-output-folder=true")
+                .AddArgs("--public-clients=true")
+                .AddArgs("--csharp")
+                .AddArgs("--use-datetimeoffset=true")
+                .AddArgs("--sync-methods=none"));
+            DotNet("add package Microsoft.Azure.AutoRest.CSharp --prerelease", workingDirectory: clientSourceFolder);
+            DotNetPack(_ => _
+                .SetProcessWorkingDirectory(clientSourceFolder)
+                .SetOutputDirectory(ArtifactsDirectory));
+        });
 
     bool MigrationsFolderExists() => !Directory.Exists(RootDirectory / RootDirectory.GetRelativePathTo(Solution.GetProject(TargetProject).Directory) / "Migrations");
 
@@ -188,12 +269,14 @@ class Build : NukeBuild
         };
         DotNet($"ef migrations add {MigrationName} --project src/{TargetProject}", environmentVariables: environmentVariables);
     }
+
     Target GetVersion => _ => _
         .Description("Returns current project semver based on current branch")
         .Executes(() =>
         {
             Logger.Block(GitVersion.NuGetPackageVersion);
         });
+
     Target PrepareRelease => _ => _
         .Description("Cuts a stabilization branch and increments version number of development branch")
         .Executes(() =>
@@ -226,7 +309,11 @@ class Build : NukeBuild
 
     Target RestoreTools => _ => _
         .Unlisted()
-        .Executes(() => DotNetToolRestore(_ => _));
+        .Executes(() =>
+        {
+            DotNetToolRestore(_ => _);
+            
+        });
     
     #endregion
 }

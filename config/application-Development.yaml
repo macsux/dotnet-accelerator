@@ -12,7 +12,7 @@ Spring:
   Boot:
     Admin:
       Client:
-        Url: http://localhost:8088
+        Url: http://127.0.0.1:8088
         Metadata:
           "user.name": admin
           "user.password": admin
@@ -23,11 +23,11 @@ Management:
   Tracing:
     Exporter:
       Zipkin:
-        Endpoint: http://localhost:9411
+        Endpoint: http://127.0.0.1:9411
 
 #if enableSecurity
 Authentication:
   Bearer:
     Authority: https://login.run.pcfone.io
 #endif
-Urls: ${ASPNETCORE_URLS?http://localhost:5000;https://localhost:5001}
+Urls: ${ASPNETCORE_URLS?http://127.0.0.1:5000;https://127.0.0.1:5001}

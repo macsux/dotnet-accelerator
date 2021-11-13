@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyProjectGroup.Common.Messaging;
-using MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Domain.Models;
+using MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Api;
 #if enableSecurity
 using MyProjectGroup.Common.Security;
 #endif
@@ -20,12 +20,12 @@ namespace MyProjectGroup.DotnetAccelerator.Modules.AirportModule
             _messageBus = messageBus;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "Airport_GetAll")]
 #if enableSecurity
         [Authorize(KnownAuthorizationPolicy.AirportRead)]
 #endif
         public IAsyncEnumerable<Airport> Get() => Get(null);
-        [HttpGet("{airportId}")]
+        [HttpGet("{airportId}", Name = "Airport_GetById")]
 #if enableSecurity
         [Authorize(KnownAuthorizationPolicy.AirportRead)]
 #endif

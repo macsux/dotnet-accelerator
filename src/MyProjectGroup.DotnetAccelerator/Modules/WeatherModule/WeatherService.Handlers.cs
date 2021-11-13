@@ -2,11 +2,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using MyProjectGroup.DotnetAccelerator.Modules.WeatherModule.Domain.Models;
+using MyProjectGroup.DotnetAccelerator.Modules.WeatherModule.Api;
 
 #pragma warning disable 1998
 
-namespace MyProjectGroup.DotnetAccelerator.Modules.WeatherModule.Domain.Services
+namespace MyProjectGroup.DotnetAccelerator.Modules.WeatherModule
 {
     partial class WeatherService : IRequestHandler<WeatherForecastQuery, IAsyncEnumerable<WeatherForecast>>, IRequestHandler<WeatherForecast, WeatherForecast>
     {

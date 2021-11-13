@@ -1,7 +1,11 @@
+using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using MyProjectGroup.Common;
 using MyProjectGroup.Common.Configuration;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Endpoint;
 
 namespace MyProjectGroup.DotnetAccelerator
 {
@@ -14,6 +18,8 @@ namespace MyProjectGroup.DotnetAccelerator
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureServices((context, _) =>  
+                    BootstrapLoggerFactory.Instance.CreateLogger<Program>().LogInformation("Environment: {Environment}", context.HostingEnvironment.EnvironmentName))
                 .AddDynamicLogging()
                 .UseYamlWithProfilesAppConfiguration<Program>(args)
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });

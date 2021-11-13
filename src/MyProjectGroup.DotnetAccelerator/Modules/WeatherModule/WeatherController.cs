@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyProjectGroup.Common.Messaging;
+using MyProjectGroup.DotnetAccelerator.Modules.WeatherModule.Api;
 
-using MyProjectGroup.DotnetAccelerator.Modules.WeatherModule.Domain.Models;
 #if enableSecurity
 using MyProjectGroup.Common.Security;
 #endif
@@ -30,7 +30,7 @@ namespace MyProjectGroup.DotnetAccelerator.Modules.WeatherModule
 #endif
         public IAsyncEnumerable<WeatherForecast> Get([FromQuery] WeatherForecastQuery query) => _messageBus.Send(query);
 
-        [HttpGet("{airportId}")]
+        [HttpGet("{airportId}", Name = "Weather_GetById")]
 #if enableSecurity
         [Authorize(KnownAuthorizationPolicy.WeatherRead)]
 #endif
@@ -45,7 +45,7 @@ namespace MyProjectGroup.DotnetAccelerator.Modules.WeatherModule
         }
 
         [HttpPost]
-        [HttpPut]
+        [HttpPut(Name = "Weather_Put")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
 #if enableSecurity
         [Authorize(KnownAuthorizationPolicy.WeatherWrite)]

@@ -3,18 +3,18 @@ using System.Linq;
 using LinqKit;
 using Microsoft.Extensions.Logging;
 using MyProjectGroup.Common.Modules;
-using MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Domain.Models;
-using MyProjectGroup.DotnetAccelerator.Modules.WeatherModule.Domain.Services;
+using MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Api;
+using MyProjectGroup.DotnetAccelerator.Modules.WeatherModule;
 using MyProjectGroup.DotnetAccelerator.Persistence;
 
-namespace MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Domain.Services
+namespace MyProjectGroup.DotnetAccelerator.Modules.AirportModule
 {
     public partial class AirportService : IService
     {
         private readonly DotnetAcceleratorContext _context;
         private readonly ILogger _logger;
 
-        public AirportService(DotnetAcceleratorContext context, ILogger<WeatherService> logger)
+        public AirportService(DotnetAcceleratorContext context, ILogger<AirportService> logger)
         {
             _context = context;
             _logger = logger;

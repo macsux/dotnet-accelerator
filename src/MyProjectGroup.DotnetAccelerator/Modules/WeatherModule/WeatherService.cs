@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MyProjectGroup.Common.Messaging;
 using MyProjectGroup.Common.Modules;
-using MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Domain.Models;
-using MyProjectGroup.DotnetAccelerator.Modules.WeatherModule.Domain.Models;
+using MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Api;
+using MyProjectGroup.DotnetAccelerator.Modules.WeatherModule.Api;
 using MyProjectGroup.DotnetAccelerator.Persistence;
 
-namespace MyProjectGroup.DotnetAccelerator.Modules.WeatherModule.Domain.Services
+namespace MyProjectGroup.DotnetAccelerator.Modules.WeatherModule
 {
     public partial class WeatherService : IService
     {

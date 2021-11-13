@@ -16,7 +16,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageDownload Include="nbgv" Version="[3.4.240]" />
+    <PackageDownload Include="nbgv" Version="[3.4.244]" />
+    <PackageDownload Include="Tilt.CommandLine.linux-x64" Version="[0.23.0]" Condition="$([MSBuild]::IsOSPlatform('Linux'))" />
+    <PackageDownload Include="Tilt.CommandLine.osx-x64" Version="[0.23.0]" Condition="$([MSBuild]::IsOSPlatform('OSX'))" />
+    <PackageDownload Include="Tilt.CommandLine.win-x64" Version="[0.23.0]" Condition="$([MSBuild]::IsOSPlatform('Windows'))" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Docker" />
   </ItemGroup>
 
 </Project>

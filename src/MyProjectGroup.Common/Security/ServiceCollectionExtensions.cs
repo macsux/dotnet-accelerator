@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using idunno.Authentication.Basic;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -100,6 +101,7 @@ namespace MyProjectGroup.Common.Security
         public static IServiceCollection AddSecureActuators(this IServiceCollection services)
         {
             services.AddAllActuators();
+            services.AddSingleton<IStartupFilter>(new AllActuatorsStartupFilter(c => c.RequireAuthorization(KnownAuthorizationPolicy.Actuators)));
             services.AddOptions<ActuatorSecurityOptions>()
                 .Configure<IConfiguration>((options, config) =>
                 {

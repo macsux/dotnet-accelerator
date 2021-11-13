@@ -79,15 +79,18 @@
               "AddMigration",
               "Clean",
               "Compile",
+              "GenerateClient",
               "GetVersion",
               "Init",
+              "OpenApi",
               "PrepareRelease",
               "Publish",
               "Restore",
               "RestoreTools",
               "Run",
               "SetupGit",
-              "Test"
+              "Test",
+              "Tilt"
             ]
           }
         },
@@ -105,15 +108,18 @@
               "AddMigration",
               "Clean",
               "Compile",
+              "GenerateClient",
               "GetVersion",
               "Init",
+              "OpenApi",
               "PrepareRelease",
               "Publish",
               "Restore",
               "RestoreTools",
               "Run",
               "SetupGit",
-              "Test"
+              "Test",
+              "Tilt"
             ]
           }
         },

@@ -1,0 +1,3 @@
+DbType: SQLite
+ConnectionStrings:
+  Database: "DataSource=myshareddb;mode=memory;cache=shared"

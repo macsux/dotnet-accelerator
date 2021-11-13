@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MyProjectGroup.DotnetAccelerator.Modules.WeatherModule.Domain.Models
+namespace MyProjectGroup.DotnetAccelerator.Modules.WeatherModule.Api
 {
     public partial class WeatherForecast
     {

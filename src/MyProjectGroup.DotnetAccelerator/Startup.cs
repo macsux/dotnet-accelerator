@@ -1,10 +1,15 @@
 using System;
 using System.Data;
+using System.Linq;
 using idunno.Authentication.Basic;
 using MediatR;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,6 +56,7 @@ namespace MyProjectGroup.DotnetAccelerator
         {
             if (Environment.IsDevelopment())
             {
+                // remove zipkin trace ids from logs when running in local development
                 services.AddSingleton<IDynamicMessageProcessor, NullLogProcessor>();
             }
             services.AddDistributedTracingAspNetCore();
@@ -87,7 +93,18 @@ namespace MyProjectGroup.DotnetAccelerator
                 switch (dbDriver)
                 {
                     case DbType.SQLite:
-                        opt.UseSqlite(connectionString);
+                        if (connectionString.Contains(":memory") || connectionString.Contains("mode=memory"))
+                        {
+                            // in memory database needs to have its connection permanently open or it will get auto-deleted
+                            var keepAliveConnection = new SqliteConnection(connectionString);
+                            keepAliveConnection.Open();
+                            opt.UseSqlite(keepAliveConnection);
+                        }
+                        else
+                        {
+                            opt.UseSqlite(connectionString);
+                        }
+
                         break;
 #if postgresql
                     case DbType.PostgreSQL:
@@ -104,7 +121,33 @@ namespace MyProjectGroup.DotnetAccelerator
             services.AddScoped<IDbConnection>(ctx => ctx.GetRequiredService<DotnetAcceleratorContext>().Database.GetDbConnection());
             services.AddScoped<IHealthContributor, RelationalDbHealthContributor>(); // allow db connection health to show up in actuator health endpoint
             services.AddControllers(cfg => cfg.Filters.Add<DomainExceptionFilter>()); // respond with HTTP400 if domain exception is thrown
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "MyProjectGroup.DotnetAccelerator", Version = "v1"}); });
+            services.AddSwaggerGen(c =>
+            {
+                c.CustomOperationIds(api =>
+                {
+                    var actionDescriptor = (ControllerActionDescriptor) api.ActionDescriptor;
+                    HttpMethodAttribute? methodAttribute = api.HttpMethod switch
+                    {
+                        "GET" => actionDescriptor.EndpointMetadata.OfType<HttpGetAttribute>().FirstOrDefault(),
+                        "POST" =>  actionDescriptor.EndpointMetadata.OfType<HttpPostAttribute>().FirstOrDefault(),
+                        "PUT" =>  actionDescriptor.EndpointMetadata.OfType<HttpPutAttribute>().FirstOrDefault(),
+                        "DELETE" =>  actionDescriptor.EndpointMetadata.OfType<HttpDeleteAttribute>().FirstOrDefault(),
+                        "PATCH" =>  actionDescriptor.EndpointMetadata.OfType<HttpPatchAttribute>().FirstOrDefault(),
+                        "OPTIONS" =>  actionDescriptor.EndpointMetadata.OfType<HttpOptionsAttribute>().FirstOrDefault(),
+                        "HEAD" =>  actionDescriptor.EndpointMetadata.OfType<HttpHeadAttribute>().FirstOrDefault(),
+                        _ => null!
+                    };
+                    if (methodAttribute?.Name is not null)
+                    {
+                        return methodAttribute.Name;
+                    }
+
+                    return $"{actionDescriptor.ControllerName}_{actionDescriptor.ActionName}"; 
+
+                    // return $"{((ControllerActionDescriptor) api.ActionDescriptor).ControllerName}_{api.HttpMethod}_{string.Join("_", api.ParameterDescriptions.Select(x => x.Name))}".ToLower();
+                });
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "MyProjectGroup.DotnetAccelerator", Version = "v1"});
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -127,7 +170,6 @@ namespace MyProjectGroup.DotnetAccelerator
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapAllActuators().RequireAuthorization(KnownAuthorizationPolicy.Actuators);
             });
         }
     }

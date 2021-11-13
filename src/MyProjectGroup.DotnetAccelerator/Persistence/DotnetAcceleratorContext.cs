@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Domain.Models;
-using MyProjectGroup.DotnetAccelerator.Modules.WeatherModule.Domain.Models;
+using MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Api;
+using MyProjectGroup.DotnetAccelerator.Modules.WeatherModule.Api;
 
 namespace MyProjectGroup.DotnetAccelerator.Persistence
 {

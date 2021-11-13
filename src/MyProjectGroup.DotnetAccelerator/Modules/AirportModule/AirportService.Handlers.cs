@@ -2,11 +2,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Domain.Models;
+using MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Api;
 
 #pragma warning disable 1998
 
-namespace MyProjectGroup.DotnetAccelerator.Modules.AirportModule.Domain.Services
+namespace MyProjectGroup.DotnetAccelerator.Modules.AirportModule
 {
     partial class AirportService : IRequestHandler<AirportQuery, IAsyncEnumerable<Airport>>
     {
