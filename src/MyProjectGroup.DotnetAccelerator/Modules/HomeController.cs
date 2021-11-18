@@ -16,7 +16,7 @@ namespace MyProjectGroup.DotnetAccelerator.Modules
         [HttpGet("/hello")]
         public string HelloWorld()
         {
-            return "Hello World";
+            return "Hello Cool demo";
         }
     }
 }

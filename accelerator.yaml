@@ -13,6 +13,13 @@ accelerator:
     inputType: text
     defaultValue: MyNamespace
     required: true
+  - name: dockerImageRepository
+    label: Docker Repository
+    dataType: string
+    description: Full name of the repository image to create (ex. dockerhubuser/myaccelerator or my.container.registry.com/myaccelerator)
+    inputType: text
+    defaultValue: dotnet-accelerator
+    required: true
   - name: database
     label: Database
     dataType: string
