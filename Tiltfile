@@ -9,8 +9,9 @@ isWindows = True if os.name == "nt" else False
 
 local_resource(
   'live-update-build',
-  cmd= 'dotnet publish src/MyProjectGroup.DotnetAccelerator --configuration ' + configuration + ' --runtime ubuntu.18.04-x64 --self-contained false --output ./src/MyProjectGroup.DotnetAccelerator/bin/.buildsync',
-  deps=['./src/MyProjectGroup.DotnetAccelerator/bin/' + configuration]
+  cmd= 'dotnet publish src/MyProjectGroup.DotnetAccelerator --configuration ' + configuration + ' --runtime ' + rid + ' --self-contained false --output ./src/MyProjectGroup.DotnetAccelerator/bin/.buildsync',
+  deps=['./src/MyProjectGroup.DotnetAccelerator/bin/' + configuration],
+  ignore=['./src/MyProjectGroup.DotnetAccelerator/bin/**/' + rid]
 )
 
 custom_build(
