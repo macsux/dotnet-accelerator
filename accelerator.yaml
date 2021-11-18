@@ -18,7 +18,7 @@ accelerator:
     dataType: string
     description: Full name of the repository image to create (ex. dockerhubuser/myaccelerator or my.container.registry.com/myaccelerator)
     inputType: text
-    defaultValue: dotnet-accelerator
+    defaultValue: dockerhubuser/dotnet-accelerator
     required: true
   - name: database
     label: Database
@@ -208,25 +208,6 @@ engine:
                                   break;'
       condition: '#mysql'
   - include:
-    - src/MyProjectGroup.Common/MyProjectGroup.Common.csproj
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if configserver -->
-                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
-                  <!--#endif -->
-        with: "''"
-      condition: '!(#configserver)'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if configserver -->
-                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
-                  <!--#endif -->
-        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
-      condition: '#configserver'
-  - include:
     - config/application-Development.yaml
     chain:
     - type: ReplaceText
@@ -251,6 +232,51 @@ engine:
           'Authentication:
             Bearer:
               Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
+  - include:
+    - src/MyProjectGroup.Common/MyProjectGroup.Common.csproj
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if configserver -->
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
+                  <!--#endif -->
+        with: "''"
+      condition: '!(#configserver)'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if configserver -->
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
+                  <!--#endif -->
+        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
+      condition: '#configserver'
+  - include:
+    - config/application.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://accounts.google.com'
       condition: '#enableSecurity'
   - include:
     - src/MyProjectGroup.DotnetAccelerator/MyProjectGroup.DotnetAccelerator.csproj
@@ -319,32 +345,6 @@ engine:
                   <!--#endif -->
         with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
       condition: '#configserver'
-  - include:
-    - config/application.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://accounts.google.com'
-      condition: '#enableSecurity'
   - include:
     - src/MyProjectGroup.Common/Configuration/ConfigurationBuilderExtensions.cs
     chain:

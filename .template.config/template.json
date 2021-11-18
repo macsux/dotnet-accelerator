@@ -30,7 +30,7 @@
       "type": "parameter",
       "replaces": "macsux/dotnet-accelerator",
       "datatype": "text",
-      "defaultValue": "dotnet-accelerator",
+      "defaultValue": "dockerhubuser/dotnet-accelerator",
       "label": "Docker Repository",
       "description": "Full name of the repository image to create (ex. dockerhubuser/myaccelerator or my.container.registry.com/myaccelerator)",
       "isRequired": true
