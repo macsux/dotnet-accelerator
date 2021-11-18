@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="NMica" Version="2.1.4" />
+        <PackageReference Include="NMica" Version="2.3.3" />
         <PackageReference Include="idunno.Authentication.Basic" Version="2.2.2" />
         <PackageReference Include="Steeltoe.Connector.ConnectorCore" Version="3.1.1" />
         <PackageReference Include="Steeltoe.Connector.EFCore" Version="3.1.1" />

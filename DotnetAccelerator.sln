@@ -1,22 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-#
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyProjectGroup.DotnetAccelerator", "src\MyProjectGroup.DotnetAccelerator\MyProjectGroup.DotnetAccelerator.csproj", "{05AF40AC-8C37-4C5D-8C93-E6B5DB0A3658}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyProjectGroup.DotnetAccelerator", "src\MyProjectGroup.DotnetAccelerator\MyProjectGroup.DotnetAccelerator.csproj", "{05AF40AC-8C37-4C5D-8C93-E6B5DB0A3658}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetAcceleratorTests", "tests\DotnetAcceleratorTests\DotnetAcceleratorTests.csproj", "{160A1C52-AF25-4593-B8C1-7A6B91E1AC84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotnetAcceleratorTests", "tests\DotnetAcceleratorTests\DotnetAcceleratorTests.csproj", "{160A1C52-AF25-4593-B8C1-7A6B91E1AC84}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{4A39293F-B876-4AC8-9865-11F376FF36D8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{D5B7E79B-4D03-4B94-B927-73CAEF204422}"
-ProjectSection(SolutionItems) = preProject
-	.gitignore = .gitignore
-	global.json = global.json
-	version.json = version.json
-	Directory.Build.props = Directory.Build.props
-	README.md = README.md
-	Tiltfile = Tiltfile
-	kubernetes\deployment.yaml = kubernetes\deployment.yaml
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		kubernetes\deployment.yaml = kubernetes\deployment.yaml
+		Directory.Build.props = Directory.Build.props
+		global.json = global.json
+		README.md = README.md
+		Tiltfile = Tiltfile
+		version.json = version.json
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "config", "config\config.csproj", "{45E90901-4A67-4041-AABB-9A79D614D133}"
 EndProject
@@ -24,7 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5E351270-369
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{DAAA1A53-C9A3-472A-9BF9-293FFB211440}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyProjectGroup.Common", "src\MyProjectGroup.Common\MyProjectGroup.Common.csproj", "{7C7A4D96-06EB-4767-94BD-515CDCA43E9A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyProjectGroup.Common", "src\MyProjectGroup.Common\MyProjectGroup.Common.csproj", "{7C7A4D96-06EB-4767-94BD-515CDCA43E9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,10 +34,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4A39293F-B876-4AC8-9865-11F376FF36D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A39293F-B876-4AC8-9865-11F376FF36D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{45E90901-4A67-4041-AABB-9A79D614D133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{45E90901-4A67-4041-AABB-9A79D614D133}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05AF40AC-8C37-4C5D-8C93-E6B5DB0A3658}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{05AF40AC-8C37-4C5D-8C93-E6B5DB0A3658}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05AF40AC-8C37-4C5D-8C93-E6B5DB0A3658}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -44,16 +42,26 @@ Global
 		{160A1C52-AF25-4593-B8C1-7A6B91E1AC84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{160A1C52-AF25-4593-B8C1-7A6B91E1AC84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{160A1C52-AF25-4593-B8C1-7A6B91E1AC84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A39293F-B876-4AC8-9865-11F376FF36D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A39293F-B876-4AC8-9865-11F376FF36D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45E90901-4A67-4041-AABB-9A79D614D133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45E90901-4A67-4041-AABB-9A79D614D133}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C7A4D96-06EB-4767-94BD-515CDCA43E9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7C7A4D96-06EB-4767-94BD-515CDCA43E9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C7A4D96-06EB-4767-94BD-515CDCA43E9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C7A4D96-06EB-4767-94BD-515CDCA43E9A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{160A1C52-AF25-4593-B8C1-7A6B91E1AC84} = {DAAA1A53-C9A3-472A-9BF9-293FFB211440}
 		{05AF40AC-8C37-4C5D-8C93-E6B5DB0A3658} = {5E351270-3697-4CA3-9330-84D290EBE0E1}
-		{7C7A4D96-06EB-4767-94BD-515CDCA43E9A} = {5E351270-3697-4CA3-9330-84D290EBE0E1}
+		{160A1C52-AF25-4593-B8C1-7A6B91E1AC84} = {DAAA1A53-C9A3-472A-9BF9-293FFB211440}
 		{4A39293F-B876-4AC8-9865-11F376FF36D8} = {D5B7E79B-4D03-4B94-B927-73CAEF204422}
 		{45E90901-4A67-4041-AABB-9A79D614D133} = {D5B7E79B-4D03-4B94-B927-73CAEF204422}
+		{7C7A4D96-06EB-4767-94BD-515CDCA43E9A} = {5E351270-3697-4CA3-9330-84D290EBE0E1}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {82AC27A9-46E9-4AEA-9ACA-A201C74CF228}
 	EndGlobalSection
 EndGlobal

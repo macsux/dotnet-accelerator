@@ -101,7 +101,7 @@ namespace MyProjectGroup.Common.Configuration
                         if (source is FileConfigurationSource fileSource)
                         {
                             var fullPath = Path.Combine(ConfigFolder.Value, fileSource.Path);
-                            logger.LogInformation("- {ConfigSource} - {File} {Status}", sourceName, fullPath, File.Exists(fullPath) ? "" : "missing");
+                            logger.LogTrace("- {ConfigSource} - {File} {Status}", sourceName, fullPath, File.Exists(fullPath) ? "" : "missing");
                         }
                         else if (source is PlaceholderResolverSource placeholderSource)
                         {
@@ -112,7 +112,7 @@ namespace MyProjectGroup.Common.Configuration
                         }
                         else
                         {
-                            logger.LogInformation("Config Source: {ConfigSource}", sourceName);
+                            logger.LogTrace("Config Source: {ConfigSource}", sourceName);
                         }
                     }
                 }

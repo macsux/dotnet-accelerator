@@ -82,6 +82,7 @@
               "GenerateClient",
               "GetVersion",
               "Init",
+              "LiveSync",
               "OpenApi",
               "PrepareRelease",
               "Publish",
@@ -89,8 +90,7 @@
               "RestoreTools",
               "Run",
               "SetupGit",
-              "Test",
-              "Tilt"
+              "Test"
             ]
           }
         },
@@ -111,6 +111,7 @@
               "GenerateClient",
               "GetVersion",
               "Init",
+              "LiveSync",
               "OpenApi",
               "PrepareRelease",
               "Publish",
@@ -118,8 +119,7 @@
               "RestoreTools",
               "Run",
               "SetupGit",
-              "Test",
-              "Tilt"
+              "Test"
             ]
           }
         },

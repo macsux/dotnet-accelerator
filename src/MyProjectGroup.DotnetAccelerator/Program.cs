@@ -18,8 +18,6 @@ namespace MyProjectGroup.DotnetAccelerator
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureServices((context, _) =>  
-                    BootstrapLoggerFactory.Instance.CreateLogger<Program>().LogInformation("Environment: {Environment}", context.HostingEnvironment.EnvironmentName))
                 .AddDynamicLogging()
                 .UseYamlWithProfilesAppConfiguration<Program>(args)
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });

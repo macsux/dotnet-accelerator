@@ -19,6 +19,7 @@ using Nuke.Common.Tools.CloudFoundry;
 using Nuke.Common.Tools.Docker;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.Git;
+using Nuke.Common.Tools.Kubernetes;
 using Nuke.Common.Tools.NerdbankGitVersioning;
 using Nuke.Common.Utilities.Collections;
 using static Nuke.Common.IO.FileSystemTasks;
@@ -204,9 +205,15 @@ class Build : NukeBuild
         .Requires(() => MigrationName, () => TargetProject)
         .Executes(DoAddMigration);
 
-    Target Tilt => _ => _
+    Target LiveSync => _ => _
+        .Description("Sets up live deployment to Kubernetes current context every time app is built")
         .Executes(async () =>
         {
+            var currentContext = KubernetesTasks.Kubernetes("config current-context").First().Text;
+            var tiltFile = File.ReadAllText(RootDirectory / "Tiltfile");
+            tiltFile = Regex.Replace(tiltFile, "^allow_k8s_contexts.+", "");
+            tiltFile = $"allow_k8s_contexts('{currentContext}')\n{tiltFile}";
+            File.WriteAllText(RootDirectory / "Tiltfile.user", tiltFile);
             string os = "";
             if (OperatingSystem.IsWindows())
                 os = "win";
@@ -215,7 +222,7 @@ class Build : NukeBuild
             else
                 os = "osx";
             var tilt = ToolPathResolver.GetPackageExecutable($"Tilt.CommandLine.{os}-x64", "tilt" + (OperatingSystem.IsWindows() ? ".exe" : ""));
-            var process = ProcessTasks.StartProcess(tilt, "up", workingDirectory: RootDirectory);
+            var process = ProcessTasks.StartProcess(tilt, "up -f Tiltfile.user", workingDirectory: RootDirectory);
             await Task.Delay(3000);
             var psi = new ProcessStartInfo
             {

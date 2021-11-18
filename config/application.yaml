@@ -4,6 +4,7 @@ Logging:
     Default: Information
     Microsoft: Warning
     Microsoft.Hosting.Lifetime: Information
+    Microsoft.EntityFrameworkCore.Database.Command: Warning
     idunno: Error
     Steeltoe: Information
     Steeltoe.Management.Endpoint.Metrics.Observer.AspNetCoreHostingObserver: None
