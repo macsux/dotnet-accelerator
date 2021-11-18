@@ -22,14 +22,30 @@ spec:
           - name: ASPNETCORE_ENVIRONMENT
             value: Development
         imagePullPolicy: Always
-#        livenessProbe:
-#          httpGet:
-#            path: /actuator/health/liveness
-#            port: 8080
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
         ports:
         - containerPort: 8080
         - containerPort: 22
-#        readinessProbe:
-#          httpGet:
-#            path: /actuator/health/readiness
-#            port: 8080
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+      - name: live-view-sidecar
+        image: registry.tanzu.vmware.com/app-live-view/application-live-view-sidecar:0.2.0
+        env:
+          - name: app.live.view.sidecar.application-name
+            value: DotnetAccelerator
+          - name: app.live.view.sidecar.application-protocol
+            value: http
+          - name: app.live.view.sidecar.application-port
+            value: '8080'
+          - name: app.live.view.sidecar.actuator-path
+            value: /actuator
+          - name: app.live.view.sidecar.app-flavours
+            value: steeltoe
+          - name: app.live.view.client.host
+            value: application-live-view-7000.app-live-view.svc.cluster.local
+
