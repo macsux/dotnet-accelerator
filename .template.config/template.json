@@ -32,7 +32,7 @@
       "fileRename": "macsux",
       "datatype": "text",
       "defaultValue": "dockerhubuser",
-      "label": "Docker Repository",
+      "label": "Docker repository",
       "description": "Dockerhub username or container registry (ex. dockerhubuser/myaccelerator or my.container.registry.com/myaccelerator)",
       "isRequired": true
     },
@@ -42,7 +42,7 @@
       "fileRename": "dotnet-accelerator",
       "datatype": "text",
       "defaultValue": "dotnet-accelerator",
-      "label": "Docker Repository",
+      "label": "Image registry name",
       "description": "Docker image repository name for image being created",
       "isRequired": true
     },
