@@ -26,14 +26,24 @@
       "description": "Root namespace for the project",
       "isRequired": true
     },
+    "dockerRegistry": {
+      "type": "parameter",
+      "replaces": "macsux",
+      "fileRename": "macsux",
+      "datatype": "text",
+      "defaultValue": "dockerhubuser",
+      "label": "Docker Repository",
+      "description": "Dockerhub username or container registry (ex. dockerhubuser/myaccelerator or my.container.registry.com/myaccelerator)",
+      "isRequired": true
+    },
     "dockerImageRepository": {
       "type": "parameter",
-      "replaces": "macsux/dotnet-accelerator",
-      "fileRename": "STUB",
+      "replaces": "dotnet-accelerator",
+      "fileRename": "dotnet-accelerator",
       "datatype": "text",
-      "defaultValue": "dockerhubuser/dotnet-accelerator",
+      "defaultValue": "dotnet-accelerator",
       "label": "Docker Repository",
-      "description": "Full name of the repository image to create (ex. dockerhubuser/myaccelerator or my.container.registry.com/myaccelerator)",
+      "description": "Docker image repository name for image being created",
       "isRequired": true
     },
     "database": {

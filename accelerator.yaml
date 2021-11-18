@@ -13,12 +13,19 @@ accelerator:
     inputType: text
     defaultValue: MyNamespace
     required: true
+  - name: dockerRegistry
+    label: Docker Repository
+    dataType: string
+    description: Dockerhub username or container registry (ex. dockerhubuser/myaccelerator or my.container.registry.com/myaccelerator)
+    inputType: text
+    defaultValue: dockerhubuser
+    required: true
   - name: dockerImageRepository
     label: Docker Repository
     dataType: string
-    description: Full name of the repository image to create (ex. dockerhubuser/myaccelerator or my.container.registry.com/myaccelerator)
+    description: Docker image repository name for image being created
     inputType: text
-    defaultValue: dockerhubuser/dotnet-accelerator
+    defaultValue: dotnet-accelerator
     required: true
   - name: database
     label: Database
@@ -250,6 +257,25 @@ engine:
                           bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);'
       condition: '#configserver'
   - include:
+    - src/MyProjectGroup.Common/MyProjectGroup.Common.csproj
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if configserver -->
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
+                  <!--#endif -->
+        with: "''"
+      condition: '!(#configserver)'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if configserver -->
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
+                  <!--#endif -->
+        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
+      condition: '#configserver'
+  - include:
     - config/application-Development.yaml
     chain:
     - type: ReplaceText
@@ -274,32 +300,6 @@ engine:
           'Authentication:
             Bearer:
               Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
-  - include:
-    - config/application.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://accounts.google.com'
       condition: '#enableSecurity'
   - include:
     - src/MyProjectGroup.Common/Persistence/DbType.cs
@@ -336,103 +336,6 @@ engine:
           #endif
         with: "'        MySQL,'"
       condition: '#mysql'
-  - include:
-    - src/MyProjectGroup.Common/Security/KnownAuthorizationPolicy.cs
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-                  public const string AirportRead = "airport.read";
-                  public const string WeatherRead = "airport.read";
-                  public const string WeatherWrite = "airport.read";
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-                  public const string AirportRead = "airport.read";
-                  public const string WeatherRead = "airport.read";
-                  public const string WeatherWrite = "airport.read";
-          #endif
-        with: |-
-          '        public const string AirportRead = "airport.read";
-                  public const string WeatherRead = "airport.read";
-                  public const string WeatherWrite = "airport.read";'
-      condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/.buildsync/config/solution-defaults.Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/.buildsync/config/solution-defaults.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://accounts.google.com'
-      condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.Common/MyProjectGroup.Common.csproj
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if configserver -->
-                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
-                  <!--#endif -->
-        with: "''"
-      condition: '!(#configserver)'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if configserver -->
-                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
-                  <!--#endif -->
-        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
-      condition: '#configserver'
   - include:
     - src/MyProjectGroup.DotnetAccelerator/MyProjectGroup.DotnetAccelerator.csproj
     chain:
@@ -501,33 +404,7 @@ engine:
         with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
       condition: '#configserver'
   - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.yaml
+    - config/application.yaml
     chain:
     - type: ReplaceText
       substitutions:
@@ -553,18 +430,15 @@ engine:
               Authority: https://accounts.google.com'
       condition: '#enableSecurity'
   - include:
-    - src/MyProjectGroup.DotnetAccelerator/Modules/AirportModule/AirportController.cs
+    - src/MyProjectGroup.Common/Security/KnownAuthorizationPolicy.cs
     chain:
     - type: ReplaceText
       substitutions:
       - text: |-
           #if enableSecurity
-          using MyProjectGroup.Common.Security;
-          #endif
-        with: "''"
-      - text: |-
-          #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.AirportRead)]
+                  public const string AirportRead = "airport.read";
+                  public const string WeatherRead = "airport.read";
+                  public const string WeatherWrite = "airport.read";
           #endif
         with: "''"
       condition: '!(#enableSecurity)'
@@ -572,56 +446,17 @@ engine:
       substitutions:
       - text: |-
           #if enableSecurity
-          using MyProjectGroup.Common.Security;
+                  public const string AirportRead = "airport.read";
+                  public const string WeatherRead = "airport.read";
+                  public const string WeatherWrite = "airport.read";
           #endif
-        with: "'using MyProjectGroup.Common.Security;'"
-      - text: |-
-          #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.AirportRead)]
-          #endif
-        with: "'        [Authorize(KnownAuthorizationPolicy.AirportRead)]'"
+        with: |-
+          '        public const string AirportRead = "airport.read";
+                  public const string WeatherRead = "airport.read";
+                  public const string WeatherWrite = "airport.read";'
       condition: '#enableSecurity'
   - include:
-    - src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/WeatherController.cs
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          using MyProjectGroup.Common.Security;
-          #endif
-        with: "''"
-      - text: |-
-          #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]
-          #endif
-        with: "''"
-      - text: |-
-          #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.WeatherWrite)]
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          using MyProjectGroup.Common.Security;
-          #endif
-        with: "'using MyProjectGroup.Common.Security;'"
-      - text: |-
-          #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]
-          #endif
-        with: "'        [Authorize(KnownAuthorizationPolicy.WeatherRead)]'"
-      - text: |-
-          #if enableSecurity
-                  [Authorize(KnownAuthorizationPolicy.WeatherWrite)]
-          #endif
-        with: "'        [Authorize(KnownAuthorizationPolicy.WeatherWrite)]'"
-      condition: '#enableSecurity'
-  - include:
-    - tests/DotnetAcceleratorTests/bin/Debug/net5.0/config/solution-defaults.Development.yaml
+    - src/MyProjectGroup.DotnetAccelerator/bin/.buildsync/config/solution-defaults.Development.yaml
     chain:
     - type: ReplaceText
       substitutions:
@@ -647,7 +482,7 @@ engine:
               Authority: https://login.run.pcfone.io'
       condition: '#enableSecurity'
   - include:
-    - tests/DotnetAcceleratorTests/bin/Debug/net5.0/config/solution-defaults.yaml
+    - src/MyProjectGroup.DotnetAccelerator/bin/.buildsync/config/solution-defaults.yaml
     chain:
     - type: ReplaceText
       substitutions:
@@ -763,6 +598,178 @@ engine:
                 }
               },'
       condition: '#mysql'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/Modules/AirportModule/AirportController.cs
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          using MyProjectGroup.Common.Security;
+          #endif
+        with: "''"
+      - text: |-
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.AirportRead)]
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          using MyProjectGroup.Common.Security;
+          #endif
+        with: "'using MyProjectGroup.Common.Security;'"
+      - text: |-
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.AirportRead)]
+          #endif
+        with: "'        [Authorize(KnownAuthorizationPolicy.AirportRead)]'"
+      condition: '#enableSecurity'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://accounts.google.com'
+      condition: '#enableSecurity'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/WeatherController.cs
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          using MyProjectGroup.Common.Security;
+          #endif
+        with: "''"
+      - text: |-
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]
+          #endif
+        with: "''"
+      - text: |-
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.WeatherWrite)]
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          using MyProjectGroup.Common.Security;
+          #endif
+        with: "'using MyProjectGroup.Common.Security;'"
+      - text: |-
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.WeatherRead)]
+          #endif
+        with: "'        [Authorize(KnownAuthorizationPolicy.WeatherRead)]'"
+      - text: |-
+          #if enableSecurity
+                  [Authorize(KnownAuthorizationPolicy.WeatherWrite)]
+          #endif
+        with: "'        [Authorize(KnownAuthorizationPolicy.WeatherWrite)]'"
+      condition: '#enableSecurity'
+  - include:
+    - tests/DotnetAcceleratorTests/bin/Debug/net5.0/config/solution-defaults.Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
+  - include:
+    - tests/DotnetAcceleratorTests/bin/Debug/net5.0/config/solution-defaults.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://accounts.google.com'
+      condition: '#enableSecurity'
   - include:
     - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/linux-x64/config/solution-defaults.Development.yaml
     chain:
@@ -973,9 +980,6 @@ engine:
       condition: '#enableSecurity'
   chain:
   - type: RewritePath
-    regex: DotnetAccelerator.sln
-    rewriteTo: "'' + #artifactId + '.sln'"
-  - type: RewritePath
     regex: config/DotnetAccelerator-Development.yaml
     rewriteTo: "'config/' + #artifactId + '-Development.yaml'"
   - type: RewritePath
@@ -991,38 +995,11 @@ engine:
     regex: config/DotnetAccelerator.yaml
     rewriteTo: "'config/' + #artifactId + '.yaml'"
   - type: RewritePath
+    regex: DotnetAccelerator.sln
+    rewriteTo: "'' + #artifactId + '.sln'"
+  - type: RewritePath
     regex: src/MyProjectGroup.Common/BootstrapLoggerFactory.cs
     rewriteTo: "'src/' + #namespace + '.Common/BootstrapLoggerFactory.cs'"
-  - type: RewritePath
-    regex: src/MyProjectGroup.Common/MyProjectGroup.Common.csproj
-    rewriteTo: "'src/' + #namespace + '.Common/' + #namespace + '.Common.csproj'"
-  - type: RewritePath
-    regex: src/MyProjectGroup.Common/NullLogProcessor.cs
-    rewriteTo: "'src/' + #namespace + '.Common/NullLogProcessor.cs'"
-  - type: RewritePath
-    regex: src/MyProjectGroup.DotnetAccelerator/Dockerfile
-    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Dockerfile'"
-  - type: RewritePath
-    regex: src/MyProjectGroup.DotnetAccelerator/MyProjectGroup.DotnetAccelerator.csproj
-    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/' + #namespace + '.' + #artifactId + '.csproj'"
-  - type: RewritePath
-    regex: src/MyProjectGroup.DotnetAccelerator/Program.cs
-    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Program.cs'"
-  - type: RewritePath
-    regex: src/MyProjectGroup.DotnetAccelerator/README.md
-    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/README.md'"
-  - type: RewritePath
-    regex: src/MyProjectGroup.DotnetAccelerator/Startup.cs
-    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Startup.cs'"
-  - type: RewritePath
-    regex: tests/DotnetAcceleratorTests/DotnetAcceleratorTests.csproj
-    rewriteTo: "'tests/' + #artifactId + 'Tests/' + #artifactId + 'Tests.csproj'"
-  - type: RewritePath
-    regex: tests/DotnetAcceleratorTests/IUseDbContext.cs
-    rewriteTo: "'tests/' + #artifactId + 'Tests/IUseDbContext.cs'"
-  - type: RewritePath
-    regex: tests/DotnetAcceleratorTests/WeatherTests.cs
-    rewriteTo: "'tests/' + #artifactId + 'Tests/WeatherTests.cs'"
   - type: RewritePath
     regex: src/MyProjectGroup.Common/Configuration/ConfigurationBuilderExtensions.cs
     rewriteTo: "'src/' + #namespace + '.Common/Configuration/ConfigurationBuilderExtensions.cs'"
@@ -1048,6 +1025,12 @@ engine:
     regex: src/MyProjectGroup.Common/Modules/ServiceCollectionExtensions.cs
     rewriteTo: "'src/' + #namespace + '.Common/Modules/ServiceCollectionExtensions.cs'"
   - type: RewritePath
+    regex: src/MyProjectGroup.Common/MyProjectGroup.Common.csproj
+    rewriteTo: "'src/' + #namespace + '.Common/' + #namespace + '.Common.csproj'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/NullLogProcessor.cs
+    rewriteTo: "'src/' + #namespace + '.Common/NullLogProcessor.cs'"
+  - type: RewritePath
     regex: src/MyProjectGroup.Common/Persistence/DbContextMigrationApplicationBuilderExtensions.cs
     rewriteTo: "'src/' + #namespace + '.Common/Persistence/DbContextMigrationApplicationBuilderExtensions.cs'"
   - type: RewritePath
@@ -1072,14 +1055,8 @@ engine:
     regex: src/MyProjectGroup.Common/Security/ServiceCollectionExtensions.cs
     rewriteTo: "'src/' + #namespace + '.Common/Security/ServiceCollectionExtensions.cs'"
   - type: RewritePath
-    regex: src/MyProjectGroup.DotnetAccelerator/Modules/HomeController.cs
-    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Modules/HomeController.cs'"
-  - type: RewritePath
-    regex: src/MyProjectGroup.DotnetAccelerator/Persistence/DotnetAcceleratorContext.cs
-    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Persistence/' + #artifactId + 'Context.cs'"
-  - type: RewritePath
-    regex: src/MyProjectGroup.DotnetAccelerator/Properties/launchSettings.json
-    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Properties/launchSettings.json'"
+    regex: src/MyProjectGroup.DotnetAccelerator/Dockerfile
+    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Dockerfile'"
   - type: RewritePath
     regex: src/MyProjectGroup.DotnetAccelerator/Modules/AirportModule/AirportController.cs
     rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Modules/AirportModule/AirportController.cs'"
@@ -1090,15 +1067,6 @@ engine:
     regex: src/MyProjectGroup.DotnetAccelerator/Modules/AirportModule/AirportService.Handlers.cs
     rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Modules/AirportModule/AirportService.Handlers.cs'"
   - type: RewritePath
-    regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/WeatherController.cs
-    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Modules/WeatherModule/WeatherController.cs'"
-  - type: RewritePath
-    regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/WeatherService.cs
-    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Modules/WeatherModule/WeatherService.cs'"
-  - type: RewritePath
-    regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/WeatherService.Handlers.cs
-    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Modules/WeatherModule/WeatherService.Handlers.cs'"
-  - type: RewritePath
     regex: src/MyProjectGroup.DotnetAccelerator/Modules/AirportModule/Api/Airport.cs
     rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Modules/AirportModule/Api/Airport.cs'"
   - type: RewritePath
@@ -1107,6 +1075,9 @@ engine:
   - type: RewritePath
     regex: src/MyProjectGroup.DotnetAccelerator/Modules/AirportModule/Api/AirportQuery.MediatR.cs
     rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Modules/AirportModule/Api/AirportQuery.MediatR.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/HomeController.cs
+    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Modules/HomeController.cs'"
   - type: RewritePath
     regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/Api/WeatherForecast.cs
     rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Modules/WeatherModule/Api/WeatherForecast.cs'"
@@ -1119,13 +1090,53 @@ engine:
   - type: RewritePath
     regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/Api/WeatherForecastQuery.MediatR.cs
     rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Modules/WeatherModule/Api/WeatherForecastQuery.MediatR.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/WeatherController.cs
+    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Modules/WeatherModule/WeatherController.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/WeatherService.cs
+    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Modules/WeatherModule/WeatherService.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/WeatherService.Handlers.cs
+    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Modules/WeatherModule/WeatherService.Handlers.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.DotnetAccelerator/MyProjectGroup.DotnetAccelerator.csproj
+    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/' + #namespace + '.' + #artifactId + '.csproj'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.DotnetAccelerator/Persistence/DotnetAcceleratorContext.cs
+    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Persistence/' + #artifactId + 'Context.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.DotnetAccelerator/Program.cs
+    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Program.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.DotnetAccelerator/Properties/launchSettings.json
+    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Properties/launchSettings.json'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.DotnetAccelerator/README.md
+    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/README.md'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.DotnetAccelerator/Startup.cs
+    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Startup.cs'"
+  - type: RewritePath
+    regex: tests/DotnetAcceleratorTests/DotnetAcceleratorTests.csproj
+    rewriteTo: "'tests/' + #artifactId + 'Tests/' + #artifactId + 'Tests.csproj'"
+  - type: RewritePath
+    regex: tests/DotnetAcceleratorTests/IUseDbContext.cs
+    rewriteTo: "'tests/' + #artifactId + 'Tests/IUseDbContext.cs'"
+  - type: RewritePath
+    regex: tests/DotnetAcceleratorTests/WeatherTests.cs
+    rewriteTo: "'tests/' + #artifactId + 'Tests/WeatherTests.cs'"
   - type: ReplaceText
     substitutions:
     - text: MyProjectGroup
       with: '#namespace'
   - type: ReplaceText
     substitutions:
-    - text: macsux/dotnet-accelerator
+    - text: macsux
+      with: '#dockerRegistry'
+  - type: ReplaceText
+    substitutions:
+    - text: dotnet-accelerator
       with: '#dockerImageRepository'
   - type: ReplaceText
     substitutions:
