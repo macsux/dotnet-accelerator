@@ -29,6 +29,7 @@
     "dockerImageRepository": {
       "type": "parameter",
       "replaces": "macsux/dotnet-accelerator",
+      "fileRename": "STUB",
       "datatype": "text",
       "defaultValue": "dockerhubuser/dotnet-accelerator",
       "label": "Docker Repository",
