@@ -19,19 +19,19 @@ Additional build targets can be easily added by editing `/build/Build.cs`
 
 ## Branching and Versioning
 
-The code uses [GitFlow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for branching and release workflow. 
+The code uses [GitFlow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for branching and release workflow.
 
 ![](https://wac-cdn.atlassian.com/dam/jcr:8f00f1a4-ef2d-498a-a2c6-8020bb97902f/03%20Release%20branches.svg?cdnVersion=1824)
 
-Latest active branch developers commit to is `develop`, while `main` represents current production code. Release branches are created during stabilization phase, and represent next release being reading to be shipped to production. 
+Latest active branch developers commit to is `develop`, while `main` represents current production code. Release branches are created during stabilization phase, and represent next release being reading to be shipped to production.
 
-Versioning is derived from Git commit history using [Nerdbank.Gitversioning](https://github.com/dotnet/Nerdbank.GitVersioning). Current version can be obtained by running 
+Versioning is derived from Git commit history using [Nerdbank.Gitversioning](https://github.com/dotnet/Nerdbank.GitVersioning). Current version can be obtained by running
 
 ````
 dotnet nbgv get-version
 ````
 
-When the team is ready to start preparing next release, they *cut* a release branch from the `develop` branch. Release branch carries stabilization fixes for next release cycle, while `develop` increments next major version number and starts accumulating new features. 
+When the team is ready to start preparing next release, they *cut* a release branch from the `develop` branch. Release branch carries stabilization fixes for next release cycle, while `develop` increments next major version number and starts accumulating new features.
 
 Cutting a release branch can be done by issuing this command:
 
@@ -43,15 +43,15 @@ Cutting a release branch can be done by issuing this command:
 
 Builds created out of different branches will have the pre-release tags applied automatically to their version numbers:
 
-`develop`: `<semver>-alpha` 
+`develop`: `<semver>-alpha`
 
-`v.X.X`: `<semver>-beta` 
+`v.X.X`: `<semver>-beta`
 
 `main`: `<semver>`
 
 any other: `<semver>-<short-sha>`
 
-### Creating production release 
+### Creating production release
 
 At the end of stabilization cycle when the release is made. The following steps should be performed:
 
@@ -72,3 +72,14 @@ The configuration is stored inside `/config` folder in the repository. You can l
 services> docker-compose up configserver
 ```
 
+## Deploy to Tanzu Application Platform
+
+Deploy this project to Tanzu Application Platform by executing either of the following commands.
+
+For both commands, make sure you've specified the correct Git repository. For the first command, the Git repository needs to be specified in the ./config/workload.yaml file and it exists as a parameter to the second command.
+
+`tanzu apps workload create dotnet-accelerator -f ./config/workload.yaml`
+
+or
+
+`tanzu apps workload create dotnet-accelerator --git-repo https://github.com/fjb4/dotnet-accelerator --git-branch master --type web --env DbType=SQLite --env ConnectionStrings__Database="DataSource=myshareddb;mode=memory;cache=shared"`
