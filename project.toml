@@ -1,0 +1,3 @@
+[[ build.env ]]
+  name = 'BP_DOTNET_PROJECT_PATH'
+  value = './src/MyProjectGroup.DotnetAccelerator'
