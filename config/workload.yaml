@@ -1,0 +1,18 @@
+apiVersion: carto.run/v1alpha1
+kind: Workload
+metadata:
+  labels:
+    apps.tanzu.vmware.com/workload-type: web
+  name: dotnet-accelerator
+  namespace: default
+spec:
+  env:
+  - name: DbType
+    value: SQLite
+  - name: ConnectionStrings__Database
+    value: DataSource=myshareddb;mode=memory;cache=shared
+  source:
+    git:
+      ref:
+        branch: master
+      url: https://github.com/fjb4/dotnet-accelerator
