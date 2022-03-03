@@ -19,4 +19,4 @@ spec:
     git:
       ref:
         branch: master
-      url: https://github.com/fjb4/dotnet-accelerator
+      url: https://github.com/macsux/dotnet-accelerator
