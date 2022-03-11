@@ -64,7 +64,7 @@ At the end of stabilization cycle when the release is made. The following steps 
 
 Config server allows configuration to be loaded from a dedicated service that is backed by one or more configuration sources. The default configuration source is git, allowing configuration changes to be stored in git, but loaded without having to redeploy the app.
 
-![Config Server](https://docs.pivotal.io/spring-cloud-services/2-1/common/config-server/images/config-server-fig1.png)
+![Config Server](docs/images/config-server-fig1.png)
 
 The configuration is stored inside `/config` folder in the repository. You can launch config server locally via `docker-compose` from inside `services` folder vas following:
 
