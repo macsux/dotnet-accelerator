@@ -3,16 +3,20 @@ kind: Workload
 metadata:
   labels:
     apps.tanzu.vmware.com/workload-type: web
+    app.kubernetes.io/part-of: dotnet-accelerator
+    tanzu.app.live.view: true
+    tanzu.app.live.view.application.flavours: steeltoe
+    tanzu.app.live.view.application.name: dotnet-accelerator
   name: dotnet-accelerator
   namespace: default
 spec:
   env:
-  - name: DbType
-    value: SQLite
-  - name: ConnectionStrings__Database
-    value: DataSource=myshareddb;mode=memory;cache=shared
+    - name: DbType
+      value: SQLite
+    - name: ConnectionStrings__Database
+      value: DataSource=myshareddb;mode=memory;cache=shared
   source:
     git:
       ref:
         branch: master
-      url: https://github.com/fjb4/dotnet-accelerator
+      url: https://github.com/macsux/dotnet-accelerator
