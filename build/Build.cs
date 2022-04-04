@@ -209,11 +209,27 @@ class Build : NukeBuild
         .Description("Sets up live deployment to Kubernetes current context every time app is built")
         .Executes(async () =>
         {
-            var currentContext = KubernetesTasks.Kubernetes("config current-context").First().Text;
-            var tiltFile = File.ReadAllText(RootDirectory / "Tiltfile");
-            tiltFile = Regex.Replace(tiltFile, "^allow_k8s_contexts.+", "");
-            tiltFile = $"allow_k8s_contexts('{currentContext}')\n{tiltFile}";
-            File.WriteAllText(RootDirectory / "Tiltfile.user", tiltFile);
+            using var watcher = new FileSystemWatcher(RootDirectory);
+            void CreateUserTilt()
+            {
+                watcher.EnableRaisingEvents = false;
+                Logger.Info("Building Tiltfile.user");
+                var currentContext = KubernetesTasks.Kubernetes("config current-context").First().Text;
+                var tiltFile = File.ReadAllText(RootDirectory / "Tiltfile");
+                tiltFile = Regex.Replace(tiltFile, "^allow_k8s_contexts.+", "");
+                tiltFile = $"allow_k8s_contexts('{currentContext}')\n{tiltFile}";
+                File.WriteAllText(RootDirectory / "Tiltfile.user", tiltFile);
+                watcher.EnableRaisingEvents = true;
+            }
+            CreateUserTilt();
+            
+            
+            watcher.Filter = "Tiltfile";
+            watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size;
+            watcher.Changed += (_, _) => CreateUserTilt();
+            watcher.IncludeSubdirectories = false;
+            watcher.EnableRaisingEvents = true;
+            
             string os = "";
             if (OperatingSystem.IsWindows())
                 os = "win";
@@ -222,15 +238,25 @@ class Build : NukeBuild
             else
                 os = "osx";
             var tilt = ToolPathResolver.GetPackageExecutable($"Tilt.CommandLine.{os}-x64", "tilt" + (OperatingSystem.IsWindows() ? ".exe" : ""));
-            var process = ProcessTasks.StartProcess(tilt, "up -f Tiltfile.user", workingDirectory: RootDirectory);
+            var tiltProcess = ProcessTasks.StartProcess(tilt, "up -f Tiltfile.user", workingDirectory: RootDirectory);
+            var kubectlProcess = ProcessTasks.StartProcess("kubectl", "port-forward -n app-live-view service/application-live-view-5112 5112:5112");
             await Task.Delay(3000);
-            var psi = new ProcessStartInfo
+            var tiltPsi = new ProcessStartInfo
             {
                 FileName = "http://localhost:10350",
                 UseShellExecute = true
             };
-            Process.Start(psi);
-            process.WaitForExit();
+            Process.Start(tiltPsi);
+            
+            var liveViewPsi = new ProcessStartInfo
+            {
+                FileName = "http://localhost:5112",
+                UseShellExecute = true
+            };
+            Process.Start(liveViewPsi);
+            
+            tiltProcess.WaitForExit();
+            kubectlProcess.Kill();
         });
 
     Target GenerateClient => _ => _
