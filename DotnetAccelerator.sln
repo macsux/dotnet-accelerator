@@ -12,7 +12,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{D5B7E79B-4D03-4B94-B927-73CAEF204422}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		kubernetes\deployment.yaml = kubernetes\deployment.yaml
 		Directory.Build.props = Directory.Build.props
 		README.md = README.md
 		version.json = version.json

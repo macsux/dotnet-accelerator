@@ -69,7 +69,7 @@ Config server allows configuration to be loaded from a dedicated service that is
 The configuration is stored inside `/config` folder in the repository. You can launch config server locally via `docker-compose` from inside `services` folder vas following:
 
 ```
-services> docker-compose up configserver
+docker-compose up configserver
 ```
 
 ## Deploy to Tanzu Application Platform
@@ -78,8 +78,5 @@ Deploy this project to Tanzu Application Platform by executing either of the fol
 
 For both commands, make sure you've specified the correct Git repository. For the first command, the Git repository needs to be specified in the ./config/workload.yaml file and it exists as a parameter to the second command.
 
-`tanzu apps workload create dotnet-accelerator -f ./config/workload.yaml`
+`tanzu apps workload create dotnet-accelerator -f ./kubernetes/workload.yaml`
 
-or
-
-`tanzu apps workload create dotnet-accelerator --git-repo https://github.com/fjb4/dotnet-accelerator --git-branch master --type web --env DbType=SQLite --env ConnectionStrings__Database="DataSource=myshareddb;mode=memory;cache=shared"`
