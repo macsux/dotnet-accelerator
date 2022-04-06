@@ -26,25 +26,14 @@
       "description": "Root namespace for the project",
       "isRequired": true
     },
-    "dockerRegistry": {
-      "type": "parameter",
-      "replaces": "macsux",
-      "fileRename": "macsux",
-      "datatype": "text",
-      "defaultValue": "dockerhubuser",
-      "label": "Docker repository",
-      "description": "Dockerhub username or container registry (ex. dockerhubuser/myaccelerator or my.container.registry.com/myaccelerator)",
-      "isRequired": true
-    },
-    "dockerImageRepository": {
-      "type": "parameter",
-      "replaces": "dotnet-accelerator",
-      "fileRename": "dotnet-accelerator",
-      "datatype": "text",
-      "defaultValue": "dotnet-accelerator",
-      "label": "Image registry name",
-      "description": "Docker image repository name for image being created",
-      "isRequired": true
+    "sourceNameLower": {
+      "type": "generated",
+      "generator": "casing", 
+      "parameters": {
+        "source":"name",
+        "toLower": true
+      },
+      "replaces": "dotnetaccelerator"
     },
     "database": {
       "type": "parameter",
@@ -90,6 +79,8 @@
     }
   },
   "sources": [{
+
+    "copyOnly": ["build/_build.csproj"],
     "modifiers": [
       {
         "condition": "!enableSecurity",

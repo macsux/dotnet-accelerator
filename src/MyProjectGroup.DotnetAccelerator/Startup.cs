@@ -60,15 +60,20 @@ namespace MyProjectGroup.DotnetAccelerator
                 services.AddSingleton<IDynamicMessageProcessor, NullLogProcessor>();
             }
             services.AddDistributedTracingAspNetCore();
-            
-            services.AddSecureActuators();
-#if configserver
-            services.AddConfigServerHealthContributor();
-#endif
+            // add all steeltoe actuators, but make them only respond on a management port
+            services.AddAllActuators();
+            services.AddSingleton<IStartupFilter>(new AllActuatorsStartupFilter(c => c.RequireHost("*:5010")));
+            // register with Spring Boot Admin if integration is enabled. Spring boot admin will scrape this apps actuators and display in GUI
+            // spring boot admin can be used instead of TAP LiveView when running locally
             if (Configuration.GetValue<string>("Spring:Boot:Admin:Client:Url") != null)
             {
                 services.AddSpringBootAdmin();
             }
+            
+#if configserver
+            services.AddConfigServerHealthContributor();
+#endif
+
 #if enableSecurity
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(cfg =>
@@ -165,7 +170,7 @@ namespace MyProjectGroup.DotnetAccelerator
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyProjectGroup.DotnetAccelerator v1");
             });
             app.UseRouting();
-            app.UseAuthentication();
+            // app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {

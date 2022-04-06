@@ -22,11 +22,14 @@ using Nuke.Common.Tools.Git;
 using Nuke.Common.Tools.Kubernetes;
 using Nuke.Common.Tools.NerdbankGitVersioning;
 using Nuke.Common.Utilities.Collections;
+using Serilog;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.NerdbankGitVersioning.NerdbankGitVersioningTasks;
 using static Nuke.Common.IO.CompressionTasks;
-using Logger = Nuke.Common.Logger;
+using Extensions;
+// ReSharper disable TemplateIsNotCompileTimeConstantProblem
+
 
 [CheckBuildProjectConfigurations]
 [ShutdownDotNetAfterServerBuild]
@@ -60,13 +63,16 @@ class Build : NukeBuild
     readonly string TargetProject = "MyProjectGroup.DotnetAccelerator";
     [Parameter("The name of the migration to add")]
     string MigrationName;
+    [Parameter("Docker image repository to be used for inner loop")] 
+    readonly string ImageRepository;
     [Solution] readonly Solution Solution;
 
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath TestsDirectory => RootDirectory / "tests";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
     AbsolutePath ToolsDirectory => RootDirectory / "tools";
-    string TargetFramework => "net5.0";
+
+    string TargetFramework => "net6.0";
 
     [GitVersion] NerdbankGitVersioning GitVersion;
 
@@ -163,7 +169,7 @@ class Build : NukeBuild
         {
             if (GitRepository.RetrieveStatus().IsDirty)
             {
-                Logger.Warn("Git repository is dirty. Build version will change after commit is made.");
+                Log.Warning("Git repository is dirty. Build version will change after commit is made.");
             }
             DotNetPublish(s => s
                 .SetProject(Solution)
@@ -175,7 +181,7 @@ class Build : NukeBuild
                             !x.Name.EndsWith("Tests") && 
                             x.GetMSBuildProject().GetProperty("OutputType").EvaluatedValue == "Exe")
                 .Select(x => (x.Name, PublishDir: x.Directory / "bin" / Configuration / TargetFramework / "publish"))
-                .Where(x => DirectoryExists(x.PublishDir))
+                .Where(x => x.PublishDir.DirectoryExists())
                 .ToArray();
 
             var version = GitVersion?.NuGetPackageVersion ?? "1.0";
@@ -188,7 +194,7 @@ class Build : NukeBuild
                 artifacts.Add(zipFile);
             }
 
-            Logger.Block(string.Join("\n", artifacts));
+            Log.Logger.Block(string.Join("\n", artifacts));
         });
 
     Target AddInitialMigration => _ => _
@@ -207,18 +213,33 @@ class Build : NukeBuild
 
     Target LiveSync => _ => _
         .Description("Sets up live deployment to Kubernetes current context every time app is built")
+        .Requires(() => ImageRepository)
         .Executes(async () =>
         {
             using var watcher = new FileSystemWatcher(RootDirectory);
             void CreateUserTilt()
             {
                 watcher.EnableRaisingEvents = false;
-                Logger.Info("Building Tiltfile.user");
+                var repositorySegments = ImageRepository.Split("/");
+                var appName = repositorySegments.Last();
+                
+                Log.Logger.Information("Building Tiltfile.user");
                 var currentContext = KubernetesTasks.Kubernetes("config current-context").First().Text;
-                var tiltFile = File.ReadAllText(RootDirectory / "Tiltfile");
-                tiltFile = Regex.Replace(tiltFile, "^allow_k8s_contexts.+", "");
+                var templatesFolder = RootDirectory / "build" / "tilt";
+                var tiltFile = File.ReadAllText(templatesFolder  / "Tiltfile.template");
+                tiltFile = Regex.Replace(tiltFile, "^allow_k8s_contexts.+", "", RegexOptions.Multiline);
                 tiltFile = $"allow_k8s_contexts('{currentContext}')\n{tiltFile}";
+                tiltFile = tiltFile.Replace("${reponame}", ImageRepository);
                 File.WriteAllText(RootDirectory / "Tiltfile.user", tiltFile);
+
+                
+                var deployment = File.ReadAllText(templatesFolder / "deployment.template.yaml");
+                deployment = deployment
+                    .Replace("${reponame}", ImageRepository)
+                    .Replace("${deploymentyaml}", "deployment.yaml.user")
+                    .Replace("${appname}", appName);
+                File.WriteAllText(RootDirectory / "deployment.yaml.user", deployment);
+                
                 watcher.EnableRaisingEvents = true;
             }
             CreateUserTilt();
@@ -239,7 +260,6 @@ class Build : NukeBuild
                 os = "osx";
             var tilt = ToolPathResolver.GetPackageExecutable($"Tilt.CommandLine.{os}-x64", "tilt" + (OperatingSystem.IsWindows() ? ".exe" : ""));
             var tiltProcess = ProcessTasks.StartProcess(tilt, "up -f Tiltfile.user", workingDirectory: RootDirectory);
-            var kubectlProcess = ProcessTasks.StartProcess("kubectl", "port-forward -n app-live-view service/application-live-view-5112 5112:5112");
             await Task.Delay(3000);
             var tiltPsi = new ProcessStartInfo
             {
@@ -248,15 +268,7 @@ class Build : NukeBuild
             };
             Process.Start(tiltPsi);
             
-            var liveViewPsi = new ProcessStartInfo
-            {
-                FileName = "http://localhost:5112",
-                UseShellExecute = true
-            };
-            Process.Start(liveViewPsi);
-            
             tiltProcess.WaitForExit();
-            kubectlProcess.Kill();
         });
 
     Target GenerateClient => _ => _
@@ -307,7 +319,7 @@ class Build : NukeBuild
         .Description("Returns current project semver based on current branch")
         .Executes(() =>
         {
-            Logger.Block(GitVersion.NuGetPackageVersion);
+            Log.Information(GitVersion.NuGetPackageVersion);
         });
 
     Target PrepareRelease => _ => _

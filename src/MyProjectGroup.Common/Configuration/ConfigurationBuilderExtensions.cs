@@ -90,7 +90,7 @@ namespace MyProjectGroup.Common.Configuration
                     .AddCommandLine(args)
                     .AddPlaceholderResolver();
 
-                var logger = BootstrapLoggerFactory.Instance.CreateLogger(typeof(ConfigurationBuilderExtensions).FullName);
+                var logger = BootstrapLoggerFactory.Instance.CreateLogger(typeof(ConfigurationBuilderExtensions).FullName!);
                 logger.LogInformation("Configuration folder: {ConfigFolder}", ConfigFolder.Value);
 
                 void LogSources(IList<IConfigurationSource> sources)

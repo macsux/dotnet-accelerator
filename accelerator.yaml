@@ -13,20 +13,6 @@ accelerator:
     inputType: text
     defaultValue: MyNamespace
     required: true
-  - name: dockerRegistry
-    label: Docker repository
-    dataType: string
-    description: Dockerhub username or container registry (ex. dockerhubuser/myaccelerator or my.container.registry.com/myaccelerator)
-    inputType: text
-    defaultValue: dockerhubuser
-    required: true
-  - name: dockerImageRepository
-    label: Image registry name
-    dataType: string
-    description: Docker image repository name for image being created
-    inputType: text
-    defaultValue: dotnet-accelerator
-    required: true
   - name: database
     label: Database
     dataType: string
@@ -59,6 +45,8 @@ engine:
     expression: (#database=="postgresql")
   - name: mysql
     expression: (#database=="mysql")
+  - name: sourceNameLower
+    expression: '#artifactId.toLowerCase()'
   merge:
   - include:
     - '**'
@@ -86,7 +74,7 @@ engine:
       substitutions:
       - text: |2-
                   <!--#if configserver -->
-                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.3" />
                   <!--#endif -->
         with: "''"
       condition: '!(#configserver)'
@@ -94,9 +82,80 @@ engine:
       substitutions:
       - text: |2-
                   <!--#if configserver -->
-                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.3" />
                   <!--#endif -->
-        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
+        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.3\" />'"
+      condition: '#configserver'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/MyProjectGroup.DotnetAccelerator.csproj
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if enableSecurity -->
+                  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
+                  <PackageReference Include="idunno.Authentication.Basic" Version="2.2.3" />
+                  <!--#endif -->
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if enableSecurity -->
+                  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
+                  <PackageReference Include="idunno.Authentication.Basic" Version="2.2.3" />
+                  <!--#endif -->
+        with: |-
+          '        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
+                  <PackageReference Include="idunno.Authentication.Basic" Version="2.2.3" />'
+      condition: '#enableSecurity'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if postgresql -->
+                  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
+                  <!--#endif -->
+        with: "''"
+      condition: '!(#postgresql)'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if postgresql -->
+                  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
+                  <!--#endif -->
+        with: "'        <PackageReference Include=\"Npgsql.EntityFrameworkCore.PostgreSQL\" Version=\"6.0.3\" />'"
+      condition: '#postgresql'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if mysql -->
+                  <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.1" />
+                  <!--#endif -->
+        with: "''"
+      condition: '!(#mysql)'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if mysql -->
+                  <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.1" />
+                  <!--#endif -->
+        with: "'        <PackageReference Include=\"Pomelo.EntityFrameworkCore.MySql\" Version=\"6.0.1\" />'"
+      condition: '#mysql'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if configserver -->
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.3" />
+                  <!--#endif -->
+        with: "''"
+      condition: '!(#configserver)'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if configserver -->
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.3" />
+                  <!--#endif -->
+        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.3\" />'"
       condition: '#configserver'
   - include:
     - config/application-Development.yaml
@@ -124,73 +183,6 @@ engine:
             Bearer:
               Authority: https://login.run.pcfone.io'
       condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/MyProjectGroup.DotnetAccelerator.csproj
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if enableSecurity -->
-                  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.11" />
-                  <!--#endif -->
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if enableSecurity -->
-                  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.11" />
-                  <!--#endif -->
-        with: "'        <PackageReference Include=\"Microsoft.AspNetCore.Authentication.JwtBearer\" Version=\"5.0.11\" />'"
-      condition: '#enableSecurity'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if postgresql -->
-                  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
-                  <!--#endif -->
-        with: "''"
-      condition: '!(#postgresql)'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if postgresql -->
-                  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
-                  <!--#endif -->
-        with: "'        <PackageReference Include=\"Npgsql.EntityFrameworkCore.PostgreSQL\" Version=\"5.0.10\" />'"
-      condition: '#postgresql'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if mysql -->
-                  <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.2" />
-                  <!--#endif -->
-        with: "''"
-      condition: '!(#mysql)'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if mysql -->
-                  <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.2" />
-                  <!--#endif -->
-        with: "'        <PackageReference Include=\"Pomelo.EntityFrameworkCore.MySql\" Version=\"5.0.2\" />'"
-      condition: '#mysql'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if configserver -->
-                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
-                  <!--#endif -->
-        with: "''"
-      condition: '!(#configserver)'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if configserver -->
-                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.1" />
-                  <!--#endif -->
-        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.1\" />'"
-      condition: '#configserver'
   - include:
     - config/application.yaml
     chain:
@@ -395,7 +387,7 @@ engine:
                           bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);'
       condition: '#configserver'
   - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/.buildsync/config/solution-defaults.Development.yaml
+    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net6.0/config/solution-defaults.Development.yaml
     chain:
     - type: ReplaceText
       substitutions:
@@ -421,7 +413,7 @@ engine:
               Authority: https://login.run.pcfone.io'
       condition: '#enableSecurity'
   - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/.buildsync/config/solution-defaults.yaml
+    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net6.0/config/solution-defaults.yaml
     chain:
     - type: ReplaceText
       substitutions:
@@ -457,7 +449,7 @@ engine:
                 "commandName": "Project",
                 "dotnetRunMessages": "true",
                 "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000",
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:5010",
                 "environmentVariables": {
                   "ASPNETCORE_ENVIRONMENT": "Development",
                   "PROFILES:ACTIVE": "LocalPostgreSQL"
@@ -474,7 +466,7 @@ engine:
                 "commandName": "Project",
                 "dotnetRunMessages": "true",
                 "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000",
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:5010",
                 "environmentVariables": {
                   "ASPNETCORE_ENVIRONMENT": "Development",
                   "PROFILES:ACTIVE": "LocalPostgreSQL"
@@ -486,7 +478,7 @@ engine:
                 "commandName": "Project",
                 "dotnetRunMessages": "true",
                 "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000",
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:5010",
                 "environmentVariables": {
                   "ASPNETCORE_ENVIRONMENT": "Development",
                   "PROFILES:ACTIVE": "LocalPostgreSQL"
@@ -501,7 +493,7 @@ engine:
                 "commandName": "Project",
                 "dotnetRunMessages": "true",
                 "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000",
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:5010",
                 "environmentVariables": {
                   "ASPNETCORE_ENVIRONMENT": "Development",
                   "PROFILES:ACTIVE": "LocalMySQL"
@@ -518,7 +510,7 @@ engine:
                 "commandName": "Project",
                 "dotnetRunMessages": "true",
                 "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000",
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:5010",
                 "environmentVariables": {
                   "ASPNETCORE_ENVIRONMENT": "Development",
                   "PROFILES:ACTIVE": "LocalMySQL"
@@ -530,7 +522,7 @@ engine:
                 "commandName": "Project",
                 "dotnetRunMessages": "true",
                 "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000",
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:5010",
                 "environmentVariables": {
                   "ASPNETCORE_ENVIRONMENT": "Development",
                   "PROFILES:ACTIVE": "LocalMySQL"
@@ -573,58 +565,6 @@ engine:
         with: "'        MySQL,'"
       condition: '#mysql'
   - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/config/solution-defaults.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://accounts.google.com'
-      condition: '#enableSecurity'
-  - include:
     - src/MyProjectGroup.Common/Security/KnownAuthorizationPolicy.cs
     chain:
     - type: ReplaceText
@@ -649,136 +589,6 @@ engine:
           '        public const string AirportRead = "airport.read";
                   public const string WeatherRead = "airport.read";
                   public const string WeatherWrite = "airport.read";'
-      condition: '#enableSecurity'
-  - include:
-    - tests/DotnetAcceleratorTests/bin/Debug/net5.0/config/solution-defaults.Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
-  - include:
-    - tests/DotnetAcceleratorTests/bin/Debug/net5.0/config/solution-defaults.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://accounts.google.com'
-      condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/linux-x64/config/solution-defaults.Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/linux-x64/config/solution-defaults.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://accounts.google.com'
-      condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/publish/config/solution-defaults.Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
       condition: '#enableSecurity'
   - include:
     - src/MyProjectGroup.DotnetAccelerator/Modules/AirportModule/AirportController.cs
@@ -808,32 +618,6 @@ engine:
                   [Authorize(KnownAuthorizationPolicy.AirportRead)]
           #endif
         with: "'        [Authorize(KnownAuthorizationPolicy.AirportRead)]'"
-      condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/publish/config/solution-defaults.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://accounts.google.com'
       condition: '#enableSecurity'
   - include:
     - src/MyProjectGroup.DotnetAccelerator/Modules/WeatherModule/WeatherController.cs
@@ -873,110 +657,6 @@ engine:
                   [Authorize(KnownAuthorizationPolicy.WeatherWrite)]
           #endif
         with: "'        [Authorize(KnownAuthorizationPolicy.WeatherWrite)]'"
-      condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/ubuntu.18.04-x64/config/solution-defaults.Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/ubuntu.18.04-x64/config/solution-defaults.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://accounts.google.com'
-      condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/linux-x64/publish/config/solution-defaults.Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net5.0/linux-x64/publish/config/solution-defaults.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://accounts.google.com'
       condition: '#enableSecurity'
   chain:
   - type: RewritePath
@@ -1039,12 +719,6 @@ engine:
   - type: RewritePath
     regex: src/MyProjectGroup.Common/Persistence/DbType.cs
     rewriteTo: "'src/' + #namespace + '.Common/Persistence/DbType.cs'"
-  - type: RewritePath
-    regex: src/MyProjectGroup.Common/Security/ActuatorSecurityOptions.cs
-    rewriteTo: "'src/' + #namespace + '.Common/Security/ActuatorSecurityOptions.cs'"
-  - type: RewritePath
-    regex: src/MyProjectGroup.Common/Security/AuthorizationPolicyBuilderExtensions.cs
-    rewriteTo: "'src/' + #namespace + '.Common/Security/AuthorizationPolicyBuilderExtensions.cs'"
   - type: RewritePath
     regex: src/MyProjectGroup.Common/Security/KnownAuthorizationPolicy.cs
     rewriteTo: "'src/' + #namespace + '.Common/Security/KnownAuthorizationPolicy.cs'"
@@ -1132,12 +806,8 @@ engine:
       with: '#namespace'
   - type: ReplaceText
     substitutions:
-    - text: macsux
-      with: '#dockerRegistry'
-  - type: ReplaceText
-    substitutions:
-    - text: dotnet-accelerator
-      with: '#dockerImageRepository'
+    - text: dotnetaccelerator
+      with: '#sourceNameLower'
   - type: ReplaceText
     substitutions:
     - text: DotnetAccelerator

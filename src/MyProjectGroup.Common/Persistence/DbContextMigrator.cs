@@ -7,6 +7,9 @@ using Microsoft.Extensions.Logging;
 
 namespace MyProjectGroup.Common.Persistence
 {
+    /// <summary>
+    /// Helper class to apply entity framework migrations
+    /// </summary>
     public class DbContextMigrator
     {
         private readonly IServiceProvider _serviceProvider;

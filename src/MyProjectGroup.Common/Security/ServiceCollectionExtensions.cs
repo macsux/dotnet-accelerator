@@ -27,11 +27,7 @@ namespace MyProjectGroup.Common.Security
             services.AddSafeSpringBootAdmin();
             services.AddSingleton(provider =>
             {
-                var actuatorSecurityOptions = provider.GetRequiredService<IOptions<ActuatorSecurityOptions>>().Value;
                 var springBootAdminOptions = ActivatorUtilities.CreateInstance<SpringBootAdminClientOptions>(provider);
-                springBootAdminOptions.Metadata ??= new();
-                springBootAdminOptions.Metadata.TryAdd("user.name", actuatorSecurityOptions.UserName);
-                springBootAdminOptions.Metadata.TryAdd("user.password", actuatorSecurityOptions.Password);
                 return springBootAdminOptions;
             });
             return services;
@@ -94,78 +90,10 @@ namespace MyProjectGroup.Common.Security
                 }
                 catch (Exception e)
                 {
-                    _logger.LogWarning(e, $"Can't connect to Spring Boot Admin at {_options.Url}");
+                    _logger.LogWarning(e, "Can't connect to Spring Boot Admin at {Url}", _options.Url);
                 }
             }
         }
-        public static IServiceCollection AddSecureActuators(this IServiceCollection services)
-        {
-            services.AddAllActuators();
-            services.AddSingleton<IStartupFilter>(new AllActuatorsStartupFilter(c => c.RequireAuthorization(KnownAuthorizationPolicy.Actuators)));
-            services.AddOptions<ActuatorSecurityOptions>()
-                .Configure<IConfiguration>((options, config) =>
-                {
-                    var section = config.GetSection("Spring:Boot:Admin:Client:Metadata");
-                    var username = section.GetValue<string>("user.name");
-                    var password = section.GetValue<string>("user.password");
-                    if (username != null)
-                    {
-                        options.UserName = username;
-                    }
-
-                    if (password != null)
-                    {
-                        options.Password = password;
-                    }
-
-                    options.Enabled = config.GetValue<bool?>("Management:Endpoints:Actuator:EnableSecurity") ?? true;
-                });
-            services.AddAuthentication().AddBasic(BasicAuthenticationDefaults.AuthenticationScheme, options =>
-            {
-                options.AllowInsecureProtocol = true;
-                options.Events = new BasicAuthenticationEvents
-                {
-                    OnValidateCredentials = context =>
-                    {
-                        var options = context.HttpContext.RequestServices.GetRequiredService<IOptionsSnapshot<ActuatorSecurityOptions>>().Value;
-                        if (context.Username == options.UserName && context.Password == options.Password) 
-                        {
-                            context.Principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("scope", KnownScope.Actuators)}));
-                            context.Success();
-                        }
-
-                        return Task.CompletedTask;
-                    }
-                };
-            });
-            
-            services.AddAuthorization(authz =>
-            {
-                authz.AddPolicy(KnownAuthorizationPolicy.Actuators, policyBuilder => policyBuilder
-                    .AddAuthenticationSchemes(BasicAuthenticationDefaults.AuthenticationScheme)
-                    .RequireAssertion(context =>
-                    {
-                        var httpContext = (HttpContext) context.Resource!;
-                        var options = httpContext.RequestServices.GetRequiredService<IOptionsSnapshot<ActuatorSecurityOptions>>().Value;
-                        if (!options.Enabled)
-                        {
-                            return true;
-                        }
-                        var actuatorEndpoints = httpContext.RequestServices.GetServices<IEndpointOptions>()
-                            .Where(x => x.Id is not "health" and not "info")
-                            .Select(x => ((PathString) $"/actuator").Add($"/{x.Id}"))
-                            .ToList();
-                        var path = httpContext.Request.Path;
-                        if (actuatorEndpoints.Any(x => path.StartsWithSegments(x)) && !context.User.HasScope(KnownScope.Actuators))
-                        {
-                            return false;
-                        }
-                        
-                        return true;
-                    })
-                );
-            });
-            return services;
-        }
+        
     }
 }

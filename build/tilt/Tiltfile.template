@@ -1,7 +1,7 @@
 os.putenv ('DOCKER_BUILDKIT' , '1' )
 isWindows = True if os.name == "nt" else False
 
-name = 'macsux/dotnet-accelerator'
+name = '${reponame}'
 expected_ref = "%EXPECTED_REF%" if isWindows else "$EXPECTED_REF"
 rid = "ubuntu.18.04-x64"
 configuration = "Debug"
@@ -24,5 +24,5 @@ custom_build(
         ]
     )
 
-k8s_yaml(['kubernetes/deployment.yaml'])
+k8s_yaml(['${deploymentyaml}'])
 k8s_resource('dotnet-accelerator', port_forwards=[8080,22])

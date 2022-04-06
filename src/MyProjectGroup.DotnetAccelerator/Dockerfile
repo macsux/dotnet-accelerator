@@ -1,4 +1,18 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+# THIS DOCKERFILE IS OPTIMIZED FOR INNERLOOP AND IS NOT APPROPRIATE FOR PRODUCTION USE. FOR OUTERLOOP, USE .NET BUILDPACK
+# Features:
+# - multistage build (compile in sdk container -> copy to run image)
+# - remote debugging agents for Visual Studio & Rider (automatically downloaded)
+# - watchexec to automatically restart the app if any dlls are hotpached in the container (tilt liveupdate)
+# - openSSH server to allow remote debugging sessions (user: root  pass: admin) 
+# - optimized layering to maximize cache hits (using NMica)
+# - caching for downloaded dependencies:
+#    - nuget packages
+#    - remote debugging agents
+#    - watchexec
+
+# - 
+# expected docker context is git root
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 RUN apt-get update && apt-get install unzip
 # download extra dependencies if they are not already in cache
 RUN --mount=type=cache,id=download,target=/download if [ ! -f /download/watchexec.deb ]; then wget -O /download/watchexec.deb https://github.com/watchexec/watchexec/releases/download/cli-v1.17.1/watchexec-1.17.1-x86_64-unknown-linux-musl.deb; fi
@@ -17,7 +31,7 @@ COPY . .
 RUN --mount=type=cache,id=nuget,target=/nuget dotnet msbuild /p:RuntimeIdentifier=ubuntu-x64 /p:SelfContained=false /p:_CommandLineDefinedRuntimeIdentifier=true /p:RestorePackages=false /t:PublishLayer /p:PublishDir=/layer/ /p:DockerLayer=All "/src/MyProjectGroup.DotnetAccelerator/MyProjectGroup.DotnetAccelerator.csproj"
 
  
-FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS run
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS run
 # install watchexec which will restart the process when any of the files are updated (to support hotpatching container)
 COPY --from=build /usr/bin/watchexec /usr/bin/watchexec
 # install JetBrains Rider debugging agent

@@ -2,6 +2,6 @@ Spring:
   Boot:
     Admin:
       Client:
-        BasePath: http://host.docker.internal:5000 # use http since SBA doesn't like our self signed cert
+        BasePath: http://host.docker.internal:5010 # use http since SBA doesn't like our self signed cert
   Profiles:
     Active: SQLite
