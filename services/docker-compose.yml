@@ -86,17 +86,6 @@ services:
     image: steeltoeoss/spring-boot-admin
     ports: 
       - 8088:8080 
-
-  live-view:
-    image: registry.tanzu.vmware.com/app-live-view/application-live-view-sidecar:0.2.0
-    environment:
-      - app.live.view.sidecar.application-name=DotnetAccelerator
-      - app.live.view.sidecar.application-host=host.docker.internal
-      - app.live.view.sidecar.application-protocol=http
-      - app.live.view.sidecar.application-port=5000
-      - app.live.view.sidecar.actuator-path=/actuator
-      - app.live.view.sidecar.app-flavours=steeltoe
-      - app.live.view.client.host=host.docker.internal
       
 volumes:
   postgresql:

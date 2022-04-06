@@ -1,3 +1,72 @@
+## Tanzu Application Platform C# accelerator
+
+This is a starter template for advanced enterprise projects built in .NET. It encompasses a number of architectural opinions that will enable best practices in a typical enterprise app. This template can be used both as a `dotnet new` template and as TAP accelerator.
+
+### Installing into TAP
+
+You can add this template as an accelerator into a TAP cluster by running the following command:
+
+```
+kubectl apply -f .template.config/myaccelerator.yaml -n accelerator-system
+```
+
+### Embedded opinions
+
+- High level build system based on Nuke.build
+  - Build shell script entrypoints for every OS
+  - Automatic acquisition of all required dependencies, including .NET SDK 
+  - Local environment initialization
+    - Initialize local git repo for GitFlow workflow
+  - Helper build targets for branching and release managements
+- Project versioning derived from git history using Nerdbank.Gitversioning. This is integrated with branching strategy.
+- Optional JWT authorization for API endpoints (template option)
+- Integration with Tilt (TAP inner loop)
+  - Helper build target to start tilt (can be used instead of IDE plugin)
+  - Automatic generation of Tiltfile and deployment manifest
+  - LiveSync patching of containers
+  - Inner loop optimized container
+    - Debugging agents for Visual Studio & Rider
+    - SSH port exposed
+    - Dependency caching between builds
+    - Intelligent layering to maximize cache hits
+    - Watchexec /w automatic restart of app after live container patch
+- Configurable databases: SQLite, MySQL or PostgreSQL
+- Entity Framework migrations with build target to automatically generating new ones
+- Build target for publishing app as a version stamped zip artifact
+- Architecture
+  - Structured monolith easily upgradable to microservices
+  - Module based project layout organized by feature rather than layers
+  - Loose coupling via in-memory message bus implemented using MediatR
+- Config managment
+  - Optional integration with Spring Config Server (template option)
+  - Ability to define default config values for all projects in solution
+  - YAML based configuration
+  - Support for profiles (Spring style)
+- Observability
+  - Actuator support /w Steeltoe exposed on management port
+  - TAP LiveView support
+  - Spring Boot Admin support (prewired for use via docker-compose)
+  - Distributed tracing with Zipkin (prewired for use via docker-compose)
+- Testing
+  - Example on how to structure unit tests
+  - Testing for exceptions / failures
+  - Use of FluentAssertions to increase test readability
+- CI/CD
+  - Automatic generation of pipelines using Nuke.build for
+    - Azure DevOps
+    - Github Actions
+- Docker-compose for all dependent services when iterating locally
+  - Spring Config Server
+  - Eureka (service discovery)
+  - RabbitMQ
+  - MySQL
+  - PostgreSQL
+  - PHPMyAdmin (Web GUI for MySQL)
+  - OmniDB (WebGUI for PostgreSQL)
+  - Zipkin (distributed tracing)
+  - Spring Boot Admin (actuator visualizer)
+
+
 ## Quickstart
 
 Run `.\build.cmd init` or `.\build.sh init` to setup local environment.
