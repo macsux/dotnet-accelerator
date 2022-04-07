@@ -222,6 +222,24 @@ class Build : NukeBuild
                 watcher.EnableRaisingEvents = false;
                 var repositorySegments = ImageRepository.Split("/");
                 var appName = repositorySegments.Last();
+                var tokenVariables = new[]
+                {
+                    ("reponame", ImageRepository),
+                    ("deploymentyaml", "deployment.yaml.user"),
+                    ("appname", appName)
+                }
+                    .Select(x => ("${" + x.Item1 + "}", x.Item2))
+                    .ToDictionary(x => x.Item1, x => x.Item2);
+
+                string ReplaceTokens(string template)
+                {
+                    foreach (var (search, replace) in tokenVariables)
+                    {
+                        template = template.Replace(search, replace);
+                    }
+
+                    return template;
+                }
                 
                 Log.Logger.Information("Building Tiltfile.user");
                 var currentContext = KubernetesTasks.Kubernetes("config current-context").First().Text;
@@ -229,15 +247,12 @@ class Build : NukeBuild
                 var tiltFile = File.ReadAllText(templatesFolder  / "Tiltfile.template");
                 tiltFile = Regex.Replace(tiltFile, "^allow_k8s_contexts.+", "", RegexOptions.Multiline);
                 tiltFile = $"allow_k8s_contexts('{currentContext}')\n{tiltFile}";
-                tiltFile = tiltFile.Replace("${reponame}", ImageRepository);
+                tiltFile = ReplaceTokens(tiltFile);
                 File.WriteAllText(RootDirectory / "Tiltfile.user", tiltFile);
 
                 
                 var deployment = File.ReadAllText(templatesFolder / "deployment.template.yaml");
-                deployment = deployment
-                    .Replace("${reponame}", ImageRepository)
-                    .Replace("${deploymentyaml}", "deployment.yaml.user")
-                    .Replace("${appname}", appName);
+                deployment = ReplaceTokens(deployment);
                 File.WriteAllText(RootDirectory / "deployment.yaml.user", deployment);
                 
                 watcher.EnableRaisingEvents = true;

@@ -62,7 +62,8 @@ namespace MyProjectGroup.DotnetAccelerator
             services.AddDistributedTracingAspNetCore();
             // add all steeltoe actuators, but make them only respond on a management port
             services.AddAllActuators();
-            services.AddSingleton<IStartupFilter>(new AllActuatorsStartupFilter(c => c.RequireHost("*:5010")));
+            var managementPort = Configuration.GetValue<uint>("Management:Port");
+            services.AddSingleton<IStartupFilter>(new AllActuatorsStartupFilter(c => c.RequireHost($"*:{managementPort}")));
             // register with Spring Boot Admin if integration is enabled. Spring boot admin will scrape this apps actuators and display in GUI
             // spring boot admin can be used instead of TAP LiveView when running locally
             if (Configuration.GetValue<string>("Spring:Boot:Admin:Client:Url") != null)

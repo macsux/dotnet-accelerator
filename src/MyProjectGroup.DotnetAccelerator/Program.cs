@@ -18,7 +18,7 @@ namespace MyProjectGroup.DotnetAccelerator
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .AddDynamicLogging()
+                // .AddDynamicLogging()
                 .UseYamlWithProfilesAppConfiguration<Program>(args)
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
         

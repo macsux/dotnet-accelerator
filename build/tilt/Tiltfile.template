@@ -25,4 +25,4 @@ custom_build(
     )
 
 k8s_yaml(['${deploymentyaml}'])
-k8s_resource('dotnet-accelerator', port_forwards=[8080,22])
+k8s_resource('dotnet-accelerator', port_forwards=[8080,8090,22])

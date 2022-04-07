@@ -51,8 +51,11 @@ COPY --from=build /layer/package ./
 COPY --from=build /layer/earlypackage ./
 COPY --from=build /layer/project ./
 COPY --from=build /layer/app ./
-ENTRYPOINT ["bash", "-c", "/etc/init.d/ssh start && watchexec --ignore *.yaml --restart --watch . 'dotnet MyProjectGroup.DotnetAccelerator.dll --urls http://0.0.0.0:${PORT}'"]
+
+ENTRYPOINT ["bash", "-c", "/etc/init.d/ssh start && watchexec --ignore *.yaml --restart --watch . 'dotnet MyProjectGroup.DotnetAccelerator.dll'"]
 ENV PORT=8080
+ENV MANAGMENTPORT=8090
+ENV ASPNETCORE_URLS="http://0.0.0.0:${PORT};http://0.0.0.0:${MANAGMENTPORT}"
 ENV ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
 ENV LOGGING__CONSOLE__DISABLECOLORS=true
 EXPOSE 8080

@@ -21,15 +21,20 @@ spec:
           env:
             - name: ASPNETCORE_ENVIRONMENT
               value: Development
+            - name: ASPNETCORE_URLS
+              value: http://0.0.0.0:8080;http://0.0.0.0:8090
+            - name: Logging__Console__FormatterName
+              value: simple
           imagePullPolicy: Always
-          livenessProbe:
-            httpGet:
-              path: /actuator/health/liveness
-              port: 8080
           ports:
             - containerPort: 8080
             - containerPort: 22
+            - containerPort: 8090
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8090
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: 8080
+              port: 8090
