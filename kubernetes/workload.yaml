@@ -7,7 +7,9 @@ metadata:
     tanzu.app.live.view: "true"
     tanzu.app.live.view.application.flavours: steeltoe
     tanzu.app.live.view.application.name: dotnetaccelerator
-  name: dotnet-accelerator
+    autoscaling.knative.dev/minScale: "1"
+    autoscaling.knative.dev/maxScale: "1"
+  name: dotnetaccelerator
   namespace: default
 spec:
   env:
@@ -22,5 +24,5 @@ spec:
   source:
     git:
       ref:
-        branch: master
+        branch: dev
       url: https://github.com/macsux/dotnet-accelerator
