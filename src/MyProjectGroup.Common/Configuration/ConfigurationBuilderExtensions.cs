@@ -134,22 +134,12 @@ namespace MyProjectGroup.Common.Configuration
                 var profiles = profilesCsv.Split(",").Select(x => x.Trim()).ToArray();
                 foreach (var profile in profiles)
                 {
-                    builder.AddYamlFile(GetFullPath($"{GetAppSettingsName()}.{profile}.yaml"), true, true);
-                    builder.AddYamlFile(GetFullPath($"{GetAppSettingsName()}-{profile}.yaml"), true, true);
+                    builder.AddYamlFile(GetFullPath($"{AppSettingsConfigName.Value}.{profile}.yaml"), true, true);
+                    builder.AddYamlFile(GetFullPath($"{AppSettingsConfigName.Value}-{profile}.yaml"), true, true);
                 }
             }
 
             return builder;
-        }
-
-        private static string GetAppSettingsName()
-        {
-            return File.Exists(GetFullPath("appsettings.yaml")) ? "appsettings" : Assembly
-                .GetEntryAssembly()?
-                .GetCustomAttributes<AssemblyMetadataAttribute>()
-                .Where(x => x.Key == "ApplicationName")
-                .Select(x => x.Value)
-                .FirstOrDefault() ?? throw new Exception("Assembly does not have application name set. Add <ApplicationName>MyAppName</ApplicationName> to csproj.");
         }
 
         private static string GetFullPath(string filename) => Path.Combine(ConfigFolder.Value, filename);
