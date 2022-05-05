@@ -87,6 +87,141 @@ engine:
         with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.3\" />'"
       condition: '#configserver'
   - include:
+    - src/MyProjectGroup.DotnetAccelerator/Program.cs
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          using Microsoft.AspNetCore.Authentication.JwtBearer;
+          #endif
+        with: "''"
+      - text: |-
+          #if enableSecurity
+          services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+              .AddJwtBearer(cfg =>
+              {
+                  cfg.ForwardDefaultSelector = httpContext => (httpContext.Request.Path.StartsWithSegments("/actuator")? BasicAuthenticationDefaults.AuthenticationScheme : null)!;
+                  configuration.GetSection($"Authentication:{JwtBearerDefaults.AuthenticationScheme}").Bind(cfg);
+              });
+          services.AddAuthorization(authz =>
+          {
+              authz.AddPolicy(KnownAuthorizationPolicy.AirportRead, policy => policy.RequireScope(KnownScope.Read));
+              authz.AddPolicy(KnownAuthorizationPolicy.WeatherRead, policy => policy.RequireScope(KnownScope.Read));
+              authz.AddPolicy(KnownAuthorizationPolicy.WeatherWrite, policy => policy.RequireScope(KnownScope.Write));
+          });
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          using Microsoft.AspNetCore.Authentication.JwtBearer;
+          #endif
+        with: "'using Microsoft.AspNetCore.Authentication.JwtBearer;'"
+      - text: |-
+          #if enableSecurity
+          services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+              .AddJwtBearer(cfg =>
+              {
+                  cfg.ForwardDefaultSelector = httpContext => (httpContext.Request.Path.StartsWithSegments("/actuator")? BasicAuthenticationDefaults.AuthenticationScheme : null)!;
+                  configuration.GetSection($"Authentication:{JwtBearerDefaults.AuthenticationScheme}").Bind(cfg);
+              });
+          services.AddAuthorization(authz =>
+          {
+              authz.AddPolicy(KnownAuthorizationPolicy.AirportRead, policy => policy.RequireScope(KnownScope.Read));
+              authz.AddPolicy(KnownAuthorizationPolicy.WeatherRead, policy => policy.RequireScope(KnownScope.Read));
+              authz.AddPolicy(KnownAuthorizationPolicy.WeatherWrite, policy => policy.RequireScope(KnownScope.Write));
+          });
+          #endif
+        with: |-
+          'services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+              .AddJwtBearer(cfg =>
+              {
+                  cfg.ForwardDefaultSelector = httpContext => (httpContext.Request.Path.StartsWithSegments("/actuator")? BasicAuthenticationDefaults.AuthenticationScheme : null)!;
+                  configuration.GetSection($"Authentication:{JwtBearerDefaults.AuthenticationScheme}").Bind(cfg);
+              });
+          services.AddAuthorization(authz =>
+          {
+              authz.AddPolicy(KnownAuthorizationPolicy.AirportRead, policy => policy.RequireScope(KnownScope.Read));
+              authz.AddPolicy(KnownAuthorizationPolicy.WeatherRead, policy => policy.RequireScope(KnownScope.Read));
+              authz.AddPolicy(KnownAuthorizationPolicy.WeatherWrite, policy => policy.RequireScope(KnownScope.Write));
+          });'
+      condition: '#enableSecurity'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if configserver
+          using Steeltoe.Extensions.Configuration.ConfigServer;
+          #endif
+        with: "''"
+      - text: |-
+          #if configserver
+          services.AddConfigServerHealthContributor();
+          #endif
+        with: "''"
+      condition: '!(#configserver)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if configserver
+          using Steeltoe.Extensions.Configuration.ConfigServer;
+          #endif
+        with: "'using Steeltoe.Extensions.Configuration.ConfigServer;'"
+      - text: |-
+          #if configserver
+          services.AddConfigServerHealthContributor();
+          #endif
+        with: "'services.AddConfigServerHealthContributor();'"
+      condition: '#configserver'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if postgresql
+                  case DbType.PostgreSQL:
+                      opt.UseNpgsql(connectionString);
+                      break;
+          #endif
+        with: "''"
+      condition: '!(#postgresql)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if postgresql
+                  case DbType.PostgreSQL:
+                      opt.UseNpgsql(connectionString);
+                      break;
+          #endif
+        with: |-
+          '        case DbType.PostgreSQL:
+                      opt.UseNpgsql(connectionString);
+                      break;'
+      condition: '#postgresql'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if mysql
+                  case DbType.MySQL:
+                      opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+                      break;
+          #endif
+        with: "''"
+      condition: '!(#mysql)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if mysql
+                  case DbType.MySQL:
+                      opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+                      break;
+          #endif
+        with: |-
+          '        case DbType.MySQL:
+                      opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+                      break;'
+      condition: '#mysql'
+  - include:
     - src/MyProjectGroup.DotnetAccelerator/MyProjectGroup.DotnetAccelerator.csproj
     chain:
     - type: ReplaceText
@@ -210,141 +345,6 @@ engine:
               Authority: https://accounts.google.com'
       condition: '#enableSecurity'
   - include:
-    - src/MyProjectGroup.DotnetAccelerator/Startup.cs
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          using Microsoft.AspNetCore.Authentication.JwtBearer;
-          #endif
-        with: "''"
-      - text: |-
-          #if enableSecurity
-                      services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                          .AddJwtBearer(cfg =>
-                          {
-                              cfg.ForwardDefaultSelector = httpContext => (httpContext.Request.Path.StartsWithSegments("/actuator")? BasicAuthenticationDefaults.AuthenticationScheme : null)!;
-                              Configuration.GetSection($"Authentication:{JwtBearerDefaults.AuthenticationScheme}").Bind(cfg);
-                          });
-                      services.AddAuthorization(authz =>
-                      {
-                          authz.AddPolicy(KnownAuthorizationPolicy.AirportRead, policy => policy.RequireScope(KnownScope.Read));
-                          authz.AddPolicy(KnownAuthorizationPolicy.WeatherRead, policy => policy.RequireScope(KnownScope.Read));
-                          authz.AddPolicy(KnownAuthorizationPolicy.WeatherWrite, policy => policy.RequireScope(KnownScope.Write));
-                      });
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          using Microsoft.AspNetCore.Authentication.JwtBearer;
-          #endif
-        with: "'using Microsoft.AspNetCore.Authentication.JwtBearer;'"
-      - text: |-
-          #if enableSecurity
-                      services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                          .AddJwtBearer(cfg =>
-                          {
-                              cfg.ForwardDefaultSelector = httpContext => (httpContext.Request.Path.StartsWithSegments("/actuator")? BasicAuthenticationDefaults.AuthenticationScheme : null)!;
-                              Configuration.GetSection($"Authentication:{JwtBearerDefaults.AuthenticationScheme}").Bind(cfg);
-                          });
-                      services.AddAuthorization(authz =>
-                      {
-                          authz.AddPolicy(KnownAuthorizationPolicy.AirportRead, policy => policy.RequireScope(KnownScope.Read));
-                          authz.AddPolicy(KnownAuthorizationPolicy.WeatherRead, policy => policy.RequireScope(KnownScope.Read));
-                          authz.AddPolicy(KnownAuthorizationPolicy.WeatherWrite, policy => policy.RequireScope(KnownScope.Write));
-                      });
-          #endif
-        with: |-
-          '            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                          .AddJwtBearer(cfg =>
-                          {
-                              cfg.ForwardDefaultSelector = httpContext => (httpContext.Request.Path.StartsWithSegments("/actuator")? BasicAuthenticationDefaults.AuthenticationScheme : null)!;
-                              Configuration.GetSection($"Authentication:{JwtBearerDefaults.AuthenticationScheme}").Bind(cfg);
-                          });
-                      services.AddAuthorization(authz =>
-                      {
-                          authz.AddPolicy(KnownAuthorizationPolicy.AirportRead, policy => policy.RequireScope(KnownScope.Read));
-                          authz.AddPolicy(KnownAuthorizationPolicy.WeatherRead, policy => policy.RequireScope(KnownScope.Read));
-                          authz.AddPolicy(KnownAuthorizationPolicy.WeatherWrite, policy => policy.RequireScope(KnownScope.Write));
-                      });'
-      condition: '#enableSecurity'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if configserver
-          using Steeltoe.Extensions.Configuration.ConfigServer;
-          #endif
-        with: "''"
-      - text: |-
-          #if configserver
-                      services.AddConfigServerHealthContributor();
-          #endif
-        with: "''"
-      condition: '!(#configserver)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if configserver
-          using Steeltoe.Extensions.Configuration.ConfigServer;
-          #endif
-        with: "'using Steeltoe.Extensions.Configuration.ConfigServer;'"
-      - text: |-
-          #if configserver
-                      services.AddConfigServerHealthContributor();
-          #endif
-        with: "'            services.AddConfigServerHealthContributor();'"
-      condition: '#configserver'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if postgresql
-                              case DbType.PostgreSQL:
-                                  opt.UseNpgsql(connectionString);
-                                  break;
-          #endif
-        with: "''"
-      condition: '!(#postgresql)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if postgresql
-                              case DbType.PostgreSQL:
-                                  opt.UseNpgsql(connectionString);
-                                  break;
-          #endif
-        with: |-
-          '                    case DbType.PostgreSQL:
-                                  opt.UseNpgsql(connectionString);
-                                  break;'
-      condition: '#postgresql'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if mysql
-                              case DbType.MySQL:
-                                  opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-                                  break;
-          #endif
-        with: "''"
-      condition: '!(#mysql)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if mysql
-                              case DbType.MySQL:
-                                  opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-                                  break;
-          #endif
-        with: |-
-          '                    case DbType.MySQL:
-                                  opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-                                  break;'
-      condition: '#mysql'
-  - include:
     - src/MyProjectGroup.Common/Configuration/ConfigurationBuilderExtensions.cs
     chain:
     - type: ReplaceText
@@ -356,11 +356,11 @@ engine:
         with: "''"
       - text: |-
           #if configserver
-                          bootstrapConfigBuilder.AddEnvironmentVariables()
-                          .AddCommandLine(Environment.GetCommandLineArgs())
-                          .AddProfiles();
-                          BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
-                          bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);
+                      bootstrapConfigBuilder.AddEnvironmentVariables()
+                      .AddCommandLine(Environment.GetCommandLineArgs())
+                      .AddProfiles();
+                      BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
+                      bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);
           #endif
         with: "''"
       condition: '!(#configserver)'
@@ -373,21 +373,112 @@ engine:
         with: "'using Steeltoe.Extensions.Configuration.ConfigServer;'"
       - text: |-
           #if configserver
-                          bootstrapConfigBuilder.AddEnvironmentVariables()
-                          .AddCommandLine(Environment.GetCommandLineArgs())
-                          .AddProfiles();
-                          BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
-                          bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);
+                      bootstrapConfigBuilder.AddEnvironmentVariables()
+                      .AddCommandLine(Environment.GetCommandLineArgs())
+                      .AddProfiles();
+                      BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
+                      bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);
           #endif
         with: |-
-          '                bootstrapConfigBuilder.AddEnvironmentVariables()
-                          .AddCommandLine(Environment.GetCommandLineArgs())
-                          .AddProfiles();
-                          BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
-                          bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);'
+          '            bootstrapConfigBuilder.AddEnvironmentVariables()
+                      .AddCommandLine(Environment.GetCommandLineArgs())
+                      .AddProfiles();
+                      BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
+                      bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);'
       condition: '#configserver'
   - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net6.0/config/solution-defaults.Development.yaml
+    - src/MyProjectGroup.DotnetAccelerator/Properties/launchSettings.json
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          //#if postgresql
+              "DotnetAccelerator - PostgreSQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "PROFILES:ACTIVE": "LocalPostgreSQL"
+                }
+              },
+          //#endif
+        with: "''"
+      condition: '!(#postgresql)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          //#if postgresql
+              "DotnetAccelerator - PostgreSQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "PROFILES:ACTIVE": "LocalPostgreSQL"
+                }
+              },
+          //#endif
+        with: |-
+          '    "DotnetAccelerator - PostgreSQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "PROFILES:ACTIVE": "LocalPostgreSQL"
+                }
+              },'
+      condition: '#postgresql'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          //#if mysql
+              "DotnetAccelerator - MySQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "PROFILES:ACTIVE": "LocalMySQL"
+                }
+              },
+          //#endif
+        with: "''"
+      condition: '!(#mysql)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          //#if mysql
+              "DotnetAccelerator - MySQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "PROFILES:ACTIVE": "LocalMySQL"
+                }
+              },
+          //#endif
+        with: |-
+          '    "DotnetAccelerator - MySQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "PROFILES:ACTIVE": "LocalMySQL"
+                }
+              },'
+      condition: '#mysql'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/bin/.buildsync/config/solution-defaults.Development.yaml
     chain:
     - type: ReplaceText
       substitutions:
@@ -413,7 +504,7 @@ engine:
               Authority: https://login.run.pcfone.io'
       condition: '#enableSecurity'
   - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net6.0/config/solution-defaults.yaml
+    - src/MyProjectGroup.DotnetAccelerator/bin/.buildsync/config/solution-defaults.yaml
     chain:
     - type: ReplaceText
       substitutions:
@@ -438,97 +529,6 @@ engine:
             Bearer:
               Authority: https://accounts.google.com'
       condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/Properties/launchSettings.json
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          //#if postgresql
-              "DotnetAccelerator - PostgreSQL: ": {
-                "commandName": "Project",
-                "dotnetRunMessages": "true",
-                "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:5010",
-                "environmentVariables": {
-                  "ASPNETCORE_ENVIRONMENT": "Development",
-                  "PROFILES:ACTIVE": "LocalPostgreSQL"
-                }
-              },
-          //#endif
-        with: "''"
-      condition: '!(#postgresql)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          //#if postgresql
-              "DotnetAccelerator - PostgreSQL: ": {
-                "commandName": "Project",
-                "dotnetRunMessages": "true",
-                "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:5010",
-                "environmentVariables": {
-                  "ASPNETCORE_ENVIRONMENT": "Development",
-                  "PROFILES:ACTIVE": "LocalPostgreSQL"
-                }
-              },
-          //#endif
-        with: |-
-          '    "DotnetAccelerator - PostgreSQL: ": {
-                "commandName": "Project",
-                "dotnetRunMessages": "true",
-                "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:5010",
-                "environmentVariables": {
-                  "ASPNETCORE_ENVIRONMENT": "Development",
-                  "PROFILES:ACTIVE": "LocalPostgreSQL"
-                }
-              },'
-      condition: '#postgresql'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          //#if mysql
-              "DotnetAccelerator - MySQL: ": {
-                "commandName": "Project",
-                "dotnetRunMessages": "true",
-                "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:5010",
-                "environmentVariables": {
-                  "ASPNETCORE_ENVIRONMENT": "Development",
-                  "PROFILES:ACTIVE": "LocalMySQL"
-                }
-              },
-          //#endif
-        with: "''"
-      condition: '!(#mysql)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          //#if mysql
-              "DotnetAccelerator - MySQL: ": {
-                "commandName": "Project",
-                "dotnetRunMessages": "true",
-                "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:5010",
-                "environmentVariables": {
-                  "ASPNETCORE_ENVIRONMENT": "Development",
-                  "PROFILES:ACTIVE": "LocalMySQL"
-                }
-              },
-          //#endif
-        with: |-
-          '    "DotnetAccelerator - MySQL: ": {
-                "commandName": "Project",
-                "dotnetRunMessages": "true",
-                "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:5010",
-                "environmentVariables": {
-                  "ASPNETCORE_ENVIRONMENT": "Development",
-                  "PROFILES:ACTIVE": "LocalMySQL"
-                }
-              },'
-      condition: '#mysql'
   - include:
     - src/MyProjectGroup.Common/Persistence/DbType.cs
     chain:
@@ -589,6 +589,162 @@ engine:
           '        public const string AirportRead = "airport.read";
                   public const string WeatherRead = "airport.read";
                   public const string WeatherWrite = "airport.read";'
+      condition: '#enableSecurity'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net6.0/config/solution-defaults.Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net6.0/config/solution-defaults.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://accounts.google.com'
+      condition: '#enableSecurity'
+  - include:
+    - tests/DotnetAcceleratorTests/bin/Debug/net6.0/config/solution-defaults.Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
+  - include:
+    - tests/DotnetAcceleratorTests/bin/Debug/net6.0/config/solution-defaults.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://accounts.google.com'
+      condition: '#enableSecurity'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net6.0/ubuntu.18.04-x64/config/solution-defaults.Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net6.0/ubuntu.18.04-x64/config/solution-defaults.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://accounts.google.com'
       condition: '#enableSecurity'
   - include:
     - src/MyProjectGroup.DotnetAccelerator/Modules/AirportModule/AirportController.cs
@@ -720,6 +876,9 @@ engine:
     regex: src/MyProjectGroup.Common/Persistence/DbType.cs
     rewriteTo: "'src/' + #namespace + '.Common/Persistence/DbType.cs'"
   - type: RewritePath
+    regex: src/MyProjectGroup.Common/Security/AuthorizationPolicyBuilderExtensions.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Security/AuthorizationPolicyBuilderExtensions.cs'"
+  - type: RewritePath
     regex: src/MyProjectGroup.Common/Security/KnownAuthorizationPolicy.cs
     rewriteTo: "'src/' + #namespace + '.Common/Security/KnownAuthorizationPolicy.cs'"
   - type: RewritePath
@@ -728,6 +887,9 @@ engine:
   - type: RewritePath
     regex: src/MyProjectGroup.Common/Security/ServiceCollectionExtensions.cs
     rewriteTo: "'src/' + #namespace + '.Common/Security/ServiceCollectionExtensions.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/Swagger/SwaggerGenOptionsExtensions.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Swagger/SwaggerGenOptionsExtensions.cs'"
   - type: RewritePath
     regex: src/MyProjectGroup.DotnetAccelerator/Dockerfile
     rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Dockerfile'"
@@ -788,9 +950,6 @@ engine:
   - type: RewritePath
     regex: src/MyProjectGroup.DotnetAccelerator/README.md
     rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/README.md'"
-  - type: RewritePath
-    regex: src/MyProjectGroup.DotnetAccelerator/Startup.cs
-    rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Startup.cs'"
   - type: RewritePath
     regex: tests/DotnetAcceleratorTests/DotnetAcceleratorTests.csproj
     rewriteTo: "'tests/' + #artifactId + 'Tests/' + #artifactId + 'Tests.csproj'"
