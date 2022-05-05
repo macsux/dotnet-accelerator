@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -57,67 +58,66 @@ namespace MyProjectGroup.Common.Configuration
 
             return Environment.CurrentDirectory;
         });
-        public static IHostBuilder UseYamlWithProfilesAppConfiguration<T>(this IHostBuilder hostBuilder, string[] args)
+        public static WebApplicationBuilder UseYamlWithProfilesAppConfiguration<T>(this WebApplicationBuilder hostBuilder, string[] args)
         {
             _markerType = typeof(T);
-            hostBuilder.ConfigureAppConfiguration((hostingContext, cfg) =>
-            {
-                cfg.Sources.Clear();
-                var environment = hostingContext.HostingEnvironment.EnvironmentName;
-                var configName = AppSettingsConfigName.Value;
-                var bootstrapConfigBuilder = cfg
-                    .AddInMemoryCollection(new Dictionary<string, string>()
-                    {
-                        {"spring:application:name", AppName.Value}
-                    })
-                    .AddYamlFile(GetFullPath("solution-defaults.yaml"), true, true)
-                    .AddYamlFile(GetFullPath("application.yaml"), true, true)
-                    .AddYamlFile(GetFullPath($"solution-defaults.{environment}.yaml"), true, true)
-                    .AddYamlFile(GetFullPath($"application-{environment}.yaml"), true, true)
-                    .AddYamlFile(GetFullPath("appsettings.yaml"), true, true)
-                    .AddYamlFile(GetFullPath($"{AppName.Value}.yaml"), true, true)
-                    .AddYamlFile(GetFullPath($"appsettings.{environment}.yaml"), true, true)
-                    .AddYamlFile(GetFullPath($"{AppName.Value}-{environment}.yaml"), true, true);
-#if configserver
-                bootstrapConfigBuilder.AddEnvironmentVariables()
-                .AddCommandLine(Environment.GetCommandLineArgs())
-                .AddProfiles();
-                BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
-                bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);
-#endif
-                bootstrapConfigBuilder
-                    .AddEnvironmentVariables()
-                    .AddCommandLine(args)
-                    .AddPlaceholderResolver();
-
-                var logger = BootstrapLoggerFactory.Instance.CreateLogger(typeof(ConfigurationBuilderExtensions).FullName!);
-                logger.LogInformation("Configuration folder: {ConfigFolder}", ConfigFolder.Value);
-
-                void LogSources(IList<IConfigurationSource> sources)
+            var cfg = (IConfigurationBuilder)hostBuilder.Configuration;
+            
+            cfg.Sources.Clear();
+            var environment = hostBuilder.Environment.EnvironmentName;
+            var configName = AppSettingsConfigName.Value;
+            var bootstrapConfigBuilder = cfg
+                .AddInMemoryCollection(new Dictionary<string, string>()
                 {
-                    foreach (var source in sources)
+                    {"spring:application:name", AppName.Value}
+                })
+                .AddYamlFile(GetFullPath("solution-defaults.yaml"), true, true)
+                .AddYamlFile(GetFullPath("application.yaml"), true, true)
+                .AddYamlFile(GetFullPath($"solution-defaults.{environment}.yaml"), true, true)
+                .AddYamlFile(GetFullPath($"application-{environment}.yaml"), true, true)
+                .AddYamlFile(GetFullPath("appsettings.yaml"), true, true)
+                .AddYamlFile(GetFullPath($"{AppName.Value}.yaml"), true, true)
+                .AddYamlFile(GetFullPath($"appsettings.{environment}.yaml"), true, true)
+                .AddYamlFile(GetFullPath($"{AppName.Value}-{environment}.yaml"), true, true);
+#if configserver
+            bootstrapConfigBuilder.AddEnvironmentVariables()
+            .AddCommandLine(Environment.GetCommandLineArgs())
+            .AddProfiles();
+            BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
+            bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);
+#endif
+            bootstrapConfigBuilder
+                .AddEnvironmentVariables()
+                .AddCommandLine(args)
+                .AddPlaceholderResolver();
+
+            var logger = BootstrapLoggerFactory.Instance.CreateLogger(typeof(ConfigurationBuilderExtensions).FullName!);
+            logger.LogInformation("Configuration folder: {ConfigFolder}", ConfigFolder.Value);
+
+            void LogSources(IList<IConfigurationSource> sources)
+            {
+                foreach (var source in sources)
+                {
+                    var sourceName = source.GetType().Name;
+                    if (source is FileConfigurationSource fileSource)
                     {
-                        var sourceName = source.GetType().Name;
-                        if (source is FileConfigurationSource fileSource)
+                        var fullPath = Path.Combine(ConfigFolder.Value, fileSource.Path);
+                        logger.LogTrace("- {ConfigSource} - {File} {Status}", sourceName, fullPath, File.Exists(fullPath) ? "" : "missing");
+                    }
+                    else if (source is PlaceholderResolverSource placeholderSource)
+                    {
+                        if (placeholderSource.GetType().GetField("_sources", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(placeholderSource) is IList<IConfigurationSource> innerSources)
                         {
-                            var fullPath = Path.Combine(ConfigFolder.Value, fileSource.Path);
-                            logger.LogTrace("- {ConfigSource} - {File} {Status}", sourceName, fullPath, File.Exists(fullPath) ? "" : "missing");
-                        }
-                        else if (source is PlaceholderResolverSource placeholderSource)
-                        {
-                            if (placeholderSource.GetType().GetField("_sources", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(placeholderSource) is IList<IConfigurationSource> innerSources)
-                            {
-                                LogSources(innerSources);
-                            }
-                        }
-                        else
-                        {
-                            logger.LogTrace("Config Source: {ConfigSource}", sourceName);
+                            LogSources(innerSources);
                         }
                     }
+                    else
+                    {
+                        logger.LogTrace("Config Source: {ConfigSource}", sourceName);
+                    }
                 }
-                LogSources(bootstrapConfigBuilder.Sources);
-            });
+            }
+            LogSources(bootstrapConfigBuilder.Sources);
             return hostBuilder;
         }
         

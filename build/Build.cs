@@ -286,37 +286,6 @@ class Build : NukeBuild
             tiltProcess.WaitForExit();
         });
 
-    Target GenerateClient => _ => _
-        .DependsOn(OpenApi)
-        .Executes(() =>
-        {
-            var rootPath = $"/{RootDirectory.ToString().Replace(":", "").Replace("\\","/")}";
-            var project = Solution.GetProject(TargetProject);
-            var swaggerFullPath = GetSwaggerFileName(project, "v1");
-            var swaggerFileName = swaggerFullPath.Parent.GetUnixRelativePathTo(swaggerFullPath);
-            var clientSourceFolder = TemporaryDirectory / "client";
-            var targetFolderDocker = RootDirectory.GetUnixRelativePathTo(clientSourceFolder);
-            
-            DockerTasks.DockerRun(_ => _
-                .EnableRm()
-                .SetImage("azuresdk/autorest-all")
-                .SetVolume($"{rootPath}:/src")
-                .AddArgs($"--input-file=/src/artifacts/{swaggerFileName}")
-                .AddArgs($"--output-folder=/src/{targetFolderDocker}/DotnetAccelerator.Client")
-                .AddArgs("--namespace=MyProjectGroup.DotnetAccelerator.Client")
-                .AddArgs("--v3")
-                .AddArgs("--latest")
-                .AddArgs("--clear-output-folder=true")
-                .AddArgs("--public-clients=true")
-                .AddArgs("--csharp")
-                .AddArgs("--use-datetimeoffset=true")
-                .AddArgs("--sync-methods=none"));
-            DotNet("add package Microsoft.Azure.AutoRest.CSharp --prerelease", workingDirectory: clientSourceFolder);
-            DotNetPack(_ => _
-                .SetProcessWorkingDirectory(clientSourceFolder)
-                .SetOutputDirectory(ArtifactsDirectory));
-        });
-
     bool MigrationsFolderExists() => !Directory.Exists(RootDirectory / RootDirectory.GetRelativePathTo(Solution.GetProject(TargetProject).Directory) / "Migrations");
 
     void DoAddMigration()

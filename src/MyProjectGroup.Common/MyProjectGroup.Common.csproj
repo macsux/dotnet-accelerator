@@ -4,6 +4,10 @@
         <TargetFramework>net6.0</TargetFramework>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>postgresql;mysql;configserver;enableSecurity;TRACE</DefineConstants>
+    </PropertyGroup>
     <ItemGroup>
         <!--#if configserver -->
         <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.3" />
@@ -17,6 +21,7 @@
         <PackageReference Include="Steeltoe.Management.EndpointCore" Version="3.1.3" />
         <PackageReference Include="idunno.Authentication.Basic" Version="2.2.3" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.3.0" />
 <!--        <PackageReference Update="Nerdbank.GitVersioning" Version="3.4.255" />-->
 
     </ItemGroup>
