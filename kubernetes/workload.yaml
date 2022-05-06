@@ -13,6 +13,8 @@ metadata:
   namespace: default
 spec:
   env:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: Development
     - name: DbType
       value: SQLite
     - name: ConnectionStrings__Database
