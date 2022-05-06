@@ -18,7 +18,7 @@
       "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "PROFILES:ACTIVE": "LocalPostgreSQL"
+        "SPRING:PROFILES:ACTIVE": "LocalPostgreSQL"
       }
     },
 //#endif
@@ -31,7 +31,7 @@
       "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "PROFILES:ACTIVE": "LocalMySQL"
+        "SPRING:PROFILES:ACTIVE": "LocalMySQL"
       }
     },
 //#endif
