@@ -83,7 +83,6 @@
               "AddMigration",
               "Clean",
               "Compile",
-              "GenerateClient",
               "GetVersion",
               "Init",
               "LiveSync",
@@ -94,7 +93,8 @@
               "RestoreTools",
               "Run",
               "SetupGit",
-              "Test"
+              "Test",
+              "TrySetRegistry"
             ]
           }
         },
@@ -112,7 +112,6 @@
               "AddMigration",
               "Clean",
               "Compile",
-              "GenerateClient",
               "GetVersion",
               "Init",
               "LiveSync",
@@ -123,7 +122,8 @@
               "RestoreTools",
               "Run",
               "SetupGit",
-              "Test"
+              "Test",
+              "TrySetRegistry"
             ]
           }
         },

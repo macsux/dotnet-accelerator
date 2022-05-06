@@ -37,10 +37,10 @@ var services = builder.Services;
 var managementPort = builder.Configuration.GetValue<uint>("Management:Port");
 builder.WebHost.AddAllActuators(c =>
 {
-    // if (managementPort > 0)
-    // {
-    //     c.RequireHost($"*:{managementPort}");
-    // }
+    if (managementPort > 0)
+    {
+        c.RequireHost($"*:{managementPort}");
+    }
 });
 if (builder.Environment.IsDevelopment())
 {

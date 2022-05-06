@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using LibGit2Sharp;
@@ -28,6 +29,9 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.NerdbankGitVersioning.NerdbankGitVersioningTasks;
 using static Nuke.Common.IO.CompressionTasks;
 using Extensions;
+using Newtonsoft.Json.Linq;
+using Newtonsoft;
+
 // ReSharper disable TemplateIsNotCompileTimeConstantProblem
 
 
@@ -64,7 +68,7 @@ class Build : NukeBuild
     [Parameter("The name of the migration to add")]
     string MigrationName;
     [Parameter("Docker image repository to be used for inner loop")] 
-    readonly string ImageRepository;
+    string ImageRepository;
     [Solution] readonly Solution Solution;
 
     AbsolutePath SourceDirectory => RootDirectory / "src";
@@ -211,9 +215,44 @@ class Build : NukeBuild
         .Requires(() => MigrationName, () => TargetProject)
         .Executes(DoAddMigration);
 
+    Target TrySetRegistry => _ => _
+        .Unlisted()
+        .Executes(() =>
+        {
+            try
+            {
+                var registrySecret = KubernetesTasks.KubernetesGet(o => o
+                    .SetTypeName("secret/registry-credentials")
+                    .SetOutput(KubernetesGetOutput.json)
+                    .DisableProcessLogOutput())
+                    .StdToText();
+                var dockerConfigBase64 = JObject.Parse(registrySecret).SelectToken("$.data.['.dockerconfigjson']")?.Value<string>();
+                if (dockerConfigBase64 == null) return;
+                var dockerConfig = JObject.Parse(Encoding.Default.GetString(Convert.FromBase64String(dockerConfigBase64)));
+                var auth = dockerConfig.SelectToken("$.auths")!.ToObject<Dictionary<string, LoginData>>()?.FirstOrDefault();
+                if (auth == null) return;
+                var server = auth.Value.Key;
+                DockerTasks.DockerLogin(c => c
+                    .SetServer(server)
+                    .SetUsername(auth.Value.Value.Username)
+                    .SetPassword(auth.Value.Value.Password)
+                    .DisableProcessLogOutput());
+                ImageRepository = $"{server}/dotnetaccelerator";
+            }
+            catch
+            {
+                // ignored
+            }
+        });
+    public class LoginData
+    {
+        public string Username {get;set;}
+        public string Password {get;set;}
+    }
     Target LiveSync => _ => _
         .Description("Sets up live deployment to Kubernetes current context every time app is built")
-        .Requires(() => ImageRepository)
+        .DependsOn(TrySetRegistry)
+        .OnlyWhenDynamic(() => ImageRepository != null)
         .Executes(async () =>
         {
             using var watcher = new FileSystemWatcher(RootDirectory);

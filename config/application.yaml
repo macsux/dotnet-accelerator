@@ -10,7 +10,7 @@ Logging:
     Steeltoe.Management.Endpoint.Metrics.Observer.AspNetCoreHostingObserver: None
 AllowedHosts: '*'
 Management:
-  Port: 8080
+#  Port: 8090
   Endpoints:
     Actuator:
       Exposure:

@@ -87,6 +87,129 @@ engine:
         with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.3\" />'"
       condition: '#configserver'
   - include:
+    - src/MyProjectGroup.DotnetAccelerator/MyProjectGroup.DotnetAccelerator.csproj
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if enableSecurity -->
+                  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
+                  <PackageReference Include="idunno.Authentication.Basic" Version="2.2.3" />
+                  <!--#endif -->
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if enableSecurity -->
+                  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
+                  <PackageReference Include="idunno.Authentication.Basic" Version="2.2.3" />
+                  <!--#endif -->
+        with: |-
+          '        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
+                  <PackageReference Include="idunno.Authentication.Basic" Version="2.2.3" />'
+      condition: '#enableSecurity'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if postgresql -->
+                  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
+                  <!--#endif -->
+        with: "''"
+      condition: '!(#postgresql)'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if postgresql -->
+                  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
+                  <!--#endif -->
+        with: "'        <PackageReference Include=\"Npgsql.EntityFrameworkCore.PostgreSQL\" Version=\"6.0.3\" />'"
+      condition: '#postgresql'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if mysql -->
+                  <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.1" />
+                  <!--#endif -->
+        with: "''"
+      condition: '!(#mysql)'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if mysql -->
+                  <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.1" />
+                  <!--#endif -->
+        with: "'        <PackageReference Include=\"Pomelo.EntityFrameworkCore.MySql\" Version=\"6.0.1\" />'"
+      condition: '#mysql'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if configserver -->
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.3" />
+                  <!--#endif -->
+        with: "''"
+      condition: '!(#configserver)'
+    - type: ReplaceText
+      substitutions:
+      - text: |2-
+                  <!--#if configserver -->
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.3" />
+                  <!--#endif -->
+        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.3\" />'"
+      condition: '#configserver'
+  - include:
+    - config/application-Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
+  - include:
+    - config/application.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://accounts.google.com
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://accounts.google.com'
+      condition: '#enableSecurity'
+  - include:
     - src/MyProjectGroup.DotnetAccelerator/Program.cs
     chain:
     - type: ReplaceText
@@ -222,129 +345,6 @@ engine:
                       break;'
       condition: '#mysql'
   - include:
-    - src/MyProjectGroup.DotnetAccelerator/MyProjectGroup.DotnetAccelerator.csproj
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if enableSecurity -->
-                  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
-                  <PackageReference Include="idunno.Authentication.Basic" Version="2.2.3" />
-                  <!--#endif -->
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if enableSecurity -->
-                  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
-                  <PackageReference Include="idunno.Authentication.Basic" Version="2.2.3" />
-                  <!--#endif -->
-        with: |-
-          '        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
-                  <PackageReference Include="idunno.Authentication.Basic" Version="2.2.3" />'
-      condition: '#enableSecurity'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if postgresql -->
-                  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
-                  <!--#endif -->
-        with: "''"
-      condition: '!(#postgresql)'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if postgresql -->
-                  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
-                  <!--#endif -->
-        with: "'        <PackageReference Include=\"Npgsql.EntityFrameworkCore.PostgreSQL\" Version=\"6.0.3\" />'"
-      condition: '#postgresql'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if mysql -->
-                  <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.1" />
-                  <!--#endif -->
-        with: "''"
-      condition: '!(#mysql)'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if mysql -->
-                  <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.1" />
-                  <!--#endif -->
-        with: "'        <PackageReference Include=\"Pomelo.EntityFrameworkCore.MySql\" Version=\"6.0.1\" />'"
-      condition: '#mysql'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if configserver -->
-                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.3" />
-                  <!--#endif -->
-        with: "''"
-      condition: '!(#configserver)'
-    - type: ReplaceText
-      substitutions:
-      - text: |2-
-                  <!--#if configserver -->
-                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.3" />
-                  <!--#endif -->
-        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.3\" />'"
-      condition: '#configserver'
-  - include:
-    - config/application-Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
-  - include:
-    - config/application.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://accounts.google.com
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://accounts.google.com'
-      condition: '#enableSecurity'
-  - include:
     - src/MyProjectGroup.Common/Configuration/ConfigurationBuilderExtensions.cs
     chain:
     - type: ReplaceText
@@ -386,6 +386,32 @@ engine:
                       BootstrapLoggerFactory.Update(bootstrapConfigBuilder.Build());
                       bootstrapConfigBuilder.AddConfigServer(environment, BootstrapLoggerFactory.Instance);'
       condition: '#configserver'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/bin/.buildsync/config/solution-defaults.Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
+      condition: '#enableSecurity'
   - include:
     - src/MyProjectGroup.DotnetAccelerator/Properties/launchSettings.json
     chain:
@@ -477,32 +503,6 @@ engine:
                 }
               },'
       condition: '#mysql'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/.buildsync/config/solution-defaults.Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
   - include:
     - src/MyProjectGroup.DotnetAccelerator/bin/.buildsync/config/solution-defaults.yaml
     chain:
