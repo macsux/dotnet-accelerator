@@ -29,14 +29,14 @@ accelerator:
     label: Config Server
     dataType: boolean
     description: Enable config server integration
-    inputType: toggle
+    inputType: checkbox
     defaultValue: true
     required: true
   - name: enableSecurity
     label: Enable Security
     dataType: boolean
     description: Enable security via JWT resource server
-    inputType: toggle
+    inputType: checkbox
     defaultValue: true
     required: true
 engine:
@@ -145,7 +145,7 @@ engine:
       substitutions:
       - text: |2-
                   <!--#if configserver -->
-                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.3" />
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="$(SteeltoeVersion)" />
                   <!--#endif -->
         with: "''"
       condition: '!(#configserver)'
@@ -153,9 +153,9 @@ engine:
       substitutions:
       - text: |2-
                   <!--#if configserver -->
-                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="3.1.3" />
+                  <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerCore" Version="$(SteeltoeVersion)" />
                   <!--#endif -->
-        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"3.1.3\" />'"
+        with: "'        <PackageReference Include=\"Steeltoe.Extensions.Configuration.ConfigServerCore\" Version=\"$(SteeltoeVersion)\" />'"
       condition: '#configserver'
   - include:
     - config/application-Development.yaml
@@ -413,97 +413,6 @@ engine:
               Authority: https://login.run.pcfone.io'
       condition: '#enableSecurity'
   - include:
-    - src/MyProjectGroup.DotnetAccelerator/Properties/launchSettings.json
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          //#if postgresql
-              "DotnetAccelerator - PostgreSQL: ": {
-                "commandName": "Project",
-                "dotnetRunMessages": "true",
-                "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
-                "environmentVariables": {
-                  "ASPNETCORE_ENVIRONMENT": "Development",
-                  "PROFILES:ACTIVE": "LocalPostgreSQL"
-                }
-              },
-          //#endif
-        with: "''"
-      condition: '!(#postgresql)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          //#if postgresql
-              "DotnetAccelerator - PostgreSQL: ": {
-                "commandName": "Project",
-                "dotnetRunMessages": "true",
-                "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
-                "environmentVariables": {
-                  "ASPNETCORE_ENVIRONMENT": "Development",
-                  "PROFILES:ACTIVE": "LocalPostgreSQL"
-                }
-              },
-          //#endif
-        with: |-
-          '    "DotnetAccelerator - PostgreSQL: ": {
-                "commandName": "Project",
-                "dotnetRunMessages": "true",
-                "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
-                "environmentVariables": {
-                  "ASPNETCORE_ENVIRONMENT": "Development",
-                  "PROFILES:ACTIVE": "LocalPostgreSQL"
-                }
-              },'
-      condition: '#postgresql'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          //#if mysql
-              "DotnetAccelerator - MySQL: ": {
-                "commandName": "Project",
-                "dotnetRunMessages": "true",
-                "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
-                "environmentVariables": {
-                  "ASPNETCORE_ENVIRONMENT": "Development",
-                  "PROFILES:ACTIVE": "LocalMySQL"
-                }
-              },
-          //#endif
-        with: "''"
-      condition: '!(#mysql)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          //#if mysql
-              "DotnetAccelerator - MySQL: ": {
-                "commandName": "Project",
-                "dotnetRunMessages": "true",
-                "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
-                "environmentVariables": {
-                  "ASPNETCORE_ENVIRONMENT": "Development",
-                  "PROFILES:ACTIVE": "LocalMySQL"
-                }
-              },
-          //#endif
-        with: |-
-          '    "DotnetAccelerator - MySQL: ": {
-                "commandName": "Project",
-                "dotnetRunMessages": "true",
-                "launchBrowser": true,
-                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
-                "environmentVariables": {
-                  "ASPNETCORE_ENVIRONMENT": "Development",
-                  "PROFILES:ACTIVE": "LocalMySQL"
-                }
-              },'
-      condition: '#mysql'
-  - include:
     - src/MyProjectGroup.DotnetAccelerator/bin/.buildsync/config/solution-defaults.yaml
     chain:
     - type: ReplaceText
@@ -528,6 +437,123 @@ engine:
           'Authentication:
             Bearer:
               Authority: https://accounts.google.com'
+      condition: '#enableSecurity'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/Properties/launchSettings.json
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          //#if postgresql
+              "DotnetAccelerator - PostgreSQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "SPRING:PROFILES:ACTIVE": "LocalPostgreSQL"
+                }
+              },
+          //#endif
+        with: "''"
+      condition: '!(#postgresql)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          //#if postgresql
+              "DotnetAccelerator - PostgreSQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "SPRING:PROFILES:ACTIVE": "LocalPostgreSQL"
+                }
+              },
+          //#endif
+        with: |-
+          '    "DotnetAccelerator - PostgreSQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "SPRING:PROFILES:ACTIVE": "LocalPostgreSQL"
+                }
+              },'
+      condition: '#postgresql'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          //#if mysql
+              "DotnetAccelerator - MySQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "SPRING:PROFILES:ACTIVE": "LocalMySQL"
+                }
+              },
+          //#endif
+        with: "''"
+      condition: '!(#mysql)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          //#if mysql
+              "DotnetAccelerator - MySQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "SPRING:PROFILES:ACTIVE": "LocalMySQL"
+                }
+              },
+          //#endif
+        with: |-
+          '    "DotnetAccelerator - MySQL: ": {
+                "commandName": "Project",
+                "dotnetRunMessages": "true",
+                "launchBrowser": true,
+                "applicationUrl": "https://localhost:5001;http://localhost:5000;http://localhost:8090",
+                "environmentVariables": {
+                  "ASPNETCORE_ENVIRONMENT": "Development",
+                  "SPRING:PROFILES:ACTIVE": "LocalMySQL"
+                }
+              },'
+      condition: '#mysql'
+  - include:
+    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net6.0/config/solution-defaults.Development.yaml
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+          Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io
+          #endif
+        with: |-
+          'Authentication:
+            Bearer:
+              Authority: https://login.run.pcfone.io'
       condition: '#enableSecurity'
   - include:
     - src/MyProjectGroup.Common/Persistence/DbType.cs
@@ -565,58 +591,6 @@ engine:
         with: "'        MySQL,'"
       condition: '#mysql'
   - include:
-    - src/MyProjectGroup.Common/Security/KnownAuthorizationPolicy.cs
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-                  public const string AirportRead = "airport.read";
-                  public const string WeatherRead = "airport.read";
-                  public const string WeatherWrite = "airport.read";
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-                  public const string AirportRead = "airport.read";
-                  public const string WeatherRead = "airport.read";
-                  public const string WeatherWrite = "airport.read";
-          #endif
-        with: |-
-          '        public const string AirportRead = "airport.read";
-                  public const string WeatherRead = "airport.read";
-                  public const string WeatherWrite = "airport.read";'
-      condition: '#enableSecurity'
-  - include:
-    - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net6.0/config/solution-defaults.Development.yaml
-    chain:
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: "''"
-      condition: '!(#enableSecurity)'
-    - type: ReplaceText
-      substitutions:
-      - text: |-
-          #if enableSecurity
-          Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io
-          #endif
-        with: |-
-          'Authentication:
-            Bearer:
-              Authority: https://login.run.pcfone.io'
-      condition: '#enableSecurity'
-  - include:
     - src/MyProjectGroup.DotnetAccelerator/bin/Debug/net6.0/config/solution-defaults.yaml
     chain:
     - type: ReplaceText
@@ -641,6 +615,32 @@ engine:
           'Authentication:
             Bearer:
               Authority: https://accounts.google.com'
+      condition: '#enableSecurity'
+  - include:
+    - src/MyProjectGroup.Common/Security/KnownAuthorizationPolicy.cs
+    chain:
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+                  public const string AirportRead = "airport.read";
+                  public const string WeatherRead = "airport.read";
+                  public const string WeatherWrite = "airport.read";
+          #endif
+        with: "''"
+      condition: '!(#enableSecurity)'
+    - type: ReplaceText
+      substitutions:
+      - text: |-
+          #if enableSecurity
+                  public const string AirportRead = "airport.read";
+                  public const string WeatherRead = "airport.read";
+                  public const string WeatherWrite = "airport.read";
+          #endif
+        with: |-
+          '        public const string AirportRead = "airport.read";
+                  public const string WeatherRead = "airport.read";
+                  public const string WeatherWrite = "airport.read";'
       condition: '#enableSecurity'
   - include:
     - tests/DotnetAcceleratorTests/bin/Debug/net6.0/config/solution-defaults.Development.yaml
@@ -834,6 +834,9 @@ engine:
     regex: DotnetAccelerator.sln
     rewriteTo: "'' + #artifactId + '.sln'"
   - type: RewritePath
+    regex: src/MyProjectGroup.Common/Application.cs
+    rewriteTo: "'src/' + #namespace + '.Common/Application.cs'"
+  - type: RewritePath
     regex: src/MyProjectGroup.Common/BootstrapLoggerFactory.cs
     rewriteTo: "'src/' + #namespace + '.Common/BootstrapLoggerFactory.cs'"
   - type: RewritePath
@@ -890,6 +893,9 @@ engine:
   - type: RewritePath
     regex: src/MyProjectGroup.Common/Swagger/SwaggerGenOptionsExtensions.cs
     rewriteTo: "'src/' + #namespace + '.Common/Swagger/SwaggerGenOptionsExtensions.cs'"
+  - type: RewritePath
+    regex: src/MyProjectGroup.Common/WebApplicationBuilderExtensions.cs
+    rewriteTo: "'src/' + #namespace + '.Common/WebApplicationBuilderExtensions.cs'"
   - type: RewritePath
     regex: src/MyProjectGroup.DotnetAccelerator/Dockerfile
     rewriteTo: "'src/' + #namespace + '.' + #artifactId + '/Dockerfile'"
